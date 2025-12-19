@@ -21,6 +21,9 @@ CREATE TABLE IF NOT EXISTS public.organizations (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Add column if it doesn't exist (for existing databases)
+ALTER TABLE public.organizations ADD COLUMN IF NOT EXISTS join_code TEXT UNIQUE;
+
 -- Insert default organization
 INSERT INTO public.organizations (name, slug, join_code) 
 VALUES ('ProjectAthlete', 'projectathlete', 'ATHLETE2025')
