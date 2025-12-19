@@ -23,14 +23,7 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
   
   const { data: workout } = await supabase
     .from('community_workouts')
-    .select(`
-      *,
-      author:profiles(display_name),
-      workout_comments(
-        *,
-        profiles(display_name)
-      )
-    `)
+    .select('*')
     .eq('id', id)
     .single()
   
@@ -40,6 +33,36 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
 
   // Force narrowing for TypeScript
   const workoutData = workout as any
+
+  // Fetch author
+  const { data: author } = await supabase
+    .from('profiles')
+    .select('display_name')
+    .eq('id', workoutData.author_id)
+    .single()
+  
+  workoutData.author = author
+
+  // Fetch comments
+  const { data: comments } = await supabase
+    .from('workout_comments')
+    .select('*')
+    .eq('workout_id', id)
+    .order('created_at', { ascending: true })
+  
+  const commentsWithAuthors = [...(comments || [])]
+  if (commentsWithAuthors.length > 0) {
+    const commenterIds = [...new Set(commentsWithAuthors.map(c => c.user_id))]
+    const { data: commenters } = await supabase
+      .from('profiles')
+      .select('id, display_name')
+      .in('id', commenterIds)
+    
+    commentsWithAuthors.forEach((c: any) => {
+      c.profiles = commenters?.find(p => p.id === c.user_id)
+    })
+  }
+  workoutData.workout_comments = commentsWithAuthors
   
   // Get reaction counts
   const { data: counts } = await (supabase.rpc as any)('get_workout_reaction_counts', {

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { ExerciseGrid } from '@/components/exercises/exercise-grid'
 import { ExerciseFilters } from '@/components/exercises/exercise-filters'
+import { CreateExerciseDialog } from '@/components/exercises/create-exercise-dialog'
 import { EXERCISE_CATEGORIES } from '@/types/database'
 
 interface ExercisesPageProps {
@@ -44,11 +45,14 @@ export default async function ExercisesPage({ searchParams }: ExercisesPageProps
   
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Exercise Library</h1>
-        <p className="text-muted-foreground">
-          {exercises?.length || 0} exercises available
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Exercise Library</h1>
+          <p className="text-muted-foreground">
+            {exercises?.length || 0} exercises available
+          </p>
+        </div>
+        <CreateExerciseDialog />
       </div>
       
       <ExerciseFilters 

@@ -15,14 +15,7 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
   
   const { data: workout } = await supabase
     .from('workout_sessions')
-    .select(`
-      *,
-      workout_exercises(
-        *,
-        exercises(id, name, category),
-        workout_sets(*)
-      )
-    `)
+    .select('*')
     .eq('id', id)
     .single()
   
@@ -32,25 +25,48 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
 
   // Force narrowing for TypeScript
   const workoutData = workout as any
+
+  // Fetch exercises and sets separately
+  const { data: workoutExercises } = await supabase
+    .from('workout_exercises')
+    .select('*')
+    .eq('session_id', id)
+    .order('order_index', { ascending: true })
+
+  const exercisesWithDetails = [...(workoutExercises || [])]
+  if (exercisesWithDetails.length > 0) {
+    const exerciseIds = [...new Set(exercisesWithDetails.map(we => we.exercise_id))]
+    const { data: exerciseNames } = await supabase
+      .from('exercises')
+      .select('id, name, category')
+      .in('id', exerciseIds)
+    
+    const { data: sets } = await supabase
+      .from('workout_sets')
+      .select('*')
+      .in('workout_exercise_id', exercisesWithDetails.map(we => we.id))
+      .order('set_number', { ascending: true })
+
+    exercisesWithDetails.forEach((we: any) => {
+      we.exercises = exerciseNames?.find(e => e.id === we.exercise_id)
+      we.workout_sets = sets?.filter(s => s.workout_exercise_id === we.id) || []
+    })
+  }
   
   // Transform to form data
   const initialData = {
     date: workoutData.date,
     notes: workoutData.notes || '',
-    exercises: (workoutData.workout_exercises as any[])
-      .sort((a, b) => a.order_index - b.order_index)
-      .map((we) => ({
-        id: we.id,
-        exercise_id: we.exercise_id,
-        exercise_name: we.exercises?.name,
-        sets: we.workout_sets
-          .sort((a: any, b: any) => a.set_number - b.set_number)
-          .map((s: any) => ({
-            id: s.id,
-            weight: Number(s.weight),
-            reps: Number(s.reps),
-          })),
+    exercises: exercisesWithDetails.map((we) => ({
+      id: we.id,
+      exercise_id: we.exercise_id,
+      exercise_name: we.exercises?.name,
+      sets: we.workout_sets.map((s: any) => ({
+        id: s.id,
+        weight: Number(s.weight),
+        reps: Number(s.reps),
       })),
+    })),
   }
   
   const updateAction = updateWorkout.bind(null, id)

@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ChallengeCard } from '@/components/challenges/challenge-card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { Trophy, Plus, History } from 'lucide-react'
+import { Trophy, Plus, History, Clock } from 'lucide-react'
 
 export default async function ChallengesPage() {
   const supabase = await createClient()
@@ -22,7 +22,7 @@ export default async function ChallengesPage() {
   const profileData = profile as any
   const today = new Date().toISOString().split('T')[0]
   
-  // Get active challenges
+  // Get active challenges (started and not ended)
   const { data: activeChallenges } = await supabase
     .from('challenges')
     .select('*')
@@ -31,12 +31,21 @@ export default async function ChallengesPage() {
     .gte('end_date', today)
     .order('end_date', { ascending: true })
   
+  // Get upcoming challenges (haven't started yet)
+  const { data: upcomingChallenges } = await supabase
+    .from('challenges')
+    .select('*')
+    .eq('org_id', profileData.org_id)
+    .gt('start_date', today)
+    .order('start_date', { ascending: true })
+  
   const challenges = (activeChallenges || []) as any[]
+  const upcoming = (upcomingChallenges || []) as any[]
   
   // Check if admin
   const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
   
-  // Fetch progress for each challenge
+  // Fetch progress for each active challenge
   const challengesWithProgress = await Promise.all(
     challenges.map(async (challenge) => {
       const { data: progress } = await (supabase.rpc as any)('get_user_challenge_progress', {
@@ -51,7 +60,7 @@ export default async function ChallengesPage() {
   )
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Challenges</h1>
@@ -75,19 +84,47 @@ export default async function ChallengesPage() {
         </div>
       </div>
       
-      {challengesWithProgress.length === 0 ? (
-        <div className="text-center py-12">
-          <Trophy className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" />
-          <h3 className="text-lg font-medium">No active challenges</h3>
-          <p className="text-muted-foreground mb-4">Check back soon for the next competition!</p>
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {challengesWithProgress.map((challenge) => (
-            <ChallengeCard key={challenge.id} challenge={challenge as any} />
-          ))}
-        </div>
-      )}
+      {/* Active Challenges */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2">
+          <Trophy className="h-5 w-5 text-primary" />
+          Active Challenges
+        </h2>
+        {challengesWithProgress.length === 0 ? (
+          <div className="text-center py-8 bg-card rounded-lg border border-border">
+            <Trophy className="h-10 w-10 mx-auto mb-3 text-muted-foreground opacity-30" />
+            <h3 className="font-medium">No active challenges</h3>
+            <p className="text-sm text-muted-foreground">Check back soon or view upcoming challenges below!</p>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {challengesWithProgress.map((challenge) => (
+              <ChallengeCard key={challenge.id} challenge={challenge as any} />
+            ))}
+          </div>
+        )}
+      </section>
+      
+      {/* Upcoming Challenges */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2">
+          <Clock className="h-5 w-5 text-muted-foreground" />
+          Upcoming Challenges
+        </h2>
+        {upcoming.length === 0 ? (
+          <div className="text-center py-8 bg-card/50 rounded-lg border border-border/50">
+            <Clock className="h-10 w-10 mx-auto mb-3 text-muted-foreground opacity-30" />
+            <h3 className="font-medium text-muted-foreground">No upcoming challenges</h3>
+            <p className="text-sm text-muted-foreground">New challenges will appear here when scheduled</p>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {upcoming.map((challenge) => (
+              <ChallengeCard key={challenge.id} challenge={challenge as any} isUpcoming />
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   )
 }

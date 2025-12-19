@@ -2,11 +2,19 @@ import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { WorkoutCard } from '@/components/workouts/workout-card'
 import Link from 'next/link'
-import { Plus, Dumbbell } from 'lucide-react'
+import { Plus, Dumbbell, Users } from 'lucide-react'
 
 export default async function WorkoutsPage() {
   const supabase = await createClient()
   
+  // Get current user
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+  
+  // Check if coach/admin
+  const { data: isCoachOrAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
+  
+  // Always filter to only show the current user's workouts
   const { data: workouts } = await supabase
     .from('workout_sessions')
     .select(`
@@ -17,23 +25,34 @@ export default async function WorkoutsPage() {
         workout_sets(id)
       )
     `)
+    .eq('user_id', user.id)
     .order('date', { ascending: false })
   
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Workouts</h1>
+          <h1 className="text-3xl font-bold">My Workouts</h1>
           <p className="text-muted-foreground">
             {workouts?.length || 0} workouts logged
           </p>
         </div>
-        <Button asChild>
-          <Link href="/workouts/new">
-            <Plus className="h-4 w-4 mr-2" />
-            Log Workout
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          {isCoachOrAdmin && (
+            <Button asChild variant="outline">
+              <Link href="/workouts/all">
+                <Users className="h-4 w-4 mr-2" />
+                All Athletes
+              </Link>
+            </Button>
+          )}
+          <Button asChild>
+            <Link href="/workouts/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Log Workout
+            </Link>
+          </Button>
+        </div>
       </div>
       
       {workouts && workouts.length > 0 ? (

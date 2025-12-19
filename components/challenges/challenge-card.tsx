@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Trophy, Calendar } from 'lucide-react'
+import { Trophy, Calendar, Clock } from 'lucide-react'
 import type { Challenge } from '@/types/database'
 
 interface ChallengeWithProgress extends Challenge {
@@ -14,24 +14,45 @@ interface ChallengeWithProgress extends Challenge {
 
 interface ChallengeCardProps {
   challenge: ChallengeWithProgress
+  isUpcoming?: boolean
 }
 
-export function ChallengeCard({ challenge }: ChallengeCardProps) {
+export function ChallengeCard({ challenge, isUpcoming }: ChallengeCardProps) {
   const today = new Date().toISOString().split('T')[0]
   const isActive = challenge.start_date <= today && challenge.end_date >= today
+  
+  // Calculate days
   const daysRemaining = Math.max(0, Math.ceil((new Date(challenge.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+  const daysUntilStart = Math.max(0, Math.ceil((new Date(challenge.start_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+  
+  // Format start date for upcoming challenges
+  const startDate = new Date(challenge.start_date).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
+  })
   
   return (
     <Link href={`/challenges/${challenge.id}`}>
-      <Card className="h-full hover:bg-accent/50 transition-colors cursor-pointer relative overflow-hidden">
+      <Card className={`h-full hover:bg-accent/50 transition-colors cursor-pointer relative overflow-hidden ${isUpcoming ? 'border-dashed opacity-80' : ''}`}>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between mb-1">
-            <Badge variant={isActive ? 'default' : 'secondary'} className="text-[10px]">
-              {isActive ? 'Active' : 'Ended'}
-            </Badge>
+            {isUpcoming ? (
+              <Badge variant="outline" className="text-[10px] border-dashed">
+                <Clock className="h-2.5 w-2.5 mr-1" />
+                Upcoming
+              </Badge>
+            ) : (
+              <Badge variant={isActive ? 'default' : 'secondary'} className="text-[10px]">
+                {isActive ? 'Active' : 'Ended'}
+              </Badge>
+            )}
             <span className="text-[10px] text-muted-foreground flex items-center gap-1">
               <Calendar className="h-3 w-3" />
-              {isActive ? `${daysRemaining} days left` : 'Ended'}
+              {isUpcoming 
+                ? `Starts ${startDate}` 
+                : isActive 
+                  ? `${daysRemaining} days left` 
+                  : 'Ended'}
             </span>
           </div>
           <CardTitle className="text-base line-clamp-1">{challenge.name}</CardTitle>
@@ -43,7 +64,12 @@ export function ChallengeCard({ challenge }: ChallengeCardProps) {
           </p>
           
           <div className="pt-2 border-t border-border">
-            {challenge.progress && Number(challenge.progress.total_value) > 0 ? (
+            {isUpcoming ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                <span>Starts in {daysUntilStart} day{daysUntilStart !== 1 ? 's' : ''}</span>
+              </div>
+            ) : challenge.progress && Number(challenge.progress.total_value) > 0 ? (
               <div className="flex items-center justify-between text-sm">
                 <div>
                   <p className="text-xs text-muted-foreground">Your Progress</p>

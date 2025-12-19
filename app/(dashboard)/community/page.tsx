@@ -2,7 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { CommunityWorkoutCard } from '@/components/community/workout-card'
 import Link from 'next/link'
-import { Plus, Users } from 'lucide-react'
+import { Plus, Users, ClipboardCheck } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
 interface CommunityPageProps {
   searchParams: Promise<{
@@ -29,11 +30,24 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
   // Force narrowing for TypeScript
   const profileData = profile as any
   
+  // Check if admin/coach
+  const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
+  
+  // Get pending count for badge
+  let pendingCount = 0
+  if (isAdmin) {
+    const { count } = await supabase
+      .from('community_workouts')
+      .select('*', { count: 'exact', head: true })
+      .eq('org_id', profileData.org_id)
+      .eq('status', 'pending')
+    pendingCount = count || 0
+  }
+  
   let query = supabase
     .from('community_workouts')
     .select(`
       *,
-      author:profiles(display_name),
       workout_comments(id),
       workout_reactions(id)
     `)
@@ -51,13 +65,25 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
   }
   
   const { data: workouts } = await query
-  
-  // Transform counts
+
+  // Fetch authors separately for names
   const transformedWorkouts = (workouts || []).map((w: any) => ({
     ...w,
     comment_count: (w.workout_comments as any[])?.length ?? 0,
     reaction_count: (w.workout_reactions as any[])?.length ?? 0
   }))
+
+  if (transformedWorkouts.length > 0) {
+    const authorIds = [...new Set(transformedWorkouts.map(w => w.author_id))]
+    const { data: authors } = await supabase
+      .from('profiles')
+      .select('id, display_name')
+      .in('id', authorIds)
+    
+    transformedWorkouts.forEach((w: any) => {
+      w.author = authors?.find(a => a.id === w.author_id)
+    })
+  }
   
   return (
     <div className="space-y-6">
@@ -66,12 +92,27 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
           <h1 className="text-3xl font-bold">Community</h1>
           <p className="text-muted-foreground">Workouts from your community</p>
         </div>
-        <Button asChild>
-          <Link href="/community/submit">
-            <Plus className="h-4 w-4 mr-2" />
-            Submit Workout
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          {isAdmin && (
+            <Button asChild variant="outline">
+              <Link href="/admin/submissions" className="relative">
+                <ClipboardCheck className="h-4 w-4 mr-2" />
+                Review
+                {pendingCount > 0 && (
+                  <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                    {pendingCount}
+                  </Badge>
+                )}
+              </Link>
+            </Button>
+          )}
+          <Button asChild>
+            <Link href="/community/submit">
+              <Plus className="h-4 w-4 mr-2" />
+              Submit
+            </Link>
+          </Button>
+        </div>
       </div>
       
       {/* Featured / Empty State */}

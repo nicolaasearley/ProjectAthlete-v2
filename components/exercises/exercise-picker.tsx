@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import { Search, Check, X } from 'lucide-react'
@@ -20,66 +20,46 @@ export function ExercisePicker({
 }: ExercisePickerProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
-  const [exercises, setExercises] = useState<Exercise[]>([])
+  const [allExercises, setAllExercises] = useState<Exercise[]>([])
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
   const supabase = createClient()
   
-  // Load selected exercise if value provided
+  // Load all exercises once on mount
   useEffect(() => {
-    if (value && !selectedExercise) {
-      supabase
+    const loadExercises = async () => {
+      setLoading(true)
+      const { data } = await supabase
         .from('exercises')
         .select('*')
-        .eq('id', value)
-        .single()
-        .then(({ data }) => {
-          if (data) setSelectedExercise(data)
-        })
-    }
-  }, [value, selectedExercise, supabase])
-  
-  // Search exercises
-  useEffect(() => {
-    if (!open) return
-    
-    const searchExercises = async () => {
-      setLoading(true)
+        .order('name')
       
-      if (search) {
-        const { data } = await (supabase.rpc as any)('search_exercises', { 
-          search_term: search 
-        })
-        
-        if (data && data.length > 0) {
-          // Get full exercise data for search results
-          const { data: fullExercises } = await supabase
-            .from('exercises')
-            .select('*')
-            .in('id', data.map((d: any) => d.id))
-          
-          setExercises(fullExercises || [])
-        } else {
-          setExercises([])
-        }
-      } else {
-        // Show popular/recent exercises when no search
-        const { data } = await supabase
-          .from('exercises')
-          .select('*')
-          .order('name')
-          .limit(100)
-        
-        setExercises(data || [])
-      }
-      
+      setAllExercises(data || [])
       setLoading(false)
     }
     
-    const debounce = setTimeout(searchExercises, 200)
-    return () => clearTimeout(debounce)
-  }, [search, open, supabase])
+    loadExercises()
+  }, [supabase])
+  
+  // Load selected exercise if value provided
+  useEffect(() => {
+    if (value && !selectedExercise && allExercises.length > 0) {
+      const found = allExercises.find(e => e.id === value)
+      if (found) setSelectedExercise(found)
+    }
+  }, [value, selectedExercise, allExercises])
+  
+  // Filter exercises client-side for instant search
+  const filteredExercises = useMemo(() => {
+    if (!search.trim()) return allExercises
+    
+    const searchLower = search.toLowerCase().trim()
+    return allExercises.filter(exercise => 
+      exercise.name.toLowerCase().includes(searchLower) ||
+      exercise.category.toLowerCase().includes(searchLower)
+    )
+  }, [search, allExercises])
   
   // Close on click outside
   useEffect(() => {
@@ -122,7 +102,7 @@ export function ExercisePicker({
         <div className={cn(
           "z-50 bg-card border border-border shadow-2xl overflow-hidden flex flex-col transition-all duration-200",
           // Mobile: Full screen fixed
-          "fixed inset-0 lg:absolute lg:inset-auto lg:top-full lg:left-0 lg:right-0 lg:mt-1 lg:rounded-lg lg:max-h-64",
+          "fixed inset-0 lg:absolute lg:inset-auto lg:top-full lg:left-0 lg:right-0 lg:mt-1 lg:rounded-lg lg:max-h-80",
           // Animation
           "animate-in fade-in zoom-in-95 duration-200"
         )}>
@@ -133,7 +113,7 @@ export function ExercisePicker({
               autoFocus
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder={placeholder}
+              placeholder="Search exercises..."
               className="flex-1 bg-transparent outline-none text-base"
             />
             <Button variant="ghost" size="icon" onClick={() => setOpen(false)}>
@@ -141,7 +121,7 @@ export function ExercisePicker({
             </Button>
           </div>
 
-          {/* Desktop Search Bar (already auto-focused on mobile header) */}
+          {/* Desktop Search Bar */}
           <div className="hidden lg:block p-2 border-b border-border">
             <div className="flex items-center gap-2 px-2 py-1 bg-accent/50 rounded-md">
               <Search className="h-3.5 w-3.5 text-muted-foreground" />
@@ -149,25 +129,30 @@ export function ExercisePicker({
                 autoFocus
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Filter..."
+                placeholder="Search exercises..."
                 className="flex-1 bg-transparent outline-none text-xs h-6"
               />
             </div>
+          </div>
+          
+          {/* Results count */}
+          <div className="px-4 py-2 text-xs text-muted-foreground border-b border-border bg-accent/30">
+            {loading ? 'Loading...' : `${filteredExercises.length} exercises`}
           </div>
           
           <div className="flex-1 overflow-y-auto">
             {loading ? (
               <div className="p-8 text-center text-muted-foreground">
                 <div className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                <p className="text-sm">Searching...</p>
+                <p className="text-sm">Loading exercises...</p>
               </div>
-            ) : exercises.length === 0 ? (
+            ) : filteredExercises.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground">
-                <p className="text-sm">{search ? 'No exercises found' : 'Start typing to search'}</p>
+                <p className="text-sm">No exercises found for &quot;{search}&quot;</p>
               </div>
             ) : (
               <div className="py-1">
-                {exercises.map((exercise) => (
+                {filteredExercises.map((exercise) => (
                   <button
                     key={exercise.id}
                     onClick={() => handleSelect(exercise)}
