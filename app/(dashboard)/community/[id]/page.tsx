@@ -104,14 +104,16 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
           </div>
         </div>
         
-        {isAdmin && (
-          <form action={toggleFeatured.bind(null, id)}>
-            <Button variant="outline" size="sm" type="submit">
-              <Star className={`h-4 w-4 mr-2 ${workoutData.is_featured ? 'fill-yellow-500 text-yellow-500' : ''}`} />
-              {workoutData.is_featured ? 'Unfeature' : 'Feature'}
-            </Button>
-          </form>
-        )}
+        <div className="flex flex-col sm:flex-row gap-2">
+          {isAdmin && (
+            <form action={toggleFeatured.bind(null, id)}>
+              <Button variant="outline" size="sm" type="submit" className="w-full sm:w-auto gap-2">
+                <Star className={`h-4 w-4 ${workoutData.is_featured ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+                {workoutData.is_featured ? 'Unfeature' : 'Feature'}
+              </Button>
+            </form>
+          )}
+        </div>
       </div>
       
       <Card>

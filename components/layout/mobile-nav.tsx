@@ -11,6 +11,7 @@ import {
   Trophy,
   User,
   X,
+  Shield,
 } from 'lucide-react'
 
 const navigation = [
@@ -22,13 +23,19 @@ const navigation = [
   { name: 'Profile', href: '/profile', icon: User },
 ]
 
+const adminNavigation = [
+  { name: 'User Management', href: '/admin/users', icon: Shield },
+]
+
 interface MobileNavProps {
   open: boolean
   onClose: () => void
+  role?: string
 }
 
-export function MobileNav({ open, onClose }: MobileNavProps) {
+export function MobileNav({ open, onClose, role }: MobileNavProps) {
   const pathname = usePathname()
+  const isAdmin = role === 'admin' || role === 'coach'
 
   return (
     <div className={cn(
@@ -62,7 +69,7 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
           </button>
         </div>
         
-        <nav className="px-4 space-y-1">
+        <nav className="px-4 space-y-1 overflow-y-auto">
           {navigation.map((item) => {
             const isActive = pathname === item.href || 
               (item.href !== '/' && pathname.startsWith(item.href))
@@ -84,6 +91,34 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
               </Link>
             )
           })}
+
+          {isAdmin && (
+            <div className="pt-4 mt-4 border-t border-border">
+              <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                Admin
+              </p>
+              {adminNavigation.map((item) => {
+                const isActive = pathname === item.href
+                
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    onClick={onClose}
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                      isActive
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                    )}
+                  >
+                    <item.icon className="h-5 w-5" />
+                    {item.name}
+                  </Link>
+                )
+              })}
+            </div>
+          )}
         </nav>
       </div>
     </div>

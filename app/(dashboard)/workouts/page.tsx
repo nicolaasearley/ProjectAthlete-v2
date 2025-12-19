@@ -1,8 +1,14 @@
+import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { WorkoutCard } from '@/components/workouts/workout-card'
 import Link from 'next/link'
 import { Plus, Dumbbell, Users } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Workouts | ProjectAthlete',
+  description: 'View and log your training sessions.',
+}
 
 export default async function WorkoutsPage() {
   const supabase = await createClient()
@@ -39,16 +45,16 @@ export default async function WorkoutsPage() {
         </div>
         <div className="flex gap-2">
           {isCoachOrAdmin && (
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="gap-2">
               <Link href="/workouts/all">
-                <Users className="h-4 w-4 mr-2" />
+                <Users className="h-4 w-4" />
                 All Athletes
               </Link>
             </Button>
           )}
-          <Button asChild>
+          <Button asChild className="gap-2">
             <Link href="/workouts/new">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4" />
               Log Workout
             </Link>
           </Button>
@@ -56,7 +62,7 @@ export default async function WorkoutsPage() {
       </div>
       
       {workouts && workouts.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {(workouts as any[]).map((workout) => (
             <WorkoutCard key={workout.id} workout={workout} />
           ))}
@@ -66,9 +72,9 @@ export default async function WorkoutsPage() {
           <Dumbbell className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" />
           <h3 className="text-lg font-medium">No workouts yet</h3>
           <p className="text-muted-foreground mb-4">Start logging to track your progress</p>
-          <Button asChild>
+          <Button asChild className="gap-2">
             <Link href="/workouts/new">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4" />
               Log Your First Workout
             </Link>
           </Button>
@@ -77,4 +83,3 @@ export default async function WorkoutsPage() {
     </div>
   )
 }
-

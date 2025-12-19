@@ -56,9 +56,9 @@ export function Leaderboard({ entries, currentUserId, unit }: LeaderboardProps) 
                   isMe ? 'bg-primary/20 border border-primary/50' : 'bg-accent/50'
                 )}
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 min-w-0">
                   <span className={cn(
-                    'w-6 text-center font-bold',
+                    'w-6 shrink-0 text-center font-bold',
                     entry.rank === 1 && 'text-yellow-500',
                     entry.rank === 2 && 'text-gray-400',
                     entry.rank === 3 && 'text-amber-600',
@@ -66,17 +66,17 @@ export function Leaderboard({ entries, currentUserId, unit }: LeaderboardProps) 
                   )}>
                     {entry.rank}
                   </span>
-                  <div>
+                  <div className="min-w-0">
                     <p className="font-medium flex items-center gap-2">
-                      {displayName}
-                      {isMe && <span className="text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full uppercase">You</span>}
+                      <span className="truncate">{displayName}</span>
+                      {isMe && <span className="shrink-0 text-[10px] bg-primary text-primary-foreground px-1.5 py-0.5 rounded-full uppercase">You</span>}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground truncate">
                       {entry.log_count} log{entry.log_count !== 1 ? 's' : ''}
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right shrink-0 ml-2">
                   <p className="font-bold">
                     {Number(entry.total_value).toLocaleString()}
                   </p>

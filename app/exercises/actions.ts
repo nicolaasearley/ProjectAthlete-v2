@@ -21,6 +21,7 @@ export async function createCustomExercise(formData: FormData) {
   
   const name = formData.get('name') as string
   const category = formData.get('category') as ExerciseCategory
+  const default_metric = formData.get('default_metric') as string
   
   if (!name || !category) {
     throw new Error('Name and category are required')
@@ -31,6 +32,7 @@ export async function createCustomExercise(formData: FormData) {
     .insert({
       name: name.trim(),
       category,
+      default_metric,
       is_global: false,
       org_id: (profile as any).org_id,
     })

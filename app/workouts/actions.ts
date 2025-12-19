@@ -56,8 +56,11 @@ export async function createWorkout(data: WorkoutFormData) {
     const sets = exercise.sets.map((set, setIndex) => ({
       workout_exercise_id: workoutExercise.id,
       set_number: setIndex + 1,
-      weight: set.weight,
-      reps: set.reps,
+      weight: set.weight || 0,
+      reps: set.reps || 0,
+      distance_meters: set.distance_meters || null,
+      time_seconds: set.time_seconds || null,
+      calories: set.calories || null,
     }))
     
     if (sets.length > 0) {

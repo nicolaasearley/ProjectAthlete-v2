@@ -38,7 +38,7 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
     const exerciseIds = [...new Set(exercisesWithDetails.map(we => we.exercise_id))] as string[]
     const { data: exerciseNames } = await supabase
       .from('exercises')
-      .select('id, name, category')
+      .select('id, name, category, default_metric')
       .in('id', exerciseIds)
     
     const { data: sets } = await supabase
@@ -47,8 +47,17 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
       .in('workout_exercise_id', exercisesWithDetails.map(we => we.id))
       .order('set_number', { ascending: true })
 
-    const exerciseList = (exerciseNames || []) as { id: string; name: string; category: string }[]
-    const setList = (sets || []) as { id: string; workout_exercise_id: string; set_number: number; weight: number; reps: number }[]
+    const exerciseList = (exerciseNames || []) as { id: string; name: string; category: string; default_metric: string }[]
+    const setList = (sets || []) as { 
+      id: string; 
+      workout_exercise_id: string; 
+      set_number: number; 
+      weight: number; 
+      reps: number;
+      distance_meters: number | null;
+      time_seconds: number | null;
+      calories: number | null;
+    }[]
     
     exercisesWithDetails.forEach((we: any) => {
       we.exercises = exerciseList.find(e => e.id === we.exercise_id)
@@ -64,10 +73,14 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
       id: we.id,
       exercise_id: we.exercise_id,
       exercise_name: we.exercises?.name,
+      default_metric: we.exercises?.default_metric,
       sets: we.workout_sets.map((s: any) => ({
         id: s.id,
-        weight: Number(s.weight),
-        reps: Number(s.reps),
+        weight: s.weight ? Number(s.weight) : undefined,
+        reps: s.reps ? Number(s.reps) : undefined,
+        distance_meters: s.distance_meters ? Number(s.distance_meters) : undefined,
+        time_seconds: s.time_seconds ? Number(s.time_seconds) : undefined,
+        calories: s.calories ? Number(s.calories) : undefined,
       })),
     })),
   }

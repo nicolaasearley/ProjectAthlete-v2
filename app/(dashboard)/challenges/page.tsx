@@ -1,8 +1,14 @@
+import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { ChallengeCard } from '@/components/challenges/challenge-card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { Trophy, Plus, History, Clock } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Challenges | ProjectAthlete',
+  description: 'Join community challenges and climb the leaderboard.',
+}
 
 export default async function ChallengesPage() {
   const supabase = await createClient()
@@ -67,16 +73,16 @@ export default async function ChallengesPage() {
           <p className="text-muted-foreground">Monthly community competitions</p>
         </div>
         <div className="flex gap-2">
-          <Button asChild variant="outline" size="sm">
+          <Button asChild variant="outline" size="sm" className="gap-2">
             <Link href="/challenges/history">
-              <History className="h-4 w-4 mr-2" />
+              <History className="h-4 w-4" />
               History
             </Link>
           </Button>
           {isAdmin && (
-            <Button asChild size="sm">
+            <Button asChild size="sm" className="gap-2">
               <Link href="/admin/challenges/new">
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="h-4 w-4" />
                 New
               </Link>
             </Button>

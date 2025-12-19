@@ -69,6 +69,7 @@ export type Database = {
           is_global: boolean
           org_id: string | null
           created_at: string
+          default_metric: 'weight_reps' | 'time' | 'distance' | 'calories' | 'time_distance' | 'time_calories'
         }
         Insert: {
           id?: string
@@ -77,6 +78,7 @@ export type Database = {
           is_global?: boolean
           org_id?: string | null
           created_at?: string
+          default_metric?: 'weight_reps' | 'time' | 'distance' | 'calories' | 'time_distance' | 'time_calories'
         }
         Update: {
           id?: string
@@ -85,6 +87,7 @@ export type Database = {
           is_global?: boolean
           org_id?: string | null
           created_at?: string
+          default_metric?: 'weight_reps' | 'time' | 'distance' | 'calories' | 'time_distance' | 'time_calories'
         }
       }
       exercise_aliases: {
@@ -167,14 +170,20 @@ export type Database = {
           weight: number
           reps: number
           created_at: string
+          distance_meters: number | null
+          time_seconds: number | null
+          calories: number | null
         }
         Insert: {
           id?: string
           workout_exercise_id: string
           set_number: number
-          weight: number
-          reps: number
+          weight?: number
+          reps?: number
           created_at?: string
+          distance_meters?: number | null
+          time_seconds?: number | null
+          calories?: number | null
         }
         Update: {
           id?: string
@@ -183,6 +192,9 @@ export type Database = {
           weight?: number
           reps?: number
           created_at?: string
+          distance_meters?: number | null
+          time_seconds?: number | null
+          calories?: number | null
         }
       }
       community_workouts: {
@@ -525,14 +537,18 @@ export type UserBadge = Database['public']['Tables']['user_badges']['Row']
 // Form types
 export interface WorkoutSetInput {
   id?: string
-  weight: number
-  reps: number
+  weight?: number
+  reps?: number
+  distance_meters?: number
+  time_seconds?: number
+  calories?: number
 }
 
 export interface WorkoutExerciseInput {
   id?: string
   exercise_id: string
   exercise_name?: string
+  default_metric?: string
   sets: WorkoutSetInput[]
 }
 

@@ -77,6 +77,22 @@ export function CreateExerciseDialog() {
             </select>
           </div>
           
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Tracking Metric</label>
+            <select
+              name="default_metric"
+              required
+              className="w-full h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="weight_reps">Weight & Reps</option>
+              <option value="time">Time Only</option>
+              <option value="distance">Distance Only</option>
+              <option value="calories">Calories Only</option>
+              <option value="time_distance">Time & Distance</option>
+              <option value="time_calories">Time & Calories</option>
+            </select>
+          </div>
+          
           {error && (
             <p className="text-sm text-destructive">{error}</p>
           )}
@@ -90,8 +106,8 @@ export function CreateExerciseDialog() {
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending} className="flex-1">
-              {isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            <Button type="submit" disabled={isPending} className="flex-1 gap-2">
+              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               Create
             </Button>
           </div>

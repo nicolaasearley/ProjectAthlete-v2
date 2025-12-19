@@ -35,8 +35,8 @@ export default function Error({
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
-        <Button onClick={() => reset()} variant="default" size="lg">
-          <RefreshCcw className="h-4 w-4 mr-2" />
+        <Button onClick={() => reset()} variant="default" size="lg" className="gap-2">
+          <RefreshCcw className="h-4 w-4" />
           Try again
         </Button>
         <Button onClick={() => window.location.href = '/'} variant="outline" size="lg">

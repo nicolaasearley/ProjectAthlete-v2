@@ -8,7 +8,8 @@ import { ChallengeCountdown } from '@/components/challenges/challenge-countdown'
 import { ChallengeLogHistory } from '@/components/challenges/log-history'
 import { logProgress } from '@/app/challenges/actions'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Info } from 'lucide-react'
+import { ArrowLeft, Calendar, Info, Settings } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface ChallengePageProps {
   params: Promise<{ id: string }>
@@ -56,6 +57,9 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
     .eq('user_id', user.id)
     .order('logged_at', { ascending: false })
   
+  // Check if admin
+  const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
+  
   const userProgress = (progress as any)?.[0] || null
   const daysRemaining = Math.max(0, Math.ceil((new Date(challengeData.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
   
@@ -77,6 +81,13 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
           </div>
           <h1 className="text-3xl font-bold">{challengeData.name}</h1>
         </div>
+        {isAdmin && (
+          <Button asChild variant="ghost" size="icon">
+            <Link href={`/admin/challenges/${id}/edit`}>
+              <Settings className="h-5 w-5" />
+            </Link>
+          </Button>
+        )}
       </div>
 
       {isActive && <ChallengeCountdown endDate={challengeData.end_date} />}

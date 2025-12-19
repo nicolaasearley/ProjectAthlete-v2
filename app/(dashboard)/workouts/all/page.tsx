@@ -71,7 +71,7 @@ export default async function AllWorkoutsPage() {
       </div>
       
       {workoutsWithUsers.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {workoutsWithUsers.map((workout) => (
             <WorkoutCard 
               key={workout.id} 

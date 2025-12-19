@@ -53,7 +53,11 @@ export function Navbar({ profile }: NavbarProps) {
         </div>
       </header>
 
-      <MobileNav open={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+      <MobileNav 
+        open={mobileNavOpen} 
+        onClose={() => setMobileNavOpen(false)} 
+        role={profile?.role}
+      />
     </>
   )
 }

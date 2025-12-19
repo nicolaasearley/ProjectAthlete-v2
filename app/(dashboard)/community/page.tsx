@@ -1,9 +1,15 @@
+import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { CommunityWorkoutCard } from '@/components/community/workout-card'
 import Link from 'next/link'
 import { Plus, Users, ClipboardCheck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+
+export const metadata: Metadata = {
+  title: 'Community | ProjectAthlete',
+  description: 'Discover and share workouts with your community.',
+}
 
 interface CommunityPageProps {
   searchParams: Promise<{
@@ -95,9 +101,9 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
         </div>
         <div className="flex gap-2">
           {isAdmin && (
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" className="gap-2">
               <Link href="/admin/submissions" className="relative">
-                <ClipboardCheck className="h-4 w-4 mr-2" />
+                <ClipboardCheck className="h-4 w-4" />
                 Review
                 {pendingCount > 0 && (
                   <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center text-xs">
@@ -107,9 +113,9 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
               </Link>
             </Button>
           )}
-          <Button asChild>
+          <Button asChild className="gap-2">
             <Link href="/community/submit">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4" />
               Submit
             </Link>
           </Button>
@@ -122,9 +128,9 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
           <Users className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" />
           <h3 className="text-lg font-medium">No community workouts yet</h3>
           <p className="text-muted-foreground mb-4">Be the first to share a workout with your organization!</p>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" className="gap-2">
             <Link href="/community/submit">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="h-4 w-4" />
               Share a Workout
             </Link>
           </Button>

@@ -1,9 +1,15 @@
+import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BadgeDisplay } from '@/components/challenges/badge-display'
 import { Button } from '@/components/ui/button'
 import { updateAnonymity } from '@/app/challenges/actions'
 import { User, Shield, AtSign, Building } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Profile | ProjectAthlete',
+  description: 'Manage your profile and view your earned badges.',
+}
 
 export default async function ProfilePage() {
   const supabase = await createClient()

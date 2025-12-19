@@ -1,8 +1,14 @@
+import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/shared/empty-state'
 import { WorkoutCard } from '@/components/workouts/workout-card'
 import { Dumbbell, Trophy, Users, TrendingUp } from 'lucide-react'
+
+export const metadata: Metadata = {
+  title: 'Dashboard | ProjectAthlete',
+  description: 'Your training overview and recent activity.',
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -136,13 +142,13 @@ export default async function DashboardPage() {
             {prs && prs.length > 0 ? (
               <div className="space-y-4">
                 {prs.slice(0, 5).map((pr: any) => (
-                  <div key={pr.exercise_id} className="flex items-center justify-between p-3 rounded-lg bg-accent/5 border border-border">
-                    <div>
-                      <p className="font-medium">{pr.exercise_name}</p>
-                      <p className="text-[10px] text-muted-foreground uppercase">{pr.category}</p>
+                  <div key={pr.exercise_id} className="flex items-center justify-between p-3 rounded-lg bg-accent/5 border border-border gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium truncate">{pr.exercise_name}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase truncate">{pr.category}</p>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-lg">
+                    <div className="text-right shrink-0">
+                      <p className="font-bold text-lg leading-tight">
                         {Number(pr.max_weight) > 0 
                           ? Number(pr.max_weight).toLocaleString() 
                           : Number(pr.estimated_1rm || 0).toLocaleString()} 

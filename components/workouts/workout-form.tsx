@@ -51,7 +51,13 @@ export function WorkoutForm({ action, initialData, deleteAction }: WorkoutFormPr
     if (exercises.length === 0) return
     
     const validExercises = exercises.filter(
-      (ex) => ex.exercise_id && ex.sets.some((s) => s.weight > 0 && s.reps > 0)
+      (ex) => ex.exercise_id && ex.sets.some((s) => 
+        (s.weight ?? 0) > 0 || 
+        (s.reps ?? 0) > 0 || 
+        (s.distance_meters ?? 0) > 0 || 
+        (s.time_seconds ?? 0) > 0 || 
+        (s.calories ?? 0) > 0
+      )
     )
     
     if (validExercises.length === 0) return
@@ -150,9 +156,9 @@ export function WorkoutForm({ action, initialData, deleteAction }: WorkoutFormPr
         <Button 
           type="submit" 
           disabled={isPending || exercises.length === 0}
-          className="flex-1"
+          className="flex-1 gap-2"
         >
-          {isPending && !isDeleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          {isPending && !isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
           {initialData ? 'Save Changes' : 'Log Workout'}
         </Button>
         
@@ -162,8 +168,9 @@ export function WorkoutForm({ action, initialData, deleteAction }: WorkoutFormPr
             variant="destructive"
             onClick={handleDelete}
             disabled={isPending || isDeleting}
+            className="gap-2"
           >
-            {isDeleting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            {isDeleting && <Loader2 className="h-4 w-4 animate-spin" />}
             {!isDeleting && <Trash2 className="h-4 w-4" />}
           </Button>
         )}

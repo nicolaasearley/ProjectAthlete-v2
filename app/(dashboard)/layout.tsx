@@ -27,14 +27,14 @@ export default async function DashboardLayout({
   const profileData = profile as any
 
   return (
-    <div className="min-h-screen flex">
-      <Sidebar />
+    <div className="min-h-screen flex text-foreground">
+      <Sidebar role={profileData?.role} />
       <div className="flex-1 flex flex-col min-h-0">
         <Navbar profile={profileData} />
-        <main className="flex-1 p-6 overflow-y-auto animate-fade-in pb-24 lg:pb-6">
+        <main className="flex-1 p-4 lg:p-6 overflow-y-auto animate-fade-in pb-24 lg:pb-6">
           {children}
         </main>
-        <BottomNav />
+        <BottomNav role={profileData?.role} />
       </div>
     </div>
   )

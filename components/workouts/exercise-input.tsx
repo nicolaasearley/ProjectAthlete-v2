@@ -19,6 +19,7 @@ export function ExerciseInput({ data, onChange, onRemove }: ExerciseInputProps) 
       ...data,
       exercise_id: exercise.id,
       exercise_name: exercise.name,
+      default_metric: (exercise as any).default_metric || 'weight_reps',
     })
   }
   
@@ -29,12 +30,18 @@ export function ExerciseInput({ data, onChange, onRemove }: ExerciseInputProps) 
       ...data,
       sets: [
         ...data.sets,
-        { weight: lastSet?.weight || 0, reps: lastSet?.reps || 0 },
+        { 
+          weight: lastSet?.weight || 0, 
+          reps: lastSet?.reps || 0,
+          distance_meters: lastSet?.distance_meters || 0,
+          time_seconds: lastSet?.time_seconds || 0,
+          calories: lastSet?.calories || 0,
+        },
       ],
     })
   }
   
-  const updateSet = (index: number, set: { weight: number; reps: number }) => {
+  const updateSet = (index: number, set: any) => {
     const updated = [...data.sets]
     updated[index] = set
     onChange({ ...data, sets: updated })
@@ -70,21 +77,13 @@ export function ExerciseInput({ data, onChange, onRemove }: ExerciseInputProps) 
         </Button>
       </CardHeader>
       <CardContent className="space-y-2">
-        {/* Header */}
-        <div className="grid grid-cols-[auto_1fr_1fr_auto] gap-2 text-xs text-muted-foreground px-1">
-          <div className="w-8 text-center">Set</div>
-          <div>Weight (lbs)</div>
-          <div>Reps</div>
-          <div className="w-8"></div>
-        </div>
-        
         {/* Sets */}
         {data.sets.map((set, index) => (
           <SetRow
             key={index}
             setNumber={index + 1}
-            weight={set.weight}
-            reps={set.reps}
+            data={set}
+            metricType={data.default_metric}
             onChange={(updated) => updateSet(index, updated)}
             onRemove={() => removeSet(index)}
             canRemove={data.sets.length > 1}

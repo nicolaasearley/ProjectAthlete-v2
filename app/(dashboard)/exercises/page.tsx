@@ -1,8 +1,14 @@
+import { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { ExerciseGrid } from '@/components/exercises/exercise-grid'
 import { ExerciseFilters } from '@/components/exercises/exercise-filters'
 import { CreateExerciseDialog } from '@/components/exercises/create-exercise-dialog'
 import { EXERCISE_CATEGORIES } from '@/types/database'
+
+export const metadata: Metadata = {
+  title: 'Exercises | ProjectAthlete',
+  description: 'Browse the exercise library and track your personal records.',
+}
 
 interface ExercisesPageProps {
   searchParams: Promise<{

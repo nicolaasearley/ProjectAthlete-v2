@@ -355,10 +355,10 @@
 - [x] 404 page exists
 
 ### Mobile
-- [ ] All pages responsive at 375px
+- [x] All pages responsive at 375px
 - [x] Navigation usable on mobile (BottomNav implemented)
-- [ ] Forms usable on mobile
-- [ ] Tables scroll horizontally
+- [x] Forms usable on mobile
+- [x] Tables scroll horizontally (using flex/grid wrappers)
 
 ### Performance
 - [ ] Lighthouse Performance: 90+
@@ -366,12 +366,14 @@
 - [ ] Lighthouse Best Practices: 90+
 - [x] No console errors
 - [x] No TypeScript errors
+- [x] Page metadata (titles/descriptions) implemented
+- [x] Skeleton loaders for all routes
 
 ### Docker
-- [ ] Final build succeeds
-- [ ] Container runs correctly
-- [ ] All features work in container
-- [ ] Environment variables documented
+- [x] Final build succeeds
+- [x] Container runs correctly
+- [x] All features work in container
+- [x] Environment variables documented (in README)
 
 ### Documentation
 - [x] README updated with:

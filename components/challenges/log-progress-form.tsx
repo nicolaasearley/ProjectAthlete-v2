@@ -64,8 +64,8 @@ export function LogProgressForm({ challengeId, unit, onLog }: LogProgressFormPro
             />
           </div>
           
-          <Button type="submit" className="w-full" disabled={isPending || value === '' || value <= 0}>
-            {isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+          <Button type="submit" className="w-full gap-2" disabled={isPending || value === '' || value <= 0}>
+            {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             Add Log
           </Button>
         </form>

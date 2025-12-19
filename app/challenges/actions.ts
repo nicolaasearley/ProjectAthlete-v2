@@ -55,6 +55,56 @@ export async function createChallenge(formData: FormData | ChallengeFormData) {
   redirect('/challenges')
 }
 
+export async function updateChallenge(challengeId: string, formData: FormData) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+  
+  const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
+  if (!isAdmin) throw new Error('Unauthorized')
+
+  const data = {
+    name: formData.get('name') as string,
+    description: formData.get('description') as string,
+    metric: formData.get('metric') as string,
+    metric_unit: formData.get('metric_unit') as string,
+    start_date: formData.get('start_date') as string,
+    end_date: formData.get('end_date') as string,
+  }
+  
+  const { error } = await (supabase
+    .from('challenges') as any)
+    .update(data)
+    .eq('id', challengeId)
+  
+  if (error) throw error
+  
+  revalidatePath('/challenges')
+  revalidatePath(`/challenges/${challengeId}`)
+  redirect(`/challenges/${challengeId}`)
+}
+
+export async function deleteChallenge(challengeId: string) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+  
+  const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
+  if (!isAdmin) throw new Error('Unauthorized')
+
+  const { error } = await (supabase
+    .from('challenges') as any)
+    .delete()
+    .eq('id', challengeId)
+  
+  if (error) throw error
+  
+  revalidatePath('/challenges')
+  redirect('/challenges')
+}
+
 export async function logProgress(challengeId: string, value: number, notes?: string) {
   const supabase = await createClient()
   
