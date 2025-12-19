@@ -16,341 +16,342 @@
 ## Phase 0: Foundation
 
 ### Project Setup
-- [ ] Next.js 14+ initialized with App Router
-- [ ] TypeScript configured (strict mode)
-- [ ] Tailwind CSS configured with design tokens
-- [ ] Dependencies installed:
-  - [ ] `@supabase/supabase-js`
-  - [ ] `@supabase/ssr`
-  - [ ] `lucide-react`
-  - [ ] `clsx`
-  - [ ] `tailwind-merge`
+- [x] Next.js 14+ initialized with App Router
+- [x] TypeScript configured (strict mode)
+- [x] Tailwind CSS configured with design tokens
+- [x] Dependencies installed:
+  - [x] `@supabase/supabase-js`
+  - [x] `@supabase/ssr`
+  - [x] `lucide-react`
+  - [x] `clsx`
+  - [x] `tailwind-merge`
 
 ### Configuration
-- [ ] `.env.example` created
+- [x] `.env.example` created
 - [ ] `.env.local` created (gitignored)
-- [ ] `.gitignore` updated
-- [ ] `next.config.js` has `output: 'standalone'`
+- [x] `.gitignore` updated
+- [x] `next.config.js` has `output: 'standalone'`
 
 ### Docker
-- [ ] `Dockerfile` created
-- [ ] `.dockerignore` created
-- [ ] `docker build` succeeds
-- [ ] Container runs on port 6767
+- [x] `Dockerfile` created
+- [x] `.dockerignore` created
+- [x] `docker build` succeeds
+- [x] Container runs on port 6767
 
 ### Design System
-- [ ] CSS variables for colors
-- [ ] Dark mode by default
-- [ ] Glass effect tokens
+- [x] CSS variables for colors
+- [x] Dark mode by default
+- [x] Glass effect tokens
 
 ### UI Components
-- [ ] `Button` component (variants: default, outline, ghost, destructive)
-- [ ] `Input` component (with label and error support)
-- [ ] `Card` components (Card, CardHeader, CardTitle, CardContent, CardFooter)
-- [ ] `Badge` component
-- [ ] `cn()` utility function
+- [x] `Button` component (variants: default, outline, ghost, destructive)
+- [x] `Input` component (with label and error support)
+- [x] `Card` components (Card, CardHeader, CardTitle, CardContent, CardFooter)
+- [x] `Badge` component
+- [x] `cn()` utility function
 
 ### Verification
-- [ ] `npm run dev` works
-- [ ] `npm run build` succeeds
-- [ ] Docker container accessible at `http://localhost:6767`
+- [x] `npm run dev` works
+- [x] `npm run build` succeeds
+- [x] Docker container accessible at `http://localhost:6767`
 
 ---
 
 ## Phase 1: Auth & Multi-Org
 
 ### Supabase Client
-- [ ] `lib/supabase/client.ts` (browser client)
-- [ ] `lib/supabase/server.ts` (server client)
-- [ ] `lib/supabase/middleware.ts` (session refresh)
+- [x] `lib/supabase/client.ts` (browser client)
+- [x] `lib/supabase/server.ts` (server client)
+- [x] `lib/supabase/middleware.ts` (session refresh)
 
 ### Middleware
-- [ ] `middleware.ts` at root
-- [ ] Session refresh on all requests
-- [ ] Protected route redirect to `/login`
-- [ ] Auth route redirect to `/` if logged in
+- [x] `middleware.ts` at root
+- [x] Session refresh on all requests
+- [x] Protected route redirect to `/login`
+- [x] Auth route redirect to `/` if logged in
 
 ### Database
-- [ ] Migration `001_foundation.sql` run
-- [ ] `organizations` table created
-- [ ] `profiles` table created
-- [ ] Default organization inserted
-- [ ] Profile creation trigger working
-- [ ] Helper functions created (`get_user_org_id`, `get_user_role`, etc.)
-- [ ] RLS policies applied
+- [x] Migration `001_foundation.sql` run
+- [x] `organizations` table created
+- [x] `profiles` table created
+- [x] Default organization inserted
+- [x] Profile creation trigger working
+- [x] Helper functions created (`get_user_org_id`, `get_user_role`, etc.)
+- [x] RLS policies applied
 
 ### Auth Pages
-- [ ] `/login` page with Apple OAuth button
-- [ ] `/auth/callback` route handler
-- [ ] Error handling for failed auth
+- [x] `/login` page with Apple OAuth button
+- [x] `/auth/callback` route handler
+- [x] Error handling for failed auth
+- [x] Email/Password login & Dev login added
 
 ### Dashboard
-- [ ] `/(dashboard)/layout.tsx` with sidebar and navbar
-- [ ] `/(dashboard)/page.tsx` dashboard home
-- [ ] Sidebar navigation component
-- [ ] Navbar with user menu
-- [ ] Mobile navigation drawer
-- [ ] Sign out functionality
+- [x] `/(dashboard)/layout.tsx` with sidebar and navbar
+- [x] `/(dashboard)/page.tsx` dashboard home
+- [x] Sidebar navigation component
+- [x] Navbar with user menu
+- [x] Mobile navigation drawer
+- [x] Sign out functionality
 
 ### Types
-- [ ] `types/database.ts` with Organization and Profile types
+- [x] `types/database.ts` with Organization and Profile types
 
 ### Verification
-- [ ] Apple OAuth login works
-- [ ] Profile created in database on first login
-- [ ] Dashboard loads after login
-- [ ] Unauthenticated users redirected
-- [ ] Sign out returns to login
-- [ ] Mobile navigation works
+- [ ] Apple OAuth login works (Pending Apple Config)
+- [x] Profile created in database on first login
+- [x] Dashboard loads after login
+- [x] Unauthenticated users redirected
+- [x] Sign out returns to login
+- [x] Mobile navigation works
 
 ---
 
 ## Phase 2: Exercise Library
 
 ### Database
-- [ ] Migration `002_exercises.sql` run
-- [ ] Migration `003_exercise_seed.sql` run
-- [ ] 100+ exercises seeded
-- [ ] Aliases created
-- [ ] RLS policies applied
+- [x] Migration `002_exercises.sql` run
+- [x] Migration `003_exercise_seed.sql` run
+- [x] 100+ exercises seeded
+- [x] Aliases created
+- [x] RLS policies applied
 
 ### Pages
-- [ ] `/exercises` browse page
-- [ ] `/exercises/[id]` detail page
+- [x] `/exercises` browse page
+- [x] `/exercises/[id]` detail page
 
 ### Components
-- [ ] `ExerciseGrid` component
-- [ ] `ExerciseCard` component
-- [ ] `ExerciseFilters` component
-- [ ] `ExercisePicker` component (reusable)
+- [x] `ExerciseGrid` component
+- [x] `ExerciseCard` component
+- [x] `ExerciseFilters` component
+- [x] `ExercisePicker` component (reusable)
 
 ### Features
-- [ ] Category filter works
-- [ ] Search by name works
-- [ ] Search by alias works
-- [ ] Detail page shows aliases
-- [ ] Stats placeholder (for Phase 4)
+- [x] Category filter works
+- [x] Search by name works
+- [x] Search by alias works
+- [x] Detail page shows aliases
+- [x] Stats wired up
 
 ### Types
-- [ ] Exercise types added
-- [ ] ExerciseAlias types added
-- [ ] EXERCISE_CATEGORIES constant
+- [x] Exercise types added
+- [x] ExerciseAlias types added
+- [x] EXERCISE_CATEGORIES constant
 
 ### Verification
-- [ ] All exercises visible
-- [ ] Filter reduces results
-- [ ] Search finds by name
-- [ ] Search finds by alias
-- [ ] Exercise picker works standalone
+- [x] All exercises visible
+- [x] Filter reduces results
+- [x] Search finds by name
+- [x] Search finds by alias
+- [x] Exercise picker works standalone
 
 ---
 
 ## Phase 3: Workout Logging
 
 ### Database
-- [ ] Migration `004_workouts.sql` run
-- [ ] `workout_sessions` table
-- [ ] `workout_exercises` table
-- [ ] `workout_sets` table
-- [ ] RLS policies applied
-- [ ] Cascade deletes working
+- [x] Migration `004_workouts.sql` run
+- [x] `workout_sessions` table
+- [x] `workout_exercises` table
+- [x] `workout_sets` table
+- [x] RLS policies applied
+- [x] Cascade deletes working
 
 ### Server Actions
-- [ ] `createWorkout` action
-- [ ] `updateWorkout` action
-- [ ] `deleteWorkout` action
-- [ ] `getWorkouts` action
-- [ ] `getWorkout` action
+- [x] `createWorkout` action
+- [x] `updateWorkout` action
+- [x] `deleteWorkout` action
+- [x] `getWorkouts` action
+- [x] `getWorkout` action
 
 ### Pages
-- [ ] `/workouts` list page
-- [ ] `/workouts/new` create page
-- [ ] `/workouts/[id]` view/edit page
+- [x] `/workouts` list page
+- [x] `/workouts/new` create page
+- [x] `/workouts/[id]` view/edit page
 
 ### Components
-- [ ] `WorkoutForm` component
-- [ ] `ExerciseInput` component
-- [ ] `SetRow` component
-- [ ] `WorkoutCard` component
+- [x] `WorkoutForm` component
+- [x] `ExerciseInput` component
+- [x] `SetRow` component
+- [x] `WorkoutCard` component
 
 ### Features
-- [ ] Date picker works
-- [ ] Add exercise with picker
-- [ ] Add sets to exercise
-- [ ] Remove sets (min 1)
-- [ ] Remove exercises
-- [ ] Save creates workout
-- [ ] Edit updates workout
-- [ ] Delete with confirmation
-- [ ] History shows all workouts
+- [x] Date picker works
+- [x] Add exercise with picker
+- [x] Add sets to exercise
+- [x] Remove sets (min 1)
+- [x] Remove exercises
+- [x] Save creates workout
+- [x] Edit updates workout
+- [x] Delete with confirmation
+- [x] History shows all workouts
 
 ### Types
-- [ ] WorkoutSession types
-- [ ] WorkoutExercise types
-- [ ] WorkoutSet types
-- [ ] Form input types
+- [x] WorkoutSession types
+- [x] WorkoutExercise types
+- [x] WorkoutSet types
+- [x] Form input types
 
 ### Verification
-- [ ] Create workout with multiple exercises
-- [ ] Each exercise has multiple sets
-- [ ] Edit existing workout
-- [ ] Delete workout
-- [ ] RLS blocks other users' workouts
+- [x] Create workout with multiple exercises
+- [x] Each exercise has multiple sets
+- [x] Edit existing workout
+- [x] Delete workout
+- [x] RLS blocks other users' workouts
 
 ---
 
 ## Phase 4: Exercise Stats
 
 ### Database
-- [ ] Migration `005_exercise_stats.sql` run
-- [ ] `get_exercise_stats` function
-- [ ] `get_exercise_history` function
-- [ ] `get_best_performances` function
-- [ ] `get_e1rm_progression` function
+- [x] Migration `005_exercise_stats.sql` run
+- [x] `get_exercise_stats` function
+- [x] `get_exercise_history` function
+- [x] `get_best_performances` function
+- [x] `get_e1rm_progression` function
 
 ### Components
-- [ ] `StatsSummary` component
-- [ ] `BestPerformances` component
-- [ ] `ExerciseHistory` component
+- [x] `StatsSummary` component
+- [x] `BestPerformances` component
+- [x] `ExerciseHistory` component
 
 ### Features
-- [ ] Estimated 1RM displays (Epley formula)
-- [ ] Max weight displays
-- [ ] Max session volume displays
-- [ ] Total sets displays
-- [ ] Best performances list (top 5)
-- [ ] History list links to workouts
-- [ ] Empty state when no data
+- [x] Estimated 1RM displays (Epley formula)
+- [x] Max weight displays
+- [x] Max session volume displays
+- [x] Total sets displays
+- [x] Best performances list (top 5)
+- [x] History list links to workouts
+- [x] Empty state when no data
 
 ### Verification
-- [ ] Stats match expected calculations
-- [ ] Stats update after new workout
-- [ ] Performance ranking correct
-- [ ] History chronological
+- [x] Stats match expected calculations
+- [x] Stats update after new workout
+- [x] Performance ranking correct
+- [x] History chronological
 
 ---
 
 ## Phase 5: Community Workouts
 
 ### Database
-- [ ] Migration `006_community.sql` run
-- [ ] `community_workouts` table
-- [ ] `workout_comments` table
-- [ ] `workout_reactions` table
-- [ ] RLS policies applied
-- [ ] Helper functions created
+- [x] Migration `006_community.sql` run
+- [x] `community_workouts` table
+- [x] `workout_comments` table
+- [x] `workout_reactions` table
+- [x] RLS policies applied
+- [x] Helper functions created
 
 ### Server Actions
-- [ ] `submitWorkout` action
-- [ ] `addComment` action
-- [ ] `deleteComment` action
-- [ ] `toggleReaction` action
-- [ ] `approveWorkout` action (coach)
-- [ ] `rejectWorkout` action (coach)
-- [ ] `toggleFeatured` action (coach)
+- [x] `submitWorkout` action
+- [x] `addComment` action
+- [x] `deleteComment` action
+- [x] `toggleReaction` action
+- [x] `approveWorkout` action (coach)
+- [x] `rejectWorkout` action (coach)
+- [x] `toggleFeatured` action (coach)
 
 ### Pages
-- [ ] `/community` browse page
-- [ ] `/community/[id]` detail page
-- [ ] `/community/submit` submission page
-- [ ] `/admin/submissions` approval queue (coach only)
+- [x] `/community` browse page
+- [x] `/community/[id]` detail page
+- [x] `/community/submit` submission page
+- [x] `/admin/submissions` approval queue (coach only)
 
 ### Components
-- [ ] `CommunityWorkoutCard` component
-- [ ] `SubmitWorkoutForm` component
-- [ ] `CommentSection` component
-- [ ] `ReactionBar` component
-- [ ] `ApprovalQueue` component
+- [x] `CommunityWorkoutCard` component
+- [x] `SubmitWorkoutForm` component
+- [x] `CommentSection` component
+- [x] `ReactionBar` component
+- [x] `ApprovalQueue` component
 
 ### Features
-- [ ] Browse approved workouts
-- [ ] Featured section at top
-- [ ] Filter by type
-- [ ] Submit new workout (pending)
-- [ ] View workout detail
-- [ ] Add comments
-- [ ] Toggle reactions
-- [ ] Coach approval queue
-- [ ] Approve/reject workflow
-- [ ] Feature toggle
+- [x] Browse approved workouts
+- [x] Featured section at top
+- [x] Filter by type
+- [x] Submit new workout (pending)
+- [x] View workout detail
+- [x] Add comments
+- [x] Toggle reactions
+- [x] Coach approval queue
+- [x] Approve/reject workflow
+- [x] Feature toggle
 
 ### Verification
-- [ ] Submission creates pending workout
-- [ ] Pending not visible to others
-- [ ] Coach sees approval queue
-- [ ] Approve changes status
-- [ ] Approved visible to all
-- [ ] Comments persist
-- [ ] Reactions toggle correctly
+- [x] Submission creates pending workout
+- [x] Pending not visible to others
+- [x] Coach sees approval queue
+- [x] Approve changes status
+- [x] Approved visible to all
+- [x] Comments persist
+- [x] Reactions toggle correctly
 
 ---
 
 ## Phase 6: Challenges & Badges
 
 ### Database
-- [ ] Migration `007_challenges.sql` run
-- [ ] `challenges` table
-- [ ] `challenge_logs` table
-- [ ] `badges` table
-- [ ] `user_badges` table
-- [ ] Badge seed data inserted
-- [ ] RLS policies applied
-- [ ] Leaderboard function created
-- [ ] Auto-award trigger created
+- [x] Migration `007_challenges.sql` run
+- [x] `challenges` table
+- [x] `challenge_logs` table
+- [x] `badges` table
+- [x] `user_badges` table
+- [x] Badge seed data inserted
+- [x] RLS policies applied
+- [x] Leaderboard function created
+- [x] Auto-award trigger created
 
 ### Server Actions
-- [ ] `createChallenge` action (coach)
-- [ ] `logProgress` action
+- [x] `createChallenge` action (coach)
+- [x] `logProgress` action
 - [ ] `updateProgress` action
 - [ ] `deleteProgress` action
 
 ### Pages
-- [ ] `/challenges` active list
-- [ ] `/challenges/[id]` detail + leaderboard
-- [ ] `/challenges/history` past challenges
-- [ ] `/admin/challenges/new` create page (coach)
-- [ ] `/profile` updated with badges
+- [x] `/challenges` active list
+- [x] `/challenges/[id]` detail + leaderboard
+- [x] `/challenges/history` past challenges
+- [x] `/admin/challenges/new` create page (coach)
+- [x] `/profile` updated with badges
 
 ### Components
-- [ ] `ChallengeCard` component
-- [ ] `Leaderboard` component
-- [ ] `LogProgressForm` component
-- [ ] `BadgeDisplay` component
+- [x] `ChallengeCard` component
+- [x] `Leaderboard` component
+- [x] `LogProgressForm` component
+- [x] `BadgeDisplay` component
 - [ ] `ChallengeCountdown` component
 
 ### Features
-- [ ] View active challenges
-- [ ] Log progress
+- [x] View active challenges
+- [x] Log progress
 - [ ] Update/delete progress
-- [ ] Leaderboard updates
-- [ ] Anonymous users hidden
-- [ ] Current user highlighted
-- [ ] Coach can create challenges
-- [ ] Badges on profile
-- [ ] Participation badge auto-awarded
+- [x] Leaderboard updates
+- [x] Anonymous users hidden
+- [x] Current user highlighted
+- [x] Coach can create challenges
+- [x] Badges on profile
+- [x] Participation badge auto-awarded
 
 ### Verification
-- [ ] Challenge creation works
-- [ ] Progress logging works
-- [ ] Leaderboard accurate
-- [ ] Anonymous respected
-- [ ] First participation awards badge
+- [x] Challenge creation works
+- [x] Progress logging works
+- [x] Leaderboard accurate
+- [x] Anonymous respected
+- [x] First participation awards badge
 
 ---
 
 ## Phase 7: Polish & Deploy
 
 ### UI Audit
-- [ ] Consistent spacing throughout
-- [ ] Typography hierarchy clear
-- [ ] Color usage consistent
-- [ ] Border radii consistent
-- [ ] Glass effects consistent
+- [x] Consistent spacing throughout
+- [x] Typography hierarchy clear
+- [x] Color usage consistent
+- [x] Border radii consistent
+- [x] Glass effects consistent
 
 ### States
-- [ ] Loading states on all async operations
+- [x] Loading states on all async operations
 - [ ] Error boundaries implemented
-- [ ] Empty states for all lists
+- [x] Empty states for all lists
 - [ ] 404 page exists
 
 ### Mobile

@@ -11,6 +11,38 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ============================================
+-- ORGANIZATIONS TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.organizations (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Insert default organization
+INSERT INTO public.organizations (name, slug) 
+VALUES ('ProjectAthlete', 'projectathlete')
+ON CONFLICT (slug) DO NOTHING;
+
+-- ============================================
+-- PROFILES TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  org_id UUID NOT NULL REFERENCES public.organizations(id),
+  role TEXT NOT NULL DEFAULT 'athlete' CHECK (role IN ('athlete', 'coach', 'admin')),
+  display_name TEXT,
+  avatar_url TEXT,
+  is_anonymous_on_leaderboards BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Indexes
+CREATE INDEX IF NOT EXISTS idx_profiles_org_id ON public.profiles(org_id);
+
+-- ============================================
 -- HELPER FUNCTIONS
 -- ============================================
 
@@ -39,49 +71,19 @@ RETURNS BOOLEAN AS $$
 $$ LANGUAGE SQL STABLE SECURITY DEFINER;
 
 -- ============================================
--- ORGANIZATIONS TABLE
+-- RLS POLICIES
 -- ============================================
-CREATE TABLE IF NOT EXISTS public.organizations (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
-  slug TEXT UNIQUE NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
 
--- Insert default organization
-INSERT INTO public.organizations (name, slug) 
-VALUES ('ProjectAthlete', 'projectathlete')
-ON CONFLICT (slug) DO NOTHING;
-
--- Enable RLS
+-- Organizations
 ALTER TABLE public.organizations ENABLE ROW LEVEL SECURITY;
 
--- RLS Policy: Users can view their own organization
 CREATE POLICY "Users can view their own organization"
   ON public.organizations FOR SELECT
   USING (id = get_user_org_id());
 
--- ============================================
--- PROFILES TABLE
--- ============================================
-CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  org_id UUID NOT NULL REFERENCES public.organizations(id),
-  role TEXT NOT NULL DEFAULT 'athlete' CHECK (role IN ('athlete', 'coach', 'admin')),
-  display_name TEXT,
-  avatar_url TEXT,
-  is_anonymous_on_leaderboards BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Indexes
-CREATE INDEX IF NOT EXISTS idx_profiles_org_id ON public.profiles(org_id);
-
--- Enable RLS
+-- Profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
--- RLS Policies
 CREATE POLICY "Users can view profiles in their org"
   ON public.profiles FOR SELECT
   USING (org_id = get_user_org_id());

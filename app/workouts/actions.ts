@@ -1,0 +1,187 @@
+'use server'
+
+import { createClient } from '@/lib/supabase/server'
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import type { WorkoutFormData } from '@/types/database'
+
+export async function createWorkout(data: WorkoutFormData) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+  
+  // Get user's org_id
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('org_id')
+    .eq('id', user.id)
+    .single()
+  
+  if (!profile) throw new Error('Profile not found')
+  
+  // Create session
+  const { data: session, error: sessionError } = await supabase
+    .from('workout_sessions')
+    .insert({
+      user_id: user.id,
+      org_id: profile.org_id,
+      date: data.date,
+      notes: data.notes || null,
+    })
+    .select()
+    .single()
+  
+  if (sessionError) throw sessionError
+  
+  // Create exercises and sets
+  for (let i = 0; i < data.exercises.length; i++) {
+    const exercise = data.exercises[i]
+    
+    const { data: workoutExercise, error: exerciseError } = await supabase
+      .from('workout_exercises')
+      .insert({
+        session_id: session.id,
+        exercise_id: exercise.exercise_id,
+        order_index: i,
+      })
+      .select()
+      .single()
+    
+    if (exerciseError) throw exerciseError
+    
+    // Create sets
+    const sets = exercise.sets.map((set, setIndex) => ({
+      workout_exercise_id: workoutExercise.id,
+      set_number: setIndex + 1,
+      weight: set.weight,
+      reps: set.reps,
+    }))
+    
+    if (sets.length > 0) {
+      const { error: setsError } = await supabase
+        .from('workout_sets')
+        .insert(sets)
+      
+      if (setsError) throw setsError
+    }
+  }
+  
+  revalidatePath('/workouts')
+  redirect(`/workouts/${session.id}`)
+}
+
+export async function updateWorkout(id: string, data: WorkoutFormData) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+  
+  // Update session
+  const { error: sessionError } = await supabase
+    .from('workout_sessions')
+    .update({
+      date: data.date,
+      notes: data.notes || null,
+    })
+    .eq('id', id)
+    .eq('user_id', user.id)
+  
+  if (sessionError) throw sessionError
+  
+  // Delete existing exercises (cascades to sets)
+  await supabase
+    .from('workout_exercises')
+    .delete()
+    .eq('session_id', id)
+  
+  // Recreate exercises and sets
+  for (let i = 0; i < data.exercises.length; i++) {
+    const exercise = data.exercises[i]
+    
+    const { data: workoutExercise, error: exerciseError } = await supabase
+      .from('workout_exercises')
+      .insert({
+        session_id: id,
+        exercise_id: exercise.exercise_id,
+        order_index: i,
+      })
+      .select()
+      .single()
+    
+    if (exerciseError) throw exerciseError
+    
+    const sets = exercise.sets.map((set, setIndex) => ({
+      workout_exercise_id: workoutExercise.id,
+      set_number: setIndex + 1,
+      weight: set.weight,
+      reps: set.reps,
+    }))
+    
+    if (sets.length > 0) {
+      await supabase.from('workout_sets').insert(sets)
+    }
+  }
+  
+  revalidatePath('/workouts')
+  revalidatePath(`/workouts/${id}`)
+  redirect(`/workouts/${id}`)
+}
+
+export async function deleteWorkout(id: string) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+  
+  const { error } = await supabase
+    .from('workout_sessions')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', user.id)
+  
+  if (error) throw error
+  
+  revalidatePath('/workouts')
+  redirect('/workouts')
+}
+
+export async function getWorkouts() {
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase
+    .from('workout_sessions')
+    .select(`
+      *,
+      workout_exercises(
+        *,
+        exercises(name, category),
+        workout_sets(*)
+      )
+    `)
+    .order('date', { ascending: false })
+  
+  if (error) throw error
+  return data
+}
+
+export async function getWorkout(id: string) {
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase
+    .from('workout_sessions')
+    .select(`
+      *,
+      workout_exercises(
+        *,
+        exercises(id, name, category),
+        workout_sets(*)
+      )
+    `)
+    .eq('id', id)
+    .single()
+  
+  if (error) throw error
+  return data
+}
+

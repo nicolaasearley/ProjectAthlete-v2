@@ -199,6 +199,7 @@ $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 -- GET USER EXERCISE SUMMARY
 -- Returns summary of all exercises for dashboard
 -- ============================================
+DROP FUNCTION IF EXISTS get_user_exercise_summary(UUID, INTEGER);
 CREATE OR REPLACE FUNCTION get_user_exercise_summary(
   p_user_id UUID DEFAULT NULL,
   p_limit INTEGER DEFAULT 10
@@ -207,6 +208,7 @@ RETURNS TABLE (
   exercise_id UUID,
   exercise_name TEXT,
   category TEXT,
+  max_weight DECIMAL,
   estimated_1rm DECIMAL,
   last_logged DATE,
   total_sets BIGINT
@@ -221,6 +223,7 @@ BEGIN
     e.id AS exercise_id,
     e.name AS exercise_name,
     e.category,
+    MAX(ws.weight)::DECIMAL AS max_weight,
     ROUND(MAX(ws.weight * (1 + ws.reps::DECIMAL / 30)), 1)::DECIMAL AS estimated_1rm,
     MAX(wsess.date) AS last_logged,
     COUNT(ws.id) AS total_sets

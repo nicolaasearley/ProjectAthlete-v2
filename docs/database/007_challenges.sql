@@ -17,9 +17,6 @@ CREATE TABLE IF NOT EXISTS public.challenges (
   metric_unit TEXT NOT NULL, -- e.g., 'count', 'miles', 'minutes'
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
-  is_active BOOLEAN GENERATED ALWAYS AS (
-    CURRENT_DATE >= start_date AND CURRENT_DATE <= end_date
-  ) STORED,
   created_by UUID NOT NULL REFERENCES auth.users(id),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW(),
@@ -29,7 +26,6 @@ CREATE TABLE IF NOT EXISTS public.challenges (
 -- Indexes
 CREATE INDEX IF NOT EXISTS idx_challenges_org_id ON public.challenges(org_id);
 CREATE INDEX IF NOT EXISTS idx_challenges_dates ON public.challenges(start_date, end_date);
-CREATE INDEX IF NOT EXISTS idx_challenges_is_active ON public.challenges(is_active) WHERE is_active = TRUE;
 
 -- Enable RLS
 ALTER TABLE public.challenges ENABLE ROW LEVEL SECURITY;
