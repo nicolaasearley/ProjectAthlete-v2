@@ -34,7 +34,7 @@ export default async function DashboardLayout({
         <main className="flex-1 p-4 lg:p-6 overflow-y-auto animate-fade-in pb-24 lg:pb-6">
           {children}
         </main>
-        <BottomNav role={profileData?.role} />
+        <BottomNav />
       </div>
     </div>
   )

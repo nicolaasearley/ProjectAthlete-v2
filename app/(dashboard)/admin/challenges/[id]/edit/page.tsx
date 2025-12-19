@@ -29,6 +29,9 @@ export default async function EditChallengePage({ params }: EditChallengePagePro
     notFound()
   }
 
+  // Force narrowing for TypeScript
+  const challengeData = challenge as any
+
   const updateAction = updateChallenge.bind(null, id)
   const deleteAction = deleteChallenge.bind(null, id)
   
@@ -60,7 +63,7 @@ export default async function EditChallengePage({ params }: EditChallengePagePro
             <Input
               name="name"
               label="Challenge Name"
-              defaultValue={challenge.name}
+              defaultValue={challengeData.name}
               required
             />
             
@@ -68,7 +71,7 @@ export default async function EditChallengePage({ params }: EditChallengePagePro
               <label className="text-sm font-medium">Description</label>
               <textarea
                 name="description"
-                defaultValue={challenge.description || ''}
+                defaultValue={challengeData.description || ''}
                 className="w-full h-32 rounded-lg border border-input bg-background px-3 py-2 text-sm resize-none"
                 required
               />
@@ -78,13 +81,13 @@ export default async function EditChallengePage({ params }: EditChallengePagePro
               <Input
                 name="metric"
                 label="Metric (e.g., Pull-ups, Miles)"
-                defaultValue={challenge.metric}
+                defaultValue={challengeData.metric}
                 required
               />
               <Input
                 name="metric_unit"
                 label="Unit (e.g., reps, miles, mins)"
-                defaultValue={challenge.metric_unit}
+                defaultValue={challengeData.metric_unit}
                 required
               />
             </div>
@@ -94,14 +97,14 @@ export default async function EditChallengePage({ params }: EditChallengePagePro
                 name="start_date"
                 label="Start Date"
                 type="date"
-                defaultValue={challenge.start_date}
+                defaultValue={challengeData.start_date}
                 required
               />
               <Input
                 name="end_date"
                 label="End Date"
                 type="date"
-                defaultValue={challenge.end_date}
+                defaultValue={challengeData.end_date}
                 required
               />
             </div>

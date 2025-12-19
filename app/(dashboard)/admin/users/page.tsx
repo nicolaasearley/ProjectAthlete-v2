@@ -24,11 +24,14 @@ export default async function UserManagementPage() {
     
   if (!profile) redirect('/')
 
+  // Force narrowing for TypeScript
+  const profileData = profile as any
+
   // Get all users in the organization
   const { data: users } = await supabase
     .from('profiles')
     .select('*')
-    .eq('org_id', profile.org_id)
+    .eq('org_id', profileData.org_id)
     .order('display_name', { ascending: true })
 
   const userList = (users || []) as any[]
