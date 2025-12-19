@@ -36,12 +36,12 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
   const isActive = challengeData.start_date <= today && challengeData.end_date >= today
   
   // Get leaderboard
-  const { data: leaderboard } = await supabase.rpc('get_challenge_leaderboard', {
+  const { data: leaderboard } = await (supabase.rpc as any)('get_challenge_leaderboard', {
     p_challenge_id: id
   })
   
   // Get user progress
-  const { data: progress } = await supabase.rpc('get_user_challenge_progress', {
+  const { data: progress } = await (supabase.rpc as any)('get_user_challenge_progress', {
     p_challenge_id: id,
     p_user_id: user.id
   })
