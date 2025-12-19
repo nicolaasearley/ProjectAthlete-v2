@@ -10,13 +10,15 @@ export async function createTemplate(name: string, data: WorkoutFormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
   
-  const { data: profile } = await supabase
+  const { data: profileData } = await supabase
     .from('profiles')
     .select('org_id')
     .eq('id', user.id)
     .single()
     
-  if (!profile) throw new Error('Profile not found')
+  if (!profileData) throw new Error('Profile not found')
+  
+  const profile = profileData as { org_id: string }
   
   // 1. Create Template
   const { data: template, error: templateError } = await (supabase

@@ -21,7 +21,7 @@ export function PRTimeline({ exercises, userId }: PRTimelineProps) {
 
     const fetchPRHistory = async () => {
       startTransition(async () => {
-        const { data: prData, error } = await supabase.rpc('get_pr_history', {
+        const { data: prData, error } = await (supabase.rpc as any)('get_pr_history', {
           p_user_id: userId,
           p_exercise_id: selectedExercise
         })

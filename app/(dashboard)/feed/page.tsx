@@ -18,13 +18,15 @@ export default async function FeedPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   
-  const { data: profile } = await supabase
+  const { data: profileData } = await supabase
     .from('profiles')
     .select('org_id')
     .eq('id', user.id)
     .single()
     
-  if (!profile) return null
+  if (!profileData) return null
+  
+  const profile = profileData as { org_id: string }
 
   const { data: feed } = await (supabase.rpc as any)('get_activity_feed', {
     p_org_id: profile.org_id,

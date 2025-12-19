@@ -49,8 +49,10 @@ export default async function StatsPage() {
     .eq('user_id', user.id)
     
   const exerciseMap = new Map()
-  userExercises?.forEach(session => {
-    session.workout_exercises.forEach((we: any) => {
+  // Type assertion for nested Supabase query result
+  const sessions = userExercises as { workout_exercises: { exercise_id: string; exercises: { id: string; name: string } | null }[] }[] | null
+  sessions?.forEach(session => {
+    session.workout_exercises.forEach((we) => {
       if (we.exercises) {
         exerciseMap.set(we.exercise_id, we.exercises.name)
       }

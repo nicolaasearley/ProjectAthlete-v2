@@ -11,8 +11,8 @@ export async function updateProfile(formData: FormData) {
   
   const displayName = formData.get('displayName') as string
   
-  const { error } = await supabase
-    .from('profiles')
+  const { error } = await (supabase
+    .from('profiles') as any)
     .update({ display_name: displayName.trim() })
     .eq('id', user.id)
   
@@ -47,8 +47,8 @@ export async function uploadAvatar(formData: FormData) {
     .getPublicUrl(filePath)
     
   // 3. Update the profile with the avatar_url
-  const { error: updateError } = await supabase
-    .from('profiles')
+  const { error: updateError } = await (supabase
+    .from('profiles') as any)
     .update({ avatar_url: publicUrl })
     .eq('id', user.id)
     
