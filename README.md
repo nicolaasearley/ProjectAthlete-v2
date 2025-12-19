@@ -5,21 +5,22 @@ A self-hosted, multi-tenant workout logging web application built with Next.js, 
 ## Features
 
 - **Multi-Tenant Architecture**: Each organization has isolated data via Supabase RLS.
-- **Next.js 14+ App Router**: Fast, SEO-friendly, and modern frontend.
-- **Tailwind CSS v4**: Beautiful, modern UI with dark mode and glassmorphism.
-- **Supabase Auth**: Apple OAuth and Email/Password support with secure session management.
-- **Developer Login**: Quick login for development and testing.
-- **Exercise Library**: 100+ seeded exercises with categorization and alias search.
-- **Workout Logging**: Log sets, weight, and reps with real-time stat calculations.
-- **Computed Stats**: View estimated 1RM, Max Weight, and Volume progression.
-- **Community Workouts**: Share training sessions, react, and comment on others' work.
-- **Monthly Challenges**: Compete in org-wide challenges with live leaderboards.
-- **Docker Ready**: Standalone output for easy deployment.
+- **Next.js App Router**: Fast, modern frontend with standard output for easy hosting.
+- **Tailwind CSS**: Beautiful UI with dark mode, glassmorphism, and mobile-first design.
+- **Supabase Auth**: Apple OAuth and Email/Password support.
+- **Developer Mode**: Quick login toggle for development and testing.
+- **Exercise Library**: 100+ seeded exercises with categorized browsing and instant live search.
+- **Workout Logging**: Log sets, weight, and reps with real-time performance tracking.
+- **Coach Dashboards**: Specialized views for coaches to monitor athlete progress and approve community submissions.
+- **Computed Stats**: Automated tracking of Estimated 1RM, Personal Records, and Volume.
+- **Community Workouts**: Share training sessions, react, and comment on others' work with an approval workflow.
+- **Gamified Challenges**: Compete in org-wide challenges with live leaderboards, real-time countdowns, and automated badge awarding.
+- **Docker Ready**: Fully containerized with standalone output.
 
 ## Tech Stack
 
-- **Frontend**: Next.js, React, Tailwind CSS, Lucide Icons.
-- **Backend**: Supabase (Auth, Database, RLS, SQL Functions).
+- **Frontend**: Next.js 15+, React 19, Tailwind CSS v4, Lucide Icons.
+- **Backend**: Supabase (PostgreSQL, RLS, Edge Functions, Auth).
 - **Deployment**: Docker, Exposed on Port 6767.
 
 ## Getting Started

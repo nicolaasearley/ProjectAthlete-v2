@@ -21,8 +21,8 @@ export function SetRow({
   canRemove,
 }: SetRowProps) {
   return (
-    <div className="grid grid-cols-[auto_1fr_1fr_auto] gap-3 items-center">
-      <div className="w-8 text-center text-sm font-bold text-primary/80">
+    <div className="grid grid-cols-[auto_1fr_1fr_auto] gap-2 sm:gap-3 items-center">
+      <div className="w-6 sm:w-8 text-center text-sm font-bold text-primary/80">
         {setNumber}
       </div>
       <div className="relative">
@@ -34,9 +34,9 @@ export function SetRow({
           min="0"
           step="0.5"
           inputMode="decimal"
-          className="w-full h-12 rounded-lg border border-input bg-background px-3 py-2 text-base text-center focus:ring-2 focus:ring-primary/30 outline-none transition-all"
+          className="w-full h-10 sm:h-12 rounded-lg border border-input bg-background px-2 sm:px-3 py-2 text-sm sm:text-base text-center focus:ring-2 focus:ring-primary/30 outline-none transition-all"
         />
-        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">lbs</span>
+        <span className="hidden xs:block absolute right-2 top-1/2 -translate-y-1/2 text-[8px] sm:text-[10px] text-muted-foreground pointer-events-none">lbs</span>
       </div>
       <div className="relative">
         <input
@@ -46,9 +46,9 @@ export function SetRow({
           placeholder="0"
           min="0"
           inputMode="numeric"
-          className="w-full h-12 rounded-lg border border-input bg-background px-3 py-2 text-base text-center focus:ring-2 focus:ring-primary/30 outline-none transition-all"
+          className="w-full h-10 sm:h-12 rounded-lg border border-input bg-background px-2 sm:px-3 py-2 text-sm sm:text-base text-center focus:ring-2 focus:ring-primary/30 outline-none transition-all"
         />
-        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">reps</span>
+        <span className="hidden xs:block absolute right-2 top-1/2 -translate-y-1/2 text-[8px] sm:text-[10px] text-muted-foreground pointer-events-none">reps</span>
       </div>
       <Button
         type="button"
