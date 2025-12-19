@@ -25,10 +25,15 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
     .eq('id', id)
     .single()
   
-  if (!challenge) notFound()
+  if (!challenge) {
+    notFound()
+  }
+
+  // Force narrowing for TypeScript
+  const challengeData = challenge as any
   
   const today = new Date().toISOString().split('T')[0]
-  const isActive = challenge.start_date <= today && challenge.end_date >= today
+  const isActive = challengeData.start_date <= today && challengeData.end_date >= today
   
   // Get leaderboard
   const { data: leaderboard } = await supabase.rpc('get_challenge_leaderboard', {
@@ -42,7 +47,7 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
   })
   
   const userProgress = (progress as any)?.[0] || null
-  const daysRemaining = Math.max(0, Math.ceil((new Date(challenge.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+  const daysRemaining = Math.max(0, Math.ceil((new Date(challengeData.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
   
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -60,7 +65,7 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
               {isActive ? `${daysRemaining} days left` : 'Competition ended'}
             </span>
           </div>
-          <h1 className="text-3xl font-bold">{challenge.name}</h1>
+          <h1 className="text-3xl font-bold">{challengeData.name}</h1>
         </div>
       </div>
       
@@ -74,15 +79,15 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-              <p className="whitespace-pre-wrap">{challenge.description}</p>
+              <p className="whitespace-pre-wrap">{challengeData.description}</p>
               <div className="pt-4 border-t border-border grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Goal</p>
-                  <p>Log most {challenge.metric} total</p>
+                  <p>Log most {challengeData.metric} total</p>
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Dates</p>
-                  <p>{new Date(challenge.start_date).toLocaleDateString()} - {new Date(challenge.end_date).toLocaleDateString()}</p>
+                  <p>{new Date(challengeData.start_date).toLocaleDateString()} - {new Date(challengeData.end_date).toLocaleDateString()}</p>
                 </div>
               </div>
             </CardContent>
@@ -91,7 +96,7 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
           <Leaderboard 
             entries={(leaderboard as any[]) || []}
             currentUserId={user.id}
-            unit={challenge.metric_unit}
+            unit={challengeData.metric_unit}
           />
         </div>
         
@@ -99,8 +104,8 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
           {isActive && (
             <LogProgressForm 
               challengeId={id}
-              metricName={challenge.metric}
-              unit={challenge.metric_unit}
+              metricName={challengeData.metric}
+              unit={challengeData.metric_unit}
               onLog={logProgress}
             />
           )}
@@ -114,7 +119,7 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
                 <p className="text-2xl font-bold">
                   {userProgress?.total_value ? Number(userProgress.total_value).toLocaleString() : '0'}
                 </p>
-                <p className="text-xs text-muted-foreground uppercase">{challenge.metric_unit} total</p>
+                <p className="text-xs text-muted-foreground uppercase">{challengeData.metric_unit} total</p>
               </div>
               <div className="grid grid-cols-2 gap-4 pt-2 border-t border-primary/10">
                 <div>
