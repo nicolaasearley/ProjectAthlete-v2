@@ -76,6 +76,45 @@ export async function logProgress(challengeId: string, value: number, notes?: st
   revalidatePath('/challenges')
 }
 
+export async function updateProgress(logId: string, challengeId: string, value: number, notes?: string) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+  
+  const { error } = await (supabase
+    .from('challenge_logs') as any)
+    .update({
+      value,
+      notes: notes || null,
+    })
+    .eq('id', logId)
+    .eq('user_id', user.id)
+  
+  if (error) throw error
+  
+  revalidatePath(`/challenges/${challengeId}`)
+  revalidatePath('/challenges')
+}
+
+export async function deleteProgress(logId: string, challengeId: string) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+  
+  const { error } = await (supabase
+    .from('challenge_logs') as any)
+    .delete()
+    .eq('id', logId)
+    .eq('user_id', user.id)
+  
+  if (error) throw error
+  
+  revalidatePath(`/challenges/${challengeId}`)
+  revalidatePath('/challenges')
+}
+
 export async function updateAnonymity(isAnonymous: boolean) {
   const supabase = await createClient()
   

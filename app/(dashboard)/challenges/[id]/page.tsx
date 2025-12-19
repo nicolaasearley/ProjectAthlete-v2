@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Leaderboard } from '@/components/challenges/leaderboard'
 import { LogProgressForm } from '@/components/challenges/log-progress-form'
+import { ChallengeCountdown } from '@/components/challenges/challenge-countdown'
+import { ChallengeLogHistory } from '@/components/challenges/log-history'
 import { logProgress } from '@/app/challenges/actions'
 import Link from 'next/link'
 import { ArrowLeft, Calendar, Info } from 'lucide-react'
@@ -40,11 +42,19 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
     p_challenge_id: id
   })
   
-  // Get user progress
+  // Get user progress summary
   const { data: progress } = await (supabase.rpc as any)('get_user_challenge_progress', {
     p_challenge_id: id,
     p_user_id: user.id
   })
+
+  // Get user's detailed logs for history
+  const { data: userLogs } = await supabase
+    .from('challenge_logs')
+    .select('*')
+    .eq('challenge_id', id)
+    .eq('user_id', user.id)
+    .order('logged_at', { ascending: false })
   
   const userProgress = (progress as any)?.[0] || null
   const daysRemaining = Math.max(0, Math.ceil((new Date(challengeData.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
@@ -55,7 +65,7 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
         <Link href="/challenges" className="p-2 rounded-lg hover:bg-accent transition-colors">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <div>
+        <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
             <Badge variant={isActive ? 'default' : 'secondary'}>
               {isActive ? 'Active' : 'Ended'}
@@ -68,6 +78,8 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
           <h1 className="text-3xl font-bold">{challengeData.name}</h1>
         </div>
       </div>
+
+      {isActive && <ChallengeCountdown endDate={challengeData.end_date} />}
       
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
@@ -132,6 +144,12 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
               </div>
             </CardContent>
           </Card>
+
+          <ChallengeLogHistory 
+            logs={(userLogs as any[]) || []} 
+            challengeId={id}
+            unit={challengeData.metric_unit}
+          />
         </div>
       </div>
     </div>

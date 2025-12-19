@@ -302,8 +302,8 @@
 ### Server Actions
 - [x] `createChallenge` action (coach)
 - [x] `logProgress` action
-- [ ] `updateProgress` action
-- [ ] `deleteProgress` action
+- [x] `updateProgress` action
+- [x] `deleteProgress` action
 
 ### Pages
 - [x] `/challenges` active list
@@ -317,12 +317,12 @@
 - [x] `Leaderboard` component
 - [x] `LogProgressForm` component
 - [x] `BadgeDisplay` component
-- [ ] `ChallengeCountdown` component
+- [x] `ChallengeCountdown` component
 
 ### Features
 - [x] View active challenges
 - [x] Log progress
-- [ ] Update/delete progress
+- [x] Update/delete progress
 - [x] Leaderboard updates
 - [x] Anonymous users hidden
 - [x] Current user highlighted
