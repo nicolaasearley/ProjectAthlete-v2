@@ -40,9 +40,9 @@ export default async function AllWorkoutsPage() {
     .limit(100)
 
   // Fetch profiles separately for names
-  const workoutsWithUsers = [...(workouts || [])]
+  const workoutsWithUsers = [...(workouts || [])] as any[]
   if (workoutsWithUsers.length > 0) {
-    const userIds = [...new Set(workoutsWithUsers.map(w => w.user_id))]
+    const userIds = [...new Set(workoutsWithUsers.map(w => w.user_id))] as string[]
     const { data: authors } = await supabase
       .from('profiles')
       .select('id, display_name')

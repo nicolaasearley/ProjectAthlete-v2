@@ -71,10 +71,10 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
     ...w,
     comment_count: (w.workout_comments as any[])?.length ?? 0,
     reaction_count: (w.workout_reactions as any[])?.length ?? 0
-  }))
+  })) as any[]
 
   if (transformedWorkouts.length > 0) {
-    const authorIds = [...new Set(transformedWorkouts.map(w => w.author_id))]
+    const authorIds = [...new Set(transformedWorkouts.map(w => w.author_id))] as string[]
     const { data: authors } = await supabase
       .from('profiles')
       .select('id, display_name')

@@ -32,9 +32,9 @@ export default async function SubmissionsPage() {
     .order('created_at', { ascending: true })
 
   // Fetch authors separately since there might not be a direct FK for easy joining
-  const workoutsWithAuthors = [...(pending || [])]
+  const workoutsWithAuthors = [...(pending || [])] as any[]
   if (workoutsWithAuthors.length > 0) {
-    const authorIds = [...new Set(workoutsWithAuthors.map(w => w.author_id))]
+    const authorIds = [...new Set(workoutsWithAuthors.map(w => w.author_id))] as string[]
     const { data: authors } = await supabase
       .from('profiles')
       .select('id, display_name')

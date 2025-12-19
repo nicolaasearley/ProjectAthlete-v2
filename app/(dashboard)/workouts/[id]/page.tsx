@@ -33,9 +33,9 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
     .eq('session_id', id)
     .order('order_index', { ascending: true })
 
-  const exercisesWithDetails = [...(workoutExercises || [])]
+  const exercisesWithDetails = [...(workoutExercises || [])] as any[]
   if (exercisesWithDetails.length > 0) {
-    const exerciseIds = [...new Set(exercisesWithDetails.map(we => we.exercise_id))]
+    const exerciseIds = [...new Set(exercisesWithDetails.map(we => we.exercise_id))] as string[]
     const { data: exerciseNames } = await supabase
       .from('exercises')
       .select('id, name, category')

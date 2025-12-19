@@ -50,9 +50,9 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
     .eq('workout_id', id)
     .order('created_at', { ascending: true })
   
-  const commentsWithAuthors = [...(comments || [])]
+  const commentsWithAuthors = [...(comments || [])] as any[]
   if (commentsWithAuthors.length > 0) {
-    const commenterIds = [...new Set(commentsWithAuthors.map(c => c.user_id))]
+    const commenterIds = [...new Set(commentsWithAuthors.map(c => c.user_id))] as string[]
     const { data: commenters } = await supabase
       .from('profiles')
       .select('id, display_name')
