@@ -92,6 +92,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Organizations
 ALTER TABLE public.organizations ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view their own organization" ON public.organizations;
 CREATE POLICY "Users can view their own organization"
   ON public.organizations FOR SELECT
   USING (id = get_user_org_id());
@@ -99,10 +100,12 @@ CREATE POLICY "Users can view their own organization"
 -- Profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view profiles in their org" ON public.profiles;
 CREATE POLICY "Users can view profiles in their org"
   ON public.profiles FOR SELECT
   USING (org_id = get_user_org_id());
 
+DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
 CREATE POLICY "Users can update their own profile"
   ON public.profiles FOR UPDATE
   USING (id = auth.uid())
