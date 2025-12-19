@@ -23,7 +23,12 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
     .eq('id', id)
     .single()
   
-  if (!exercise) notFound()
+  if (!exercise) {
+    notFound()
+  }
+
+  // Force narrowing for TypeScript
+  const exerciseData = exercise as any
   
   // Get stats
   const { data: stats } = await (supabase.rpc as any)('get_exercise_stats', {
@@ -52,12 +57,12 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h1 className="text-3xl font-bold">{exercise.name}</h1>
+          <h1 className="text-3xl font-bold">{exerciseData.name}</h1>
           <div className="flex items-center gap-2 mt-1">
             <Badge variant="secondary" className="capitalize">
-              {exercise.category}
+              {exerciseData.category}
             </Badge>
-            {exercise.is_global && (
+            {exerciseData.is_global && (
               <Badge variant="outline">Global</Badge>
             )}
           </div>
@@ -65,9 +70,9 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
       </div>
       
       {/* Aliases */}
-      {exercise.exercise_aliases && (exercise.exercise_aliases as any[]).length > 0 && (
+      {exerciseData.exercise_aliases && (exerciseData.exercise_aliases as any[]).length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {(exercise.exercise_aliases as any[]).map((alias) => (
+          {(exerciseData.exercise_aliases as any[]).map((alias) => (
             <Badge key={alias.id} variant="outline">
               {alias.alias}
             </Badge>

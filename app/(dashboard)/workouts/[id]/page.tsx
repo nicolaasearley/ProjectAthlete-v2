@@ -29,12 +29,15 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
   if (!workout) {
     notFound()
   }
+
+  // Force narrowing for TypeScript
+  const workoutData = workout as any
   
   // Transform to form data
   const initialData = {
-    date: workout.date,
-    notes: workout.notes || '',
-    exercises: (workout.workout_exercises as any[])
+    date: workoutData.date,
+    notes: workoutData.notes || '',
+    exercises: (workoutData.workout_exercises as any[])
       .sort((a, b) => a.order_index - b.order_index)
       .map((we) => ({
         id: we.id,
@@ -65,7 +68,7 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
         <div className="flex-1">
           <h1 className="text-3xl font-bold">Edit Workout</h1>
           <p className="text-muted-foreground">
-            {new Date(workout.date).toLocaleDateString('en-US', {
+            {new Date(workoutData.date).toLocaleDateString('en-US', {
               weekday: 'long',
               year: 'numeric',
               month: 'long',

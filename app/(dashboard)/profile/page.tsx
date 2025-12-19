@@ -19,6 +19,9 @@ export default async function ProfilePage() {
   
   if (!profile) return null
   
+  // Force narrowing for TypeScript
+  const profileData = profile as any
+  
   // Get user badges
   const { data: userBadges } = await supabase
     .from('user_badges')
@@ -40,8 +43,8 @@ export default async function ProfilePage() {
               <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center text-primary mb-4">
                 <User className="h-10 w-10" />
               </div>
-              <CardTitle className="text-xl">{profile.display_name || 'User'}</CardTitle>
-              <p className="text-sm text-muted-foreground capitalize">{profile.role}</p>
+              <CardTitle className="text-xl">{profileData.display_name || 'User'}</CardTitle>
+              <p className="text-sm text-muted-foreground capitalize">{profileData.role}</p>
             </CardHeader>
             <CardContent className="space-y-4 pt-4 border-t border-border">
               <div className="flex items-center gap-3 text-sm">
@@ -50,7 +53,7 @@ export default async function ProfilePage() {
               </div>
               <div className="flex items-center gap-3 text-sm">
                 <Building className="h-4 w-4 text-muted-foreground" />
-                <span>{profile.organizations?.name}</span>
+                <span>{profileData.organizations?.name}</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Shield className="h-4 w-4" />
@@ -64,7 +67,7 @@ export default async function ProfilePage() {
               <CardTitle className="text-sm font-medium">Privacy Settings</CardTitle>
             </CardHeader>
             <CardContent>
-              <form action={updateAnonymity.bind(null, !profile.is_anonymous_on_leaderboards)}>
+              <form action={updateAnonymity.bind(null, !profileData.is_anonymous_on_leaderboards)}>
                 <div className="flex items-center justify-between space-x-2">
                   <div>
                     <p className="text-sm font-medium">Anonymous Mode</p>
@@ -72,10 +75,10 @@ export default async function ProfilePage() {
                   </div>
                   <Button 
                     type="submit" 
-                    variant={profile.is_anonymous_on_leaderboards ? 'default' : 'outline'}
+                    variant={profileData.is_anonymous_on_leaderboards ? 'default' : 'outline'}
                     size="sm"
                   >
-                    {profile.is_anonymous_on_leaderboards ? 'Enabled' : 'Disabled'}
+                    {profileData.is_anonymous_on_leaderboards ? 'Enabled' : 'Disabled'}
                   </Button>
                 </div>
               </form>

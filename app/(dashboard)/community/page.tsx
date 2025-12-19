@@ -26,6 +26,9 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
   
   if (!profile) return null
   
+  // Force narrowing for TypeScript
+  const profileData = profile as any
+  
   let query = supabase
     .from('community_workouts')
     .select(`
@@ -34,7 +37,7 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
       workout_comments(id),
       workout_reactions(id)
     `)
-    .eq('org_id', profile.org_id)
+    .eq('org_id', profileData.org_id)
     .eq('status', 'approved')
     .order('is_featured', { ascending: false })
     .order('created_at', { ascending: false })

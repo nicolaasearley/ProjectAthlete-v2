@@ -34,7 +34,12 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
     .eq('id', id)
     .single()
   
-  if (!workout) notFound()
+  if (!workout) {
+    notFound()
+  }
+
+  // Force narrowing for TypeScript
+  const workoutData = workout as any
   
   // Get reaction counts
   const { data: counts } = await (supabase.rpc as any)('get_workout_reaction_counts', {
@@ -59,18 +64,18 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Badge variant="secondary" className="capitalize">
-                {workout.workout_type.replace('_', ' ')}
+                {workoutData.workout_type.replace('_', ' ')}
               </Badge>
-              {workout.is_featured && (
+              {workoutData.is_featured && (
                 <Badge variant="default" className="bg-yellow-600 text-white">
                   <Star className="h-3 w-3 mr-1 fill-white" />
                   Featured
                 </Badge>
               )}
             </div>
-            <h1 className="text-3xl font-bold">{workout.title}</h1>
+            <h1 className="text-3xl font-bold">{workoutData.title}</h1>
             <p className="text-sm text-muted-foreground">
-              by {workout.author?.display_name || 'Anonymous'} • {new Date(workout.created_at).toLocaleDateString()}
+              by {workoutData.author?.display_name || 'Anonymous'} • {new Date(workoutData.created_at).toLocaleDateString()}
             </p>
           </div>
         </div>
@@ -78,8 +83,8 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
         {isAdmin && (
           <form action={toggleFeatured.bind(null, id)}>
             <Button variant="outline" size="sm" type="submit">
-              <Star className={`h-4 w-4 mr-2 ${workout.is_featured ? 'fill-yellow-500 text-yellow-500' : ''}`} />
-              {workout.is_featured ? 'Unfeature' : 'Feature'}
+              <Star className={`h-4 w-4 mr-2 ${workoutData.is_featured ? 'fill-yellow-500 text-yellow-500' : ''}`} />
+              {workoutData.is_featured ? 'Unfeature' : 'Feature'}
             </Button>
           </form>
         )}
@@ -88,12 +93,12 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
       <Card>
         <CardContent className="pt-6 space-y-6">
           <div className="prose dark:prose-invert max-w-none">
-            <p className="whitespace-pre-wrap leading-relaxed">{workout.description}</p>
+            <p className="whitespace-pre-wrap leading-relaxed">{workoutData.description}</p>
           </div>
           
-          {workout.time_cap_minutes && (
+          {workoutData.time_cap_minutes && (
             <div className="p-3 rounded-lg bg-accent/50 inline-block">
-              <p className="text-sm font-semibold">Time Cap: {workout.time_cap_minutes} minutes</p>
+              <p className="text-sm font-semibold">Time Cap: {workoutData.time_cap_minutes} minutes</p>
             </div>
           )}
           
@@ -110,7 +115,7 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
       
       <CommentSection 
         workoutId={id}
-        comments={(workout.workout_comments as any[]) || []}
+        comments={(workoutData.workout_comments as any[]) || []}
         userId={user.id}
         onAddComment={addComment}
         onDeleteComment={deleteComment}
