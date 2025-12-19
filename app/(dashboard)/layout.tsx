@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Navbar } from '@/components/layout/navbar'
+import { BottomNav } from '@/components/layout/bottom-nav'
 
 export default async function DashboardLayout({
   children,
@@ -22,16 +23,19 @@ export default async function DashboardLayout({
     .eq('id', user.id)
     .single()
 
+  // Force narrowing for TypeScript
+  const profileData = profile as any
+
   return (
     <div className="min-h-screen flex">
       <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <Navbar profile={profile as any} />
-        <main className="flex-1 p-6">
+      <div className="flex-1 flex flex-col min-h-0">
+        <Navbar profile={profileData} />
+        <main className="flex-1 p-6 overflow-y-auto animate-fade-in pb-24 lg:pb-6">
           {children}
         </main>
+        <BottomNav />
       </div>
     </div>
   )
 }
-
