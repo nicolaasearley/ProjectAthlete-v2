@@ -37,17 +37,17 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
   if (!workout) notFound()
   
   // Get reaction counts
-  const { data: counts } = await supabase.rpc('get_workout_reaction_counts', {
+  const { data: counts } = await (supabase.rpc as any)('get_workout_reaction_counts', {
     p_workout_id: id
   })
   
   // Get user's reactions
-  const { data: userReactions } = await supabase.rpc('get_user_workout_reactions', {
+  const { data: userReactions } = await (supabase.rpc as any)('get_user_workout_reactions', {
     p_workout_id: id
   })
   
   // Check if admin
-  const { data: isAdmin } = await supabase.rpc('is_coach_or_admin')
+  const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
   
   return (
     <div className="max-w-3xl mx-auto space-y-6">

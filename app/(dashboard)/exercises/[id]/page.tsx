@@ -26,18 +26,18 @@ export default async function ExercisePage({ params }: ExercisePageProps) {
   if (!exercise) notFound()
   
   // Get stats
-  const { data: stats } = await supabase.rpc('get_exercise_stats', {
+  const { data: stats } = await (supabase.rpc as any)('get_exercise_stats', {
     p_exercise_id: id,
   })
   
   // Get best performances
-  const { data: bestPerformances } = await supabase.rpc('get_best_performances', {
+  const { data: bestPerformances } = await (supabase.rpc as any)('get_best_performances', {
     p_exercise_id: id,
     p_limit: 5,
   })
   
   // Get history
-  const { data: history } = await supabase.rpc('get_exercise_history', {
+  const { data: history } = await (supabase.rpc as any)('get_exercise_history', {
     p_exercise_id: id,
     p_limit: 20,
   })

@@ -48,7 +48,7 @@ export function ExercisePicker({
       setLoading(true)
       
       if (search) {
-        const { data } = await supabase.rpc('search_exercises', { 
+        const { data } = await (supabase.rpc as any)('search_exercises', { 
           search_term: search 
         })
         

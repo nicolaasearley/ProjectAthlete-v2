@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache'
 export async function approveWorkout(id: string) {
   const supabase = await createClient()
   
-  const { data, error } = await supabase.rpc('approve_community_workout', {
+  const { data, error } = await (supabase.rpc as any)('approve_community_workout', {
     p_workout_id: id,
   })
   
@@ -20,7 +20,7 @@ export async function approveWorkout(id: string) {
 export async function rejectWorkout(id: string, reason?: string) {
   const supabase = await createClient()
   
-  const { data, error } = await supabase.rpc('reject_community_workout', {
+  const { data, error } = await (supabase.rpc as any)('reject_community_workout', {
     p_workout_id: id,
     p_reason: reason,
   })
@@ -34,7 +34,7 @@ export async function rejectWorkout(id: string, reason?: string) {
 export async function toggleFeatured(id: string) {
   const supabase = await createClient()
   
-  const { data, error } = await supabase.rpc('toggle_workout_featured', {
+  const { data, error } = await (supabase.rpc as any)('toggle_workout_featured', {
     p_workout_id: id,
   })
   

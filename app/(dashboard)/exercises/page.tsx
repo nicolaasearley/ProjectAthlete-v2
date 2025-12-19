@@ -25,8 +25,7 @@ export default async function ExercisesPage({ searchParams }: ExercisesPageProps
   
   if (params.search) {
     // Use the search function for better alias matching
-    const { data: searchResults, error: searchError } = await supabase
-      .rpc('search_exercises', { search_term: params.search })
+    const { data: searchResults, error: searchError } = await (supabase.rpc as any)('search_exercises', { search_term: params.search })
     
     if (searchError) {
       console.error('Search error:', searchError)
