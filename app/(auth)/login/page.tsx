@@ -17,8 +17,20 @@ export default function LoginPage() {
   const [orgCode, setOrgCode] = useState('')
   const [isValidatingCode, setIsValidatingCode] = useState(false)
   const [orgDetails, setOrgDetails] = useState<{ id: string; name: string } | null>(null)
+  const [clickCount, setClickCount] = useState(0)
+  const [showDevAccess, setShowDevAccess] = useState(false)
   
   const supabase = createClient()
+
+  // Handle logo clicks to toggle dev access
+  const handleLogoClick = () => {
+    const newCount = clickCount + 1
+    setClickCount(newCount)
+    if (newCount === 5) {
+      setShowDevAccess(true)
+      setClickCount(0)
+    }
+  }
 
   // Validate org code when it changes
   useEffect(() => {
@@ -78,6 +90,12 @@ export default function LoginPage() {
   }
 
   const handleDevLogin = async () => {
+    const accessCode = window.prompt('Enter Developer Access Code:')
+    if (accessCode !== 'athlete-dev-2025') {
+      if (accessCode !== null) setError('Invalid developer access code.')
+      return
+    }
+
     setIsLoading(true)
     setError(null)
     
@@ -87,7 +105,7 @@ export default function LoginPage() {
     })
 
     if (error) {
-      setError('Dev account not found. Please create dev@projectathlete.com in Supabase with password "password123".')
+      setError('Dev account not found or configuration error.')
       setIsLoading(false)
     } else {
       window.location.href = '/'
@@ -98,10 +116,13 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-background animate-fade-in">
       <Card className="w-full max-w-md shadow-2xl border-primary/10">
         <CardHeader className="text-center pb-2">
-          <div className="mx-auto h-12 w-12 rounded-xl bg-primary flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
+          <div 
+            onClick={handleLogoClick}
+            className="mx-auto h-12 w-12 rounded-xl bg-primary flex items-center justify-center mb-4 shadow-lg shadow-primary/20 cursor-pointer active:scale-95 transition-transform"
+          >
             <ShieldCheck className="h-7 w-7 text-primary-foreground" />
           </div>
-          <CardTitle className="text-3xl font-bold tracking-tight">ProjectAthlete</CardTitle>
+          <CardTitle className="text-3xl font-bold tracking-tight select-none">ProjectAthlete</CardTitle>
           <CardDescription className="text-base mt-2">
             {activeTab === 'signin' ? 'Welcome back to the grind' : 'Join your local fitness community'}
           </CardDescription>
@@ -221,15 +242,17 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <Button 
-            variant="ghost"
-            onClick={handleDevLogin}
-            disabled={isLoading}
-            className="w-full h-11 text-muted-foreground hover:text-primary transition-colors gap-2"
-          >
-            <ShieldCheck className="h-4 w-4" />
-            Developer Access
-          </Button>
+          {showDevAccess && (
+            <Button 
+              variant="ghost"
+              onClick={handleDevLogin}
+              disabled={isLoading}
+              className="w-full h-11 text-muted-foreground hover:text-primary transition-colors gap-2 animate-in fade-in slide-in-from-bottom-2"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Developer Access
+            </Button>
+          )}
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
           {activeTab === 'signup' && !orgDetails && (
