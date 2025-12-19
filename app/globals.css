@@ -8,6 +8,7 @@
   --color-card-foreground: hsl(0 0% 98%);
   
   --color-primary: hsl(221 83% 53%);
+  --color-primary-glow: hsla(221, 83%, 53%, 0.4);
   --color-primary-foreground: hsl(0 0% 98%);
   
   --color-secondary: hsl(0 0% 15%);
@@ -27,6 +28,31 @@
   --color-ring: hsl(221 83% 53%);
   
   --radius: 0.75rem;
+
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-slide-in-right: slide-in-right 0.3s ease-out;
+  --animate-slide-in-left: slide-in-left 0.3s ease-out;
+  --animate-scale-in: scale-in 0.2s ease-out;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slide-in-right {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  @keyframes slide-in-left {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+
+  @keyframes scale-in {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
 }
 
 @layer base {
@@ -58,5 +84,23 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/70 backdrop-blur-md border border-border/50 shadow-xl;
+  }
+
+  .primary-glow {
+    @apply shadow-[0_0_20px_rgba(37,99,235,0.4)] transition-shadow duration-300 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)];
+  }
+
+  .hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-primary/10;
+  }
+
+  .page-transition {
+    @apply animate-fade-in;
   }
 }

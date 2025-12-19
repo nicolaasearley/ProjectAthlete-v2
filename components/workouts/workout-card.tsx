@@ -35,7 +35,7 @@ export function WorkoutCard({ workout }: WorkoutCardProps) {
   
   return (
     <Link href={`/workouts/${workout.id}`}>
-      <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+      <Card hoverable className="cursor-pointer">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base flex items-center gap-2">

@@ -10,9 +10,9 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'default', size = 'default', asChild = false, ...props }, ref) => {
     const combinedClassName = cn(
-      'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+      'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 active:scale-95',
       {
-        'bg-primary text-primary-foreground hover:bg-primary/90': variant === 'default',
+        'bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_20px_rgba(37,99,235,0.5)]': variant === 'default',
         'border border-border bg-transparent hover:bg-accent hover:text-accent-foreground': variant === 'outline',
         'hover:bg-accent hover:text-accent-foreground': variant === 'ghost',
         'bg-destructive text-destructive-foreground hover:bg-destructive/90': variant === 'destructive',

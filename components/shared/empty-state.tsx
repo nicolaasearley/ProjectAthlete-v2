@@ -18,9 +18,9 @@ export function EmptyState({
   actionHref 
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4 text-center border-2 border-dashed border-border rounded-xl bg-accent/5">
-      <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
-        <Icon className="h-8 w-8" />
+    <div className="flex flex-col items-center justify-center py-12 px-4 text-center border-2 border-dashed border-border rounded-xl bg-accent/5 animate-scale-in">
+      <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4 transition-transform hover:scale-110 duration-500">
+        <Icon className="h-10 w-10" />
       </div>
       <h3 className="text-xl font-bold mb-2">{title}</h3>
       <p className="text-muted-foreground max-w-xs mx-auto mb-6">

@@ -30,18 +30,25 @@ interface MobileNavProps {
 export function MobileNav({ open, onClose }: MobileNavProps) {
   const pathname = usePathname()
 
-  if (!open) return null
-
   return (
-    <div className="fixed inset-0 z-50 lg:hidden">
+    <div className={cn(
+      'fixed inset-0 z-50 lg:hidden transition-all duration-300',
+      open ? 'visible' : 'invisible'
+    )}>
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-background/80 backdrop-blur-sm"
+        className={cn(
+          'fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity duration-300',
+          open ? 'opacity-100' : 'opacity-0'
+        )}
         onClick={onClose}
       />
       
       {/* Sidebar */}
-      <div className="fixed inset-y-0 left-0 w-64 bg-card border-r border-border">
+      <div className={cn(
+        'fixed inset-y-0 left-0 w-64 bg-card border-r border-border transition-transform duration-300 ease-in-out shadow-2xl',
+        open ? 'translate-x-0' : '-translate-x-full'
+      )}>
         <div className="p-6 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2" onClick={onClose}>
             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">

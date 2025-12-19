@@ -17,7 +17,7 @@ interface CommunityWorkoutCardProps {
 export function CommunityWorkoutCard({ workout }: CommunityWorkoutCardProps) {
   return (
     <Link href={`/community/${workout.id}`}>
-      <Card className="h-full hover:bg-accent/50 transition-colors cursor-pointer relative overflow-hidden">
+      <Card hoverable className="h-full cursor-pointer relative overflow-hidden">
         {workout.is_featured && (
           <div className="absolute top-0 right-0 p-2">
             <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />

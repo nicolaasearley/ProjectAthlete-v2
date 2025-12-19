@@ -21,27 +21,35 @@ export function SetRow({
   canRemove,
 }: SetRowProps) {
   return (
-    <div className="grid grid-cols-[auto_1fr_1fr_auto] gap-2 items-center">
-      <div className="w-8 text-center text-sm font-medium text-muted-foreground">
+    <div className="grid grid-cols-[auto_1fr_1fr_auto] gap-3 items-center">
+      <div className="w-8 text-center text-sm font-bold text-primary/80">
         {setNumber}
       </div>
-      <input
-        type="number"
-        value={weight || ''}
-        onChange={(e) => onChange({ weight: parseFloat(e.target.value) || 0, reps })}
-        placeholder="0"
-        min="0"
-        step="0.5"
-        className="h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm text-center"
-      />
-      <input
-        type="number"
-        value={reps || ''}
-        onChange={(e) => onChange({ weight, reps: parseInt(e.target.value) || 0 })}
-        placeholder="0"
-        min="0"
-        className="h-10 rounded-lg border border-input bg-background px-3 py-2 text-sm text-center"
-      />
+      <div className="relative">
+        <input
+          type="number"
+          value={weight || ''}
+          onChange={(e) => onChange({ weight: parseFloat(e.target.value) || 0, reps })}
+          placeholder="0"
+          min="0"
+          step="0.5"
+          inputMode="decimal"
+          className="w-full h-12 rounded-lg border border-input bg-background px-3 py-2 text-base text-center focus:ring-2 focus:ring-primary/30 outline-none transition-all"
+        />
+        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">lbs</span>
+      </div>
+      <div className="relative">
+        <input
+          type="number"
+          value={reps || ''}
+          onChange={(e) => onChange({ weight, reps: parseInt(e.target.value) || 0 })}
+          placeholder="0"
+          min="0"
+          inputMode="numeric"
+          className="w-full h-12 rounded-lg border border-input bg-background px-3 py-2 text-base text-center focus:ring-2 focus:ring-primary/30 outline-none transition-all"
+        />
+        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground pointer-events-none">reps</span>
+      </div>
       <Button
         type="button"
         variant="ghost"
