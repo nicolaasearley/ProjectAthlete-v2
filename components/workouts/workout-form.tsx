@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -18,7 +17,6 @@ interface WorkoutFormProps {
 export function WorkoutForm({ action, initialData, deleteAction }: WorkoutFormProps) {
   const [isPending, startTransition] = useTransition()
   const [isDeleting, setIsDeleting] = useState(false)
-  const router = useRouter()
   
   const [date, setDate] = useState(
     initialData?.date || new Date().toISOString().split('T')[0]

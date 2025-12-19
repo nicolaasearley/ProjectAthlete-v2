@@ -11,13 +11,15 @@ export async function submitWorkout(formData: FormData | CommunityWorkoutFormDat
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
   
-  const { data: profile } = await supabase
+  const { data: profileData } = await supabase
     .from('profiles')
     .select('org_id')
     .eq('id', user.id)
     .single()
   
-  if (!profile) throw new Error('Profile not found')
+  if (!profileData) throw new Error('Profile not found')
+  
+  const profile = profileData as { org_id: string }
 
   // Extract data from FormData or use directly if CommunityWorkoutFormData
   let data: CommunityWorkoutFormData
@@ -32,8 +34,8 @@ export async function submitWorkout(formData: FormData | CommunityWorkoutFormDat
     data = formData
   }
   
-  const { error } = await supabase
-    .from('community_workouts')
+  const { error } = await (supabase
+    .from('community_workouts') as any)
     .insert({
       org_id: profile.org_id,
       author_id: user.id,
@@ -56,8 +58,8 @@ export async function addComment(workoutId: string, content: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
   
-  const { error } = await supabase
-    .from('workout_comments')
+  const { error } = await (supabase
+    .from('workout_comments') as any)
     .insert({
       workout_id: workoutId,
       user_id: user.id,
@@ -75,8 +77,8 @@ export async function deleteComment(commentId: string, workoutId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
   
-  const { error } = await supabase
-    .from('workout_comments')
+  const { error } = await (supabase
+    .from('workout_comments') as any)
     .delete()
     .eq('id', commentId)
     .eq('user_id', user.id)
@@ -93,8 +95,8 @@ export async function toggleReaction(workoutId: string, reactionType: 'like' | '
   if (!user) throw new Error('Unauthorized')
   
   // Check if reaction exists
-  const { data: existing } = await supabase
-    .from('workout_reactions')
+  const { data: existing } = await (supabase
+    .from('workout_reactions') as any)
     .select('id')
     .eq('workout_id', workoutId)
     .eq('user_id', user.id)
@@ -103,14 +105,14 @@ export async function toggleReaction(workoutId: string, reactionType: 'like' | '
   
   if (existing) {
     // Remove it
-    await supabase
-      .from('workout_reactions')
+    await (supabase
+      .from('workout_reactions') as any)
       .delete()
       .eq('id', existing.id)
   } else {
     // Add it
-    await supabase
-      .from('workout_reactions')
+    await (supabase
+      .from('workout_reactions') as any)
       .insert({
         workout_id: workoutId,
         user_id: user.id,

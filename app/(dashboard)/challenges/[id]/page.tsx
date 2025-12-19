@@ -104,7 +104,6 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
           {isActive && (
             <LogProgressForm 
               challengeId={id}
-              metricName={challengeData.metric}
               unit={challengeData.metric_unit}
               onLog={logProgress}
             />

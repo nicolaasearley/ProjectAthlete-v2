@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { Search, Check } from 'lucide-react'
 import type { Exercise } from '@/types/database'
@@ -57,7 +56,7 @@ export function ExercisePicker({
           const { data: fullExercises } = await supabase
             .from('exercises')
             .select('*')
-            .in('id', data.map(d => d.id))
+            .in('id', data.map((d: any) => d.id))
           
           setExercises(fullExercises || [])
         } else {

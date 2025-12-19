@@ -1,13 +1,21 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { Database } from '@/types/database'
+
+// Get URLs with fallbacks for build-time (actual values come from Docker build args)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
 export async function createClient() {
   const cookieStore = await cookies()
 
+  // Use placeholder values during build if env vars not set
+  const url = supabaseUrl || 'https://placeholder.supabase.co'
+  const key = supabaseAnonKey || 'placeholder-key'
+
   return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    key,
     {
       cookies: {
         getAll() {

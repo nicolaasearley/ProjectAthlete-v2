@@ -53,10 +53,10 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
   const { data: workouts } = await query
   
   // Transform counts
-  const transformedWorkouts = (workouts || []).map(w => ({
+  const transformedWorkouts = (workouts || []).map((w: any) => ({
     ...w,
-    comment_count: (w.workout_comments as any[]).length,
-    reaction_count: (w.workout_reactions as any[]).length
+    comment_count: (w.workout_comments as any[])?.length ?? 0,
+    reaction_count: (w.workout_reactions as any[])?.length ?? 0
   }))
   
   return (

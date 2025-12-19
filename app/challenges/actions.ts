@@ -11,13 +11,15 @@ export async function createChallenge(formData: FormData | ChallengeFormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
   
-  const { data: profile } = await supabase
+  const { data: profileData } = await supabase
     .from('profiles')
     .select('org_id')
     .eq('id', user.id)
     .single()
   
-  if (!profile) throw new Error('Profile not found')
+  if (!profileData) throw new Error('Profile not found')
+  
+  const profile = profileData as { org_id: string }
 
   // Extract data from FormData or use directly if ChallengeFormData
   let data: ChallengeFormData
@@ -34,8 +36,8 @@ export async function createChallenge(formData: FormData | ChallengeFormData) {
     data = formData
   }
   
-  const { error } = await supabase
-    .from('challenges')
+  const { error } = await (supabase
+    .from('challenges') as any)
     .insert({
       org_id: profile.org_id,
       name: data.name,
@@ -59,8 +61,8 @@ export async function logProgress(challengeId: string, value: number, notes?: st
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
   
-  const { error } = await supabase
-    .from('challenge_logs')
+  const { error } = await (supabase
+    .from('challenge_logs') as any)
     .insert({
       challenge_id: challengeId,
       user_id: user.id,
@@ -80,8 +82,8 @@ export async function updateAnonymity(isAnonymous: boolean) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
   
-  const { error } = await supabase
-    .from('profiles')
+  const { error } = await (supabase
+    .from('profiles') as any)
     .update({ is_anonymous_on_leaderboards: isAnonymous })
     .eq('id', user.id)
   

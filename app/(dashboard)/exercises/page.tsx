@@ -32,7 +32,7 @@ export default async function ExercisesPage({ searchParams }: ExercisesPageProps
     }
 
     if (searchResults && searchResults.length > 0) {
-      query = query.in('id', searchResults.map(r => r.id))
+      query = query.in('id', searchResults.map((r: any) => r.id))
     } else {
       // Fallback: If RPC returns nothing, try a simple ILIKE on the exercises table directly
       // This helps if there are issues with the RPC or aliases

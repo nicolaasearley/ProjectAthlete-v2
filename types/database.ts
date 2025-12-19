@@ -308,6 +308,7 @@ export type Database = {
           metric_unit: string
           start_date: string
           end_date: string
+          is_active?: boolean
           created_by: string
           created_at?: string
           updated_at?: string
@@ -321,6 +322,7 @@ export type Database = {
           metric_unit?: string
           start_date?: string
           end_date?: string
+          is_active?: boolean
           created_by?: string
           created_at?: string
           updated_at?: string
