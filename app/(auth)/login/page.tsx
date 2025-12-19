@@ -17,7 +17,6 @@ export default function LoginPage() {
   const [orgCode, setOrgCode] = useState('')
   const [isValidatingCode, setIsValidatingCode] = useState(false)
   const [orgDetails, setOrgDetails] = useState<{ id: string; name: string } | null>(null)
-  const [displayName, setDisplayName] = useState('')
   
   const supabase = createClient()
 
@@ -61,10 +60,9 @@ export default function LoginPage() {
         return
       }
       
-      // Pass both org code and display name through to metadata
+      // Pass the org code through to metadata
       options.data = {
-        org_code: orgCode.toUpperCase(),
-        display_name: displayName || undefined
+        org_code: orgCode.toUpperCase()
       }
     }
     
@@ -171,14 +169,6 @@ export default function LoginPage() {
                   Joining <strong>{orgDetails.name}</strong>
                 </div>
               )}
-
-              <Input
-                label="Display Name (Optional)"
-                placeholder="How should we call you?"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                className="h-11"
-              />
             </div>
           )}
 
