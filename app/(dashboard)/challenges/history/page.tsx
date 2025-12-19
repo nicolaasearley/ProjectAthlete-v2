@@ -17,20 +17,22 @@ export default async function ChallengeHistoryPage() {
   
   if (!profile) return null
   
+  // Force narrowing for TypeScript
+  const profileData = profile as any
   const today = new Date().toISOString().split('T')[0]
   
   // Get past challenges
   const { data: pastChallenges } = await supabase
     .from('challenges')
     .select('*')
-    .eq('org_id', profile.org_id)
+    .eq('org_id', profileData.org_id)
     .lt('end_date', today)
     .order('end_date', { ascending: false })
   
   // Fetch progress for each challenge
   const challengesWithProgress = await Promise.all(
     (pastChallenges || []).map(async (challenge) => {
-      const { data: progress } = await supabase.rpc('get_user_challenge_progress', {
+      const { data: progress } = await (supabase.rpc as any)('get_user_challenge_progress', {
         p_challenge_id: challenge.id,
         p_user_id: user.id
       })
