@@ -47,9 +47,12 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
       .in('workout_exercise_id', exercisesWithDetails.map(we => we.id))
       .order('set_number', { ascending: true })
 
+    const exerciseList = (exerciseNames || []) as { id: string; name: string; category: string }[]
+    const setList = (sets || []) as { id: string; workout_exercise_id: string; set_number: number; weight: number; reps: number }[]
+    
     exercisesWithDetails.forEach((we: any) => {
-      we.exercises = exerciseNames?.find(e => e.id === we.exercise_id)
-      we.workout_sets = sets?.filter(s => s.workout_exercise_id === we.id) || []
+      we.exercises = exerciseList.find(e => e.id === we.exercise_id)
+      we.workout_sets = setList.filter(s => s.workout_exercise_id === we.id)
     })
   }
   

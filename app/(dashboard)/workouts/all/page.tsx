@@ -48,8 +48,9 @@ export default async function AllWorkoutsPage() {
       .select('id, display_name')
       .in('id', userIds)
     
+    const authorList = (authors || []) as { id: string; display_name: string | null }[]
     workoutsWithUsers.forEach((w: any) => {
-      w.user = authors?.find(a => a.id === w.user_id)
+      w.user = authorList.find(a => a.id === w.user_id)
     })
   }
   

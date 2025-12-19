@@ -80,8 +80,9 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
       .select('id, display_name')
       .in('id', authorIds)
     
+    const authorList = (authors || []) as { id: string; display_name: string | null }[]
     transformedWorkouts.forEach((w: any) => {
-      w.author = authors?.find(a => a.id === w.author_id)
+      w.author = authorList.find(a => a.id === w.author_id)
     })
   }
   

@@ -58,8 +58,9 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
       .select('id, display_name')
       .in('id', commenterIds)
     
+    const commenterList = (commenters || []) as { id: string; display_name: string | null }[]
     commentsWithAuthors.forEach((c: any) => {
-      c.profiles = commenters?.find(p => p.id === c.user_id)
+      c.profiles = commenterList.find(p => p.id === c.user_id)
     })
   }
   workoutData.workout_comments = commentsWithAuthors
