@@ -17,13 +17,14 @@ CREATE TABLE IF NOT EXISTS public.organizations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
   slug TEXT UNIQUE NOT NULL,
+  join_code TEXT UNIQUE, -- Added for registration access control
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Insert default organization
-INSERT INTO public.organizations (name, slug) 
-VALUES ('ProjectAthlete', 'projectathlete')
-ON CONFLICT (slug) DO NOTHING;
+INSERT INTO public.organizations (name, slug, join_code) 
+VALUES ('ProjectAthlete', 'projectathlete', 'ATHLETE2025')
+ON CONFLICT (slug) DO UPDATE SET join_code = 'ATHLETE2025';
 
 -- ============================================
 -- PROFILES TABLE
@@ -70,6 +71,17 @@ RETURNS BOOLEAN AS $$
   SELECT get_user_role() = 'admin';
 $$ LANGUAGE SQL STABLE SECURITY DEFINER;
 
+-- Validate an organization join code and return the org_id
+CREATE OR REPLACE FUNCTION validate_org_code(p_code TEXT)
+RETURNS TABLE (org_id UUID, org_name TEXT) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT id, name
+  FROM public.organizations
+  WHERE join_code = p_code;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- ============================================
 -- RLS POLICIES
 -- ============================================
@@ -99,19 +111,32 @@ CREATE POLICY "Users can update their own profile"
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 DECLARE
-  default_org_id UUID;
+  target_org_id UUID;
+  metadata_org_code TEXT;
 BEGIN
-  -- Get the default organization
-  SELECT id INTO default_org_id 
-  FROM public.organizations 
-  WHERE slug = 'projectathlete' 
-  LIMIT 1;
+  -- 1. Try to get org_id from explicit metadata (passed via state in OAuth or direct)
+  metadata_org_code := NEW.raw_user_meta_data->>'org_code';
+  
+  IF metadata_org_code IS NOT NULL THEN
+    SELECT id INTO target_org_id 
+    FROM public.organizations 
+    WHERE join_code = metadata_org_code 
+    LIMIT 1;
+  END IF;
+
+  -- 2. Fallback to default org if no valid code provided
+  IF target_org_id IS NULL THEN
+    SELECT id INTO target_org_id 
+    FROM public.organizations 
+    WHERE slug = 'projectathlete' 
+    LIMIT 1;
+  END IF;
   
   -- Create profile for new user
   INSERT INTO public.profiles (id, org_id, display_name)
   VALUES (
     NEW.id,
-    default_org_id,
+    target_org_id,
     COALESCE(
       NEW.raw_user_meta_data->>'full_name',
       NEW.raw_user_meta_data->>'name',

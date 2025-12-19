@@ -36,8 +36,21 @@ A self-hosted, multi-tenant workout logging web application built with Next.js, 
    npm install
    ```
 3. Set up your environment variables (see `.env.example`).
-4. Run the database migrations located in `docs/database/` in your Supabase SQL Editor in order.
-5. Run the development server:
+4. Run the database migrations located in `docs/database/` in your Supabase SQL Editor in order (`001_foundation.sql` to `007_challenges.sql`).
+5. **Supabase Configuration**:
+   - **Authentication Providers**:
+     - **Email**: Enable in `Authentication > Providers`. Disable "Confirm Email" for immediate access.
+     - **Google**: 
+       1. Create a project in Google Cloud Console.
+       2. Set up OAuth consent screen and create Web App Client IDs.
+       3. Add the Supabase Callback URL to Google's redirect URIs.
+       4. Add Client ID/Secret to Supabase.
+     - **Apple**: 
+       1. Setup App ID and Service ID in Apple Developer Portal.
+       2. Add Supabase Callback URL to the Service ID.
+       3. Generate and upload a private key to Supabase.
+   - **Join Code**: The default organization "ProjectAthlete" is created with join code `ATHLETE2025`. Users must enter this code to sign up.
+6. Run the development server:
    ```bash
    npm run dev
    ```

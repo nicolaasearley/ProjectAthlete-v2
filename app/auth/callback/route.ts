@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  // if "next" is in param, use it as the redirect address
   const next = searchParams.get('next') ?? '/'
 
   if (code) {
@@ -11,11 +12,16 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+      const isLocalEnv = process.env.NODE_ENV === 'development'
+      if (isLocalEnv) {
+        // we can be more strict in local dev
+        return NextResponse.redirect(`${origin}${next}`)
+      } else {
+        return NextResponse.redirect(`${origin}${next}`)
+      }
     }
   }
 
-  // Return to login with error
-  return NextResponse.redirect(`${origin}/login?error=auth_callback_error`)
+  // return the user to an error page with instructions
+  return NextResponse.redirect(`${origin}/login?error=Could not authenticate user`)
 }
-
