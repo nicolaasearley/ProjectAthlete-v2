@@ -12,17 +12,19 @@ export async function createWorkout(data: WorkoutFormData) {
   if (!user) throw new Error('Unauthorized')
   
   // Get user's org_id
-  const { data: profile } = await supabase
+  const { data: profileData } = await supabase
     .from('profiles')
     .select('org_id')
     .eq('id', user.id)
     .single()
   
-  if (!profile) throw new Error('Profile not found')
+  if (!profileData) throw new Error('Profile not found')
+  
+  const profile = profileData as { org_id: string }
   
   // Create session
-  const { data: session, error: sessionError } = await supabase
-    .from('workout_sessions')
+  const { data: session, error: sessionError } = await (supabase
+    .from('workout_sessions') as any)
     .insert({
       user_id: user.id,
       org_id: profile.org_id,
@@ -38,8 +40,8 @@ export async function createWorkout(data: WorkoutFormData) {
   for (let i = 0; i < data.exercises.length; i++) {
     const exercise = data.exercises[i]
     
-    const { data: workoutExercise, error: exerciseError } = await supabase
-      .from('workout_exercises')
+    const { data: workoutExercise, error: exerciseError } = await (supabase
+      .from('workout_exercises') as any)
       .insert({
         session_id: session.id,
         exercise_id: exercise.exercise_id,
@@ -59,8 +61,8 @@ export async function createWorkout(data: WorkoutFormData) {
     }))
     
     if (sets.length > 0) {
-      const { error: setsError } = await supabase
-        .from('workout_sets')
+      const { error: setsError } = await (supabase
+        .from('workout_sets') as any)
         .insert(sets)
       
       if (setsError) throw setsError
@@ -78,8 +80,8 @@ export async function updateWorkout(id: string, data: WorkoutFormData) {
   if (!user) throw new Error('Unauthorized')
   
   // Update session
-  const { error: sessionError } = await supabase
-    .from('workout_sessions')
+  const { error: sessionError } = await (supabase
+    .from('workout_sessions') as any)
     .update({
       date: data.date,
       notes: data.notes || null,
@@ -90,8 +92,8 @@ export async function updateWorkout(id: string, data: WorkoutFormData) {
   if (sessionError) throw sessionError
   
   // Delete existing exercises (cascades to sets)
-  await supabase
-    .from('workout_exercises')
+  await (supabase
+    .from('workout_exercises') as any)
     .delete()
     .eq('session_id', id)
   
@@ -99,8 +101,8 @@ export async function updateWorkout(id: string, data: WorkoutFormData) {
   for (let i = 0; i < data.exercises.length; i++) {
     const exercise = data.exercises[i]
     
-    const { data: workoutExercise, error: exerciseError } = await supabase
-      .from('workout_exercises')
+    const { data: workoutExercise, error: exerciseError } = await (supabase
+      .from('workout_exercises') as any)
       .insert({
         session_id: id,
         exercise_id: exercise.exercise_id,
@@ -119,7 +121,7 @@ export async function updateWorkout(id: string, data: WorkoutFormData) {
     }))
     
     if (sets.length > 0) {
-      await supabase.from('workout_sets').insert(sets)
+      await (supabase.from('workout_sets') as any).insert(sets)
     }
   }
   
@@ -134,8 +136,8 @@ export async function deleteWorkout(id: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
   
-  const { error } = await supabase
-    .from('workout_sessions')
+  const { error } = await (supabase
+    .from('workout_sessions') as any)
     .delete()
     .eq('id', id)
     .eq('user_id', user.id)

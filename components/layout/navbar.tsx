@@ -6,15 +6,13 @@ import { Button } from '@/components/ui/button'
 import { MobileNav } from '@/components/layout/mobile-nav'
 import { LogOut, Menu } from 'lucide-react'
 import { useState } from 'react'
-import type { User } from '@supabase/supabase-js'
 import type { Profile } from '@/types/database'
 
 interface NavbarProps {
-  user: User
   profile: (Profile & { organizations: { name: string } | null }) | null
 }
 
-export function Navbar({ user, profile }: NavbarProps) {
+export function Navbar({ profile }: NavbarProps) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const router = useRouter()
   const supabase = createClient()

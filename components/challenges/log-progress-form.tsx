@@ -8,12 +8,11 @@ import { Loader2 } from 'lucide-react'
 
 interface LogProgressFormProps {
   challengeId: string
-  metricName: string
   unit: string
   onLog: (challengeId: string, value: number, notes?: string) => Promise<void>
 }
 
-export function LogProgressForm({ challengeId, metricName, unit, onLog }: LogProgressFormProps) {
+export function LogProgressForm({ challengeId, unit, onLog }: LogProgressFormProps) {
   const [isPending, startTransition] = useTransition()
   const [value, setValue] = useState<number | ''>('')
   const [notes, setNotes] = useState('')

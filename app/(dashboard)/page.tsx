@@ -40,20 +40,20 @@ export default async function DashboardPage() {
   // Calculate this week's workouts
   const oneWeekAgo = new Date()
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-  const thisWeekWorkouts = workouts?.filter(w => new Date(w.date) >= oneWeekAgo).length || 0
+  const thisWeekWorkouts = workouts?.filter((w: any) => new Date(w.date) >= oneWeekAgo).length || 0
 
   // Get Personal Records (simplified for dashboard)
   const { data: prs } = await (supabase.rpc as any)('get_user_exercise_summary', {
     p_user_id: user.id
   })
 
-  const recentWorkouts = workouts?.slice(0, 3) || []
+  const recentWorkouts = (workouts as any[] || []).slice(0, 3)
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold">Welcome back</h1>
-        <p className="text-muted-foreground">Here's your training overview</p>
+        <p className="text-muted-foreground">Here&apos;s your training overview</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

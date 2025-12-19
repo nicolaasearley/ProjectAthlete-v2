@@ -26,7 +26,7 @@ export default async function DashboardLayout({
     <div className="min-h-screen flex">
       <Sidebar />
       <div className="flex-1 flex flex-col">
-        <Navbar user={user} profile={profile as any} />
+        <Navbar profile={profile as any} />
         <main className="flex-1 p-6">
           {children}
         </main>

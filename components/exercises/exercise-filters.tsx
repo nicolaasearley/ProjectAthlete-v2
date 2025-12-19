@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, X } from 'lucide-react'
 import { useState, useTransition, useCallback } from 'react'
-import { cn } from '@/lib/utils'
 
 interface ExerciseFiltersProps {
   categories: { value: string; label: string }[]
