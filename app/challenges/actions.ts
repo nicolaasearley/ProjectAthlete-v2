@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import type { ChallengeFormData } from '@/types/database'
 
-export async function createChallenge(data: ChallengeFormData) {
+export async function createChallenge(formData: FormData | ChallengeFormData) {
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
@@ -18,6 +18,21 @@ export async function createChallenge(data: ChallengeFormData) {
     .single()
   
   if (!profile) throw new Error('Profile not found')
+
+  // Extract data from FormData or use directly if ChallengeFormData
+  let data: ChallengeFormData
+  if (formData instanceof FormData) {
+    data = {
+      name: formData.get('name') as string,
+      description: formData.get('description') as string,
+      metric: formData.get('metric') as string,
+      metric_unit: formData.get('metric_unit') as string,
+      start_date: formData.get('start_date') as string,
+      end_date: formData.get('end_date') as string,
+    }
+  } else {
+    data = formData
+  }
   
   const { error } = await supabase
     .from('challenges')

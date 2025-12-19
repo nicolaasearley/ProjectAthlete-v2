@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import type { CommunityWorkoutFormData } from '@/types/database'
 
-export async function submitWorkout(data: CommunityWorkoutFormData) {
+export async function submitWorkout(formData: FormData | CommunityWorkoutFormData) {
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
@@ -18,6 +18,19 @@ export async function submitWorkout(data: CommunityWorkoutFormData) {
     .single()
   
   if (!profile) throw new Error('Profile not found')
+
+  // Extract data from FormData or use directly if CommunityWorkoutFormData
+  let data: CommunityWorkoutFormData
+  if (formData instanceof FormData) {
+    data = {
+      title: formData.get('title') as string,
+      description: formData.get('description') as string,
+      workout_type: formData.get('workout_type') as any,
+      time_cap_minutes: formData.get('time_cap_minutes') ? parseInt(formData.get('time_cap_minutes') as string) : null,
+    }
+  } else {
+    data = formData
+  }
   
   const { error } = await supabase
     .from('community_workouts')
