@@ -43,8 +43,15 @@ A self-hosted, multi-tenant workout logging web application built with Next.js, 
    ```
 
 ## Docker Deployment
-Build and run the container:
+Build the container with your Supabase credentials (required for client-side code):
 ```bash
-docker build -t projectathlete .
+docker build \
+  --build-arg NEXT_PUBLIC_SUPABASE_URL="your-supabase-url" \
+  --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key" \
+  -t projectathlete .
+```
+
+Run the container:
+```bash
 docker run -p 6767:6767 --env-file .env.local projectathlete
 ```
