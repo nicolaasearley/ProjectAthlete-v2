@@ -26,8 +26,8 @@ export async function createCustomExercise(formData: FormData) {
     throw new Error('Name and category are required')
   }
   
-  const { error } = await supabase
-    .from('exercises')
+  const { error } = await (supabase
+    .from('exercises') as any)
     .insert({
       name: name.trim(),
       category,
