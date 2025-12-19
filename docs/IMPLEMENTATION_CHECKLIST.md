@@ -385,10 +385,52 @@
 - [ ] CONTRIBUTING.md (basic)
 
 ### Final Verification
-- [ ] Full flow: login → log workout → view stats
-- [ ] Full flow: submit community workout → approve → view
-- [ ] Full flow: create challenge → log progress → leaderboard
-- [ ] All roles tested: athlete, coach, admin
+- [x] Full flow: login → log workout → view stats
+- [x] Full flow: submit community workout → approve → view
+- [x] Full flow: create challenge → log progress → leaderboard
+- [x] All roles tested: athlete, coach, admin
+
+---
+
+## Phase 8: Feature Expansion
+
+### Profile & Identity
+- [x] Migration `009_storage_setup.sql` run
+- [x] Profile photo upload (Supabase Storage)
+- [x] Display name editing
+- [x] Fixed storage security policies (RLS)
+
+### Advanced Analytics
+- [x] Migration `010_training_stats.sql` run
+- [x] Recharts integration
+- [x] Volume trends chart (30 days)
+- [x] Workout consistency streaks
+- [x] Category breakdown (Push/Pull/etc.)
+- [x] PR progression timeline (per exercise)
+- [x] Fixed Estimated 1RM logic (Migration `014_fix_1rm_calculation.sql`)
+
+### Custom Badges
+- [x] Migration `011_challenge_badges.sql` run
+- [x] Admin upload for custom challenge badges
+- [x] Badge image display on profiles/leaderboards
+
+### Activity Feed
+- [x] Migration `012_activity_feed.sql` run
+- [x] Automated PR announcements in feed
+- [x] Automated achievement announcements
+- [x] Social reactions (Fire, Heart, Respect)
+- [x] Manual text posts support
+
+### Workout Efficiency
+- [x] Migration `013_workout_templates.sql` run
+- [x] "Save as Template" during workout logging
+- [x] Quick start from template on New Workout page
+- [x] Template management (Delete)
+
+### Admin Tools
+- [x] User management page (`/admin/users`)
+- [x] Organization-wide user role management (Athlete/Coach/Admin)
+- [x] View all organization lifts (`/workouts/all`)
 
 ---
 
@@ -397,4 +439,4 @@
 - [ ] Monitor for errors
 - [ ] Gather user feedback
 - [ ] Document known issues
-- [ ] Plan v2 features
+- [ ] Plan v3 features

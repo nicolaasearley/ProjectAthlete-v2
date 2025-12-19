@@ -108,6 +108,20 @@ export default async function EditChallengePage({ params }: EditChallengePagePro
                 required
               />
             </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Update Badge Image (optional)</label>
+              {challengeData.badge_image_url && (
+                <div className="h-16 w-16 rounded-lg bg-accent overflow-hidden mb-2">
+                  <img src={challengeData.badge_image_url} alt="Current badge" className="h-full w-full object-cover" />
+                </div>
+              )}
+              <Input
+                name="badge_image"
+                type="file"
+                accept="image/*"
+              />
+            </div>
             
             <Button type="submit" className="w-full h-12">
               Save Changes

@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { BadgeDisplay } from '@/components/challenges/badge-display'
 import { Button } from '@/components/ui/button'
 import { updateAnonymity } from '@/app/challenges/actions'
-import { User, Shield, AtSign, Building } from 'lucide-react'
+import { ProfileEditor } from '@/components/profile/profile-editor'
+import { AtSign, Building, Shield } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Profile | ProjectAthlete',
@@ -31,7 +32,7 @@ export default async function ProfilePage() {
   // Get user badges
   const { data: userBadges } = await supabase
     .from('user_badges')
-    .select('*, badges(*)')
+    .select('*, badges(*), challenges(name, badge_image_url)')
     .eq('user_id', user.id)
     .order('awarded_at', { ascending: false })
   
@@ -44,15 +45,10 @@ export default async function ProfilePage() {
       
       <div className="grid gap-6 md:grid-cols-3">
         <div className="md:col-span-1 space-y-6">
+          <ProfileEditor profile={profileData} />
+          
           <Card>
-            <CardHeader className="flex flex-col items-center">
-              <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center text-primary mb-4">
-                <User className="h-10 w-10" />
-              </div>
-              <CardTitle className="text-xl">{profileData.display_name || 'User'}</CardTitle>
-              <p className="text-sm text-muted-foreground capitalize">{profileData.role}</p>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-4 border-t border-border">
+            <CardContent className="space-y-4 pt-6">
               <div className="flex items-center gap-3 text-sm">
                 <AtSign className="h-4 w-4 text-muted-foreground" />
                 <span className="truncate">{user.email}</span>

@@ -96,19 +96,19 @@ export default async function ChallengesPage() {
           <Trophy className="h-5 w-5 text-primary" />
           Active Challenges
         </h2>
-        {challengesWithProgress.length === 0 ? (
+      {challengesWithProgress.length === 0 ? (
           <div className="text-center py-8 bg-card rounded-lg border border-border">
             <Trophy className="h-10 w-10 mx-auto mb-3 text-muted-foreground opacity-30" />
             <h3 className="font-medium">No active challenges</h3>
             <p className="text-sm text-muted-foreground">Check back soon or view upcoming challenges below!</p>
-          </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {challengesWithProgress.map((challenge) => (
-              <ChallengeCard key={challenge.id} challenge={challenge as any} />
-            ))}
-          </div>
-        )}
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {challengesWithProgress.map((challenge) => (
+            <ChallengeCard key={challenge.id} challenge={challenge as any} />
+          ))}
+        </div>
+      )}
       </section>
       
       {/* Upcoming Challenges */}

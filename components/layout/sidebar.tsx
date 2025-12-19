@@ -11,12 +11,16 @@ import {
   Trophy,
   User,
   Shield,
+  BarChart2,
+  Rss,
 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
+  { name: 'Feed', href: '/feed', icon: Rss },
   { name: 'Workouts', href: '/workouts', icon: Dumbbell },
   { name: 'Exercises', href: '/exercises', icon: Library },
+  { name: 'Stats', href: '/stats', icon: BarChart2 },
   { name: 'Community', href: '/community', icon: Users },
   { name: 'Challenges', href: '/challenges', icon: Trophy },
   { name: 'Profile', href: '/profile', icon: User },

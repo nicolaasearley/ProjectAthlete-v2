@@ -75,27 +75,27 @@ export function ExerciseFilters({
     <div className="space-y-4">
       {/* Search - Live as you type */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search exercises..."
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          className="pl-10 pr-10"
-        />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search exercises..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="pl-10 pr-10"
+          />
         {isPending ? (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
             <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
           </div>
         ) : searchValue ? (
-          <button
-            type="button"
-            onClick={clearSearch}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            <X className="h-4 w-4" />
-          </button>
+            <button
+              type="button"
+              onClick={clearSearch}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4" />
+            </button>
         ) : null}
-      </div>
+        </div>
       
       {/* Category Filters */}
       <div className="flex flex-wrap gap-2">

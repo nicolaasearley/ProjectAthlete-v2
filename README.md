@@ -9,18 +9,19 @@ A self-hosted, multi-tenant workout logging web application built with Next.js, 
 - **Tailwind CSS**: Beautiful UI with dark mode, glassmorphism, and mobile-first design.
 - **Supabase Auth**: Apple OAuth and Email/Password support.
 - **Developer Mode**: Quick login toggle for development and testing.
-- **Exercise Library**: 100+ seeded exercises with categorized browsing and instant live search.
-- **Workout Logging**: Log sets, weight, and reps with real-time performance tracking.
-- **Coach Dashboards**: Specialized views for coaches to monitor athlete progress and approve community submissions.
-- **Computed Stats**: Automated tracking of Estimated 1RM, Personal Records, and Volume.
-- **Community Workouts**: Share training sessions, react, and comment on others' work with an approval workflow.
-- **Gamified Challenges**: Compete in org-wide challenges with live leaderboards, real-time countdowns, and automated badge awarding.
+- **Flexible Metrics**: Track more than just weights and reps. Support for time, distance (meters/km), and calories per exercise.
+- **Training Stats Dashboard**: Comprehensive analytics with interactive charts for volume trends, consistency streaks, and PR progression.
+- **Activity Feed**: Real-time community hub showing New Personal Records, challenge achievements, and community updates with social reactions.
+- **Workout Templates**: Save favorite routines as templates to jumpstart your next training session.
+- **Profile Management**: Customize your identity with display names and profile photo uploads via Supabase Storage.
+- **Coach Dashboards**: Specialized views for coaches to monitor all athletes' lifts, manage organization users, and approve community submissions.
+- **Gamified Challenges**: Compete in org-wide challenges with live leaderboards, custom challenge badges, and automated awarding.
 - **Docker Ready**: Fully containerized with standalone output.
 
 ## Tech Stack
 
-- **Frontend**: Next.js 15+, React 19, Tailwind CSS v4, Lucide Icons.
-- **Backend**: Supabase (PostgreSQL, RLS, Edge Functions, Auth).
+- **Frontend**: Next.js 15+, React 19, Tailwind CSS v4, Lucide Icons, Recharts.
+- **Backend**: Supabase (PostgreSQL, RLS, Storage, Auth).
 - **Deployment**: Docker, Exposed on Port 6767.
 
 ## Getting Started
@@ -37,7 +38,7 @@ A self-hosted, multi-tenant workout logging web application built with Next.js, 
    npm install
    ```
 3. Set up your environment variables (see `.env.example`).
-4. Run the database migrations located in `docs/database/` in your Supabase SQL Editor in order (`001_foundation.sql` to `007_challenges.sql`).
+4. Run the database migrations located in `docs/database/` in your Supabase SQL Editor in order (`001_foundation.sql` to `014_fix_1rm_calculation.sql`).
 5. **Supabase Configuration**:
    - **Authentication Providers**:
      - **Email**: Enable in `Authentication > Providers`. Disable "Confirm Email" for immediate access.
@@ -50,6 +51,7 @@ A self-hosted, multi-tenant workout logging web application built with Next.js, 
        1. Setup App ID and Service ID in Apple Developer Portal.
        2. Add Supabase Callback URL to the Service ID.
        3. Generate and upload a private key to Supabase.
+   - **Storage**: Create two public buckets named `avatars` and `badges` in your Supabase project (or run migration `009_storage_setup.sql`).
    - **Join Code**: The default organization "ProjectAthlete" is created with join code `ATHLETE2025`. Users must enter this code to sign up.
 6. Run the development server:
    ```bash

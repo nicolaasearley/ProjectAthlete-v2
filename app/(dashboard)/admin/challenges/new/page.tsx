@@ -78,6 +78,16 @@ export default async function NewChallengePage() {
                 required
               />
             </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Badge Image (optional)</label>
+              <Input
+                name="badge_image"
+                type="file"
+                accept="image/*"
+              />
+              <p className="text-[10px] text-muted-foreground italic">Custom badges make your challenge stand out!</p>
+            </div>
             
             <Button type="submit" className="w-full h-12">
               Create Challenge

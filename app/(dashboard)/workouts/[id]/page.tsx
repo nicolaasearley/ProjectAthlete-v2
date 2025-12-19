@@ -70,19 +70,19 @@ export default async function WorkoutPage({ params }: WorkoutPageProps) {
     date: workoutData.date,
     notes: workoutData.notes || '',
     exercises: exercisesWithDetails.map((we) => ({
-      id: we.id,
-      exercise_id: we.exercise_id,
-      exercise_name: we.exercises?.name,
+        id: we.id,
+        exercise_id: we.exercise_id,
+        exercise_name: we.exercises?.name,
       default_metric: we.exercises?.default_metric,
       sets: we.workout_sets.map((s: any) => ({
-        id: s.id,
+            id: s.id,
         weight: s.weight ? Number(s.weight) : undefined,
         reps: s.reps ? Number(s.reps) : undefined,
         distance_meters: s.distance_meters ? Number(s.distance_meters) : undefined,
         time_seconds: s.time_seconds ? Number(s.time_seconds) : undefined,
         calories: s.calories ? Number(s.calories) : undefined,
+          })),
       })),
-    })),
   }
   
   const updateAction = updateWorkout.bind(null, id)

@@ -22,7 +22,7 @@ export async function createChallenge(formData: FormData | ChallengeFormData) {
   const profile = profileData as { org_id: string }
 
   // Extract data from FormData or use directly if ChallengeFormData
-  let data: ChallengeFormData
+  let data: ChallengeFormData & { badge_image?: File | null }
   if (formData instanceof FormData) {
     data = {
       name: formData.get('name') as string,
@@ -31,9 +31,28 @@ export async function createChallenge(formData: FormData | ChallengeFormData) {
       metric_unit: formData.get('metric_unit') as string,
       start_date: formData.get('start_date') as string,
       end_date: formData.get('end_date') as string,
+      badge_image: formData.get('badge_image') as File | null,
     }
   } else {
     data = formData
+  }
+
+  let badgeImageUrl = null
+  if (data.badge_image && data.badge_image.size > 0) {
+    const fileExt = data.badge_image.name.split('.').pop()
+    const fileName = `${Math.random()}.${fileExt}`
+    const filePath = `challenge-badges/${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('badges')
+      .upload(filePath, data.badge_image)
+
+    if (!uploadError) {
+      const { data: { publicUrl } } = supabase.storage
+        .from('badges')
+        .getPublicUrl(filePath)
+      badgeImageUrl = publicUrl
+    }
   }
   
   const { error } = await (supabase
@@ -47,6 +66,7 @@ export async function createChallenge(formData: FormData | ChallengeFormData) {
       start_date: data.start_date,
       end_date: data.end_date,
       created_by: user.id,
+      badge_image_url: badgeImageUrl,
     })
   
   if (error) throw error
@@ -72,10 +92,33 @@ export async function updateChallenge(challengeId: string, formData: FormData) {
     start_date: formData.get('start_date') as string,
     end_date: formData.get('end_date') as string,
   }
+
+  const badgeImage = formData.get('badge_image') as File | null
+  let badgeImageUrl = undefined // undefined means don't update if not provided
   
+  if (badgeImage && badgeImage.size > 0) {
+    const fileExt = badgeImage.name.split('.').pop()
+    const fileName = `${Math.random()}.${fileExt}`
+    const filePath = `challenge-badges/${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('badges')
+      .upload(filePath, badgeImage)
+
+    if (!uploadError) {
+      const { data: { publicUrl } } = supabase.storage
+        .from('badges')
+        .getPublicUrl(filePath)
+      badgeImageUrl = publicUrl
+    }
+  }
+  
+  const updateData: any = { ...data }
+  if (badgeImageUrl) updateData.badge_image_url = badgeImageUrl
+
   const { error } = await (supabase
     .from('challenges') as any)
-    .update(data)
+    .update(updateData)
     .eq('id', challengeId)
   
   if (error) throw error

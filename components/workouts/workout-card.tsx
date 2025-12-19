@@ -41,10 +41,10 @@ export function WorkoutCard({ workout, showUser }: WorkoutCardProps) {
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
-              <CardTitle className="text-base flex items-center gap-2">
+            <CardTitle className="text-base flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
-                {formattedDate}
-              </CardTitle>
+              {formattedDate}
+            </CardTitle>
               {showUser && workout.user && (
                 <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
                   <User className="h-3 w-3" />

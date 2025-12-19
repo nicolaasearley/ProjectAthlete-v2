@@ -71,7 +71,7 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
   }
   
   const { data: workouts } = await query
-
+  
   // Fetch authors separately for names
   const transformedWorkouts = (workouts || []).map((w: any) => ({
     ...w,
@@ -114,11 +114,11 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
             </Button>
           )}
           <Button asChild className="gap-2">
-            <Link href="/community/submit">
+          <Link href="/community/submit">
               <Plus className="h-4 w-4" />
               Submit
-            </Link>
-          </Button>
+          </Link>
+        </Button>
         </div>
       </div>
       

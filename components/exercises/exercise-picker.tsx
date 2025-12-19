@@ -30,10 +30,10 @@ export function ExercisePicker({
   useEffect(() => {
     const loadExercises = async () => {
       setLoading(true)
-      const { data } = await supabase
-        .from('exercises')
-        .select('*')
-        .order('name')
+        const { data } = await supabase
+          .from('exercises')
+          .select('*')
+          .order('name')
       
       setAllExercises(data || [])
       setLoading(false)

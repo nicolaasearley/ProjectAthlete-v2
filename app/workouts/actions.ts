@@ -72,7 +72,11 @@ export async function createWorkout(data: WorkoutFormData) {
     }
   }
   
+  // Check for PRs and post to feed
+  await (supabase.rpc as any)('check_and_post_prs', { p_session_id: session.id })
+  
   revalidatePath('/workouts')
+  revalidatePath('/feed')
   redirect(`/workouts/${session.id}`)
 }
 
@@ -127,9 +131,13 @@ export async function updateWorkout(id: string, data: WorkoutFormData) {
       await (supabase.from('workout_sets') as any).insert(sets)
     }
   }
+
+  // Check for PRs and post to feed
+  await (supabase.rpc as any)('check_and_post_prs', { p_session_id: id })
   
   revalidatePath('/workouts')
   revalidatePath(`/workouts/${id}`)
+  revalidatePath('/feed')
   redirect(`/workouts/${id}`)
 }
 

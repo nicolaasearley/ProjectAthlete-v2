@@ -1,14 +1,9 @@
 -- ============================================
--- ProjectAthlete v2 - Database Migration 005
--- Exercise Stats: Computed Functions
+-- ProjectAthlete v2 - Database Migration 014
+-- Fix Estimated 1RM Calculation
 -- ============================================
 
--- Run this AFTER 004_workouts.sql
-
--- ============================================
--- GET EXERCISE STATS
--- Returns summary stats for a specific exercise
--- ============================================
+-- Update get_exercise_stats
 CREATE OR REPLACE FUNCTION get_exercise_stats(
   p_exercise_id UUID,
   p_user_id UUID DEFAULT NULL
@@ -27,7 +22,6 @@ RETURNS TABLE (
 DECLARE
   v_user_id UUID;
 BEGIN
-  -- Use provided user_id or current user
   v_user_id := COALESCE(p_user_id, auth.uid());
   
   RETURN QUERY
@@ -38,7 +32,7 @@ BEGIN
       wsess.date,
       ws.weight,
       ws.reps,
-      -- Fixed Epley formula for estimated 1RM
+      -- Fixed Epley formula: if reps = 1, e1rm = weight
       CASE 
         WHEN ws.reps = 1 THEN ws.weight 
         ELSE ws.weight * (1 + ws.reps::DECIMAL / 30) 
@@ -72,10 +66,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
--- ============================================
--- GET EXERCISE HISTORY
--- Returns workout history for a specific exercise
--- ============================================
+-- Update get_exercise_history
 CREATE OR REPLACE FUNCTION get_exercise_history(
   p_exercise_id UUID,
   p_user_id UUID DEFAULT NULL,
@@ -104,7 +95,6 @@ BEGIN
     SUM(ws.reps)::INTEGER AS total_reps,
     SUM(ws.weight * ws.reps)::DECIMAL AS total_volume,
     MAX(ws.weight)::DECIMAL AS best_set_weight,
-    -- Get reps from the heaviest set
     (
       SELECT ws2.reps 
       FROM public.workout_sets ws2 
@@ -130,10 +120,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
--- ============================================
--- GET BEST PERFORMANCES
--- Returns top performances by estimated 1RM
--- ============================================
+-- Update get_best_performances
 CREATE OR REPLACE FUNCTION get_best_performances(
   p_exercise_id UUID,
   p_user_id UUID DEFAULT NULL,
@@ -179,10 +166,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
--- ============================================
--- GET E1RM PROGRESSION
--- Returns e1RM over time for charting
--- ============================================
+-- Update get_e1rm_progression
 CREATE OR REPLACE FUNCTION get_e1rm_progression(
   p_exercise_id UUID,
   p_user_id UUID DEFAULT NULL,
@@ -217,11 +201,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
 
--- ============================================
--- GET USER EXERCISE SUMMARY
--- Returns summary of all exercises for dashboard
--- ============================================
-DROP FUNCTION IF EXISTS get_user_exercise_summary(UUID, INTEGER);
+-- Update get_user_exercise_summary
 CREATE OR REPLACE FUNCTION get_user_exercise_summary(
   p_user_id UUID DEFAULT NULL,
   p_limit INTEGER DEFAULT 10
@@ -264,3 +244,44 @@ BEGIN
   LIMIT p_limit;
 END;
 $$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+
+-- Update get_pr_history
+CREATE OR REPLACE FUNCTION get_pr_history(p_user_id UUID, p_exercise_id UUID)
+RETURNS TABLE (
+  logged_date DATE,
+  max_weight DECIMAL,
+  reps INTEGER,
+  estimated_1rm DECIMAL
+) AS $$
+DECLARE
+  v_current_max_1rm DECIMAL := 0;
+  v_row RECORD;
+BEGIN
+  FOR v_row IN 
+    SELECT 
+      ws.date::DATE as work_date,
+      wsets.weight,
+      wsets.reps,
+      CASE 
+        WHEN wsets.reps = 1 THEN wsets.weight 
+        ELSE wsets.weight * (1 + wsets.reps / 30.0) 
+      END as e1rm
+    FROM public.workout_sessions ws
+    JOIN public.workout_exercises we ON we.session_id = ws.id
+    JOIN public.workout_sets wsets ON wsets.workout_exercise_id = we.id
+    WHERE ws.user_id = p_user_id
+      AND we.exercise_id = p_exercise_id
+    ORDER BY work_date ASC, e1rm DESC
+  LOOP
+    IF v_row.e1rm > v_current_max_1rm THEN
+      v_current_max_1rm := v_row.e1rm;
+      logged_date := v_row.work_date;
+      max_weight := v_row.weight;
+      reps := v_row.reps;
+      estimated_1rm := v_row.e1rm;
+      RETURN NEXT;
+    END IF;
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+

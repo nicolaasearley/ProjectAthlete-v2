@@ -310,6 +310,7 @@ export type Database = {
           created_by: string
           created_at: string
           updated_at: string
+          badge_image_url: string | null
         }
         Insert: {
           id?: string
@@ -324,6 +325,7 @@ export type Database = {
           created_by: string
           created_at?: string
           updated_at?: string
+          badge_image_url?: string | null
         }
         Update: {
           id?: string
@@ -338,6 +340,7 @@ export type Database = {
           created_by?: string
           created_at?: string
           updated_at?: string
+          badge_image_url?: string | null
         }
       }
       challenge_logs: {

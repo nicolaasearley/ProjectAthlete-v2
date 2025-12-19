@@ -53,11 +53,11 @@ export default async function WorkoutsPage() {
             </Button>
           )}
           <Button asChild className="gap-2">
-            <Link href="/workouts/new">
+          <Link href="/workouts/new">
               <Plus className="h-4 w-4" />
-              Log Workout
-            </Link>
-          </Button>
+            Log Workout
+          </Link>
+        </Button>
         </div>
       </div>
       

@@ -42,9 +42,9 @@ export function ChallengeCard({ challenge, isUpcoming }: ChallengeCardProps) {
                 Upcoming
               </Badge>
             ) : (
-              <Badge variant={isActive ? 'default' : 'secondary'} className="text-[10px]">
-                {isActive ? 'Active' : 'Ended'}
-              </Badge>
+            <Badge variant={isActive ? 'default' : 'secondary'} className="text-[10px]">
+              {isActive ? 'Active' : 'Ended'}
+            </Badge>
             )}
             <span className="text-[10px] text-muted-foreground flex items-center gap-1">
               <Calendar className="h-3 w-3" />

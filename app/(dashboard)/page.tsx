@@ -3,7 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/shared/empty-state'
 import { WorkoutCard } from '@/components/workouts/workout-card'
-import { Dumbbell, Trophy, Users, TrendingUp } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Dumbbell, Trophy, Users, TrendingUp, Rss, BarChart2 } from 'lucide-react'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Dashboard | ProjectAthlete',
@@ -29,11 +31,10 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .order('date', { ascending: false })
 
-  // Fetch community stats
-  const { count: communityCount } = await supabase
-    .from('community_workouts')
+  // Fetch feed count
+  const { count: feedCount } = await supabase
+    .from('feed_posts')
     .select('*', { count: 'exact', head: true })
-    .eq('user_id', user.id)
 
   // Fetch active challenges count
   const today = new Date().toISOString().split('T')[0]
@@ -48,6 +49,11 @@ export default async function DashboardPage() {
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
   const thisWeekWorkouts = workouts?.filter((w: any) => new Date(w.date) >= oneWeekAgo).length || 0
 
+  // Get streaks
+  const { data: streaks } = await (supabase.rpc as any)('get_workout_streaks', {
+    p_user_id: user.id
+  })
+
   // Get Personal Records (simplified for dashboard)
   const { data: prs } = await (supabase.rpc as any)('get_user_exercise_summary', {
     p_user_id: user.id
@@ -57,31 +63,39 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">Welcome back</h1>
-        <p className="text-muted-foreground">Here&apos;s your training overview</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Welcome back</h1>
+          <p className="text-muted-foreground">Here&apos;s your training overview</p>
+        </div>
+        <Button asChild variant="outline" size="sm" className="gap-2">
+          <Link href="/stats">
+            <BarChart2 className="h-4 w-4" />
+            Full Stats
+          </Link>
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Workouts</CardTitle>
-            <Dumbbell className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Weekly Consistency</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{workouts?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Lifetime sessions</p>
+            <div className="text-2xl font-bold text-orange-500">{streaks?.[0]?.current_streak || 0} Day Streak</div>
+            <p className="text-xs text-muted-foreground">{thisWeekWorkouts} workouts this week</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Week</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Activity Feed</CardTitle>
+            <Rss className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{thisWeekWorkouts}</div>
-            <p className="text-xs text-muted-foreground">workouts completed</p>
+            <div className="text-2xl font-bold">{feedCount || 0}</div>
+            <p className="text-xs text-muted-foreground">Updates from community</p>
           </CardContent>
         </Card>
 
@@ -98,12 +112,12 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Community</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Total Workouts</CardTitle>
+            <Dumbbell className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{communityCount || 0}</div>
-            <p className="text-xs text-muted-foreground">workouts shared</p>
+            <div className="text-2xl font-bold">{workouts?.length || 0}</div>
+            <p className="text-xs text-muted-foreground">Lifetime sessions logged</p>
           </CardContent>
         </Card>
       </div>
