@@ -29,9 +29,11 @@ export default async function ChallengeHistoryPage() {
     .lt('end_date', today)
     .order('end_date', { ascending: false })
   
+  const challenges = (pastChallenges || []) as any[]
+  
   // Fetch progress for each challenge
   const challengesWithProgress = await Promise.all(
-    (pastChallenges || []).map(async (challenge) => {
+    challenges.map(async (challenge) => {
       const { data: progress } = await (supabase.rpc as any)('get_user_challenge_progress', {
         p_challenge_id: challenge.id,
         p_user_id: user.id

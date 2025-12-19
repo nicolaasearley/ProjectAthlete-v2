@@ -7,7 +7,7 @@ export default async function SubmissionsPage() {
   const supabase = await createClient()
   
   // Check if admin
-  const { data: isAdmin } = await supabase.rpc('is_coach_or_admin')
+  const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
   if (!isAdmin) redirect('/')
   
   // Get pending submissions

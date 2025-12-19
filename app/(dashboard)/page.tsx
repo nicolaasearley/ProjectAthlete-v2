@@ -43,7 +43,7 @@ export default async function DashboardPage() {
   const thisWeekWorkouts = workouts?.filter(w => new Date(w.date) >= oneWeekAgo).length || 0
 
   // Get Personal Records (simplified for dashboard)
-  const { data: prs } = await supabase.rpc('get_user_exercise_summary', {
+  const { data: prs } = await (supabase.rpc as any)('get_user_exercise_summary', {
     p_user_id: user.id
   })
 
