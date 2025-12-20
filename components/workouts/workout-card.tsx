@@ -37,50 +37,49 @@ export function WorkoutCard({ workout, showUser }: WorkoutCardProps) {
   
   return (
     <Link href={`/workouts/${workout.id}`}>
-      <Card hoverable className="cursor-pointer">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-            <CardTitle className="text-base flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
-              {formattedDate}
-            </CardTitle>
-              {showUser && workout.user && (
-                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                  <User className="h-3 w-3" />
-                  {workout.user.display_name || 'Anonymous'}
-                </p>
-              )}
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Badge variant="secondary">
-                {exerciseCount} exercise{exerciseCount !== 1 ? 's' : ''}
-              </Badge>
-              <Badge variant="outline">
-                {totalSets} set{totalSets !== 1 ? 's' : ''}
-              </Badge>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {workout.workout_exercises.slice(0, 5).map((ex) => (
-              <Badge key={ex.id} variant="outline" className="text-xs">
-                {ex.exercises?.name || 'Unknown'}
-              </Badge>
-            ))}
-            {workout.workout_exercises.length > 5 && (
-              <Badge variant="outline" className="text-xs">
-                +{workout.workout_exercises.length - 5} more
-              </Badge>
+      <Card hoverable className="group p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <div className="stat-label mb-1">Workout Session</div>
+            <h3 className="text-xl font-bold tracking-tight">{formattedDate}</h3>
+            {showUser && workout.user && (
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mt-1 flex items-center gap-1">
+                <User className="h-3 w-3" />
+                {workout.user.display_name || 'Anonymous'}
+              </p>
             )}
           </div>
-          {workout.notes && (
-            <p className="text-sm text-muted-foreground mt-2 line-clamp-1">
-              {workout.notes}
-            </p>
+          <div className="flex gap-2">
+            <div className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+              <Calendar className="h-4 w-4 text-white/20 group-hover:text-blue-400 transition-colors" />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-1.5 mt-4">
+          {workout.workout_exercises.slice(0, 4).map((ex) => (
+            <div key={ex.id} className="px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-wider text-white/40">
+              {ex.exercises?.name || 'Unknown'}
+            </div>
+          ))}
+          {workout.workout_exercises.length > 4 && (
+            <div className="px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-wider text-white/20">
+              +{workout.workout_exercises.length - 4}
+            </div>
           )}
-        </CardContent>
+        </div>
+
+        <div className="mt-6 flex items-center gap-4 border-t border-white/5 pt-4">
+          <div>
+            <p className="text-xs font-bold tracking-tight">{exerciseCount}</p>
+            <p className="stat-label">Exercises</p>
+          </div>
+          <div className="h-4 w-px bg-white/5" />
+          <div>
+            <p className="text-xs font-bold tracking-tight">{totalSets}</p>
+            <p className="stat-label">Total Sets</p>
+          </div>
+        </div>
       </Card>
     </Link>
   )

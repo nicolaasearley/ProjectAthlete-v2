@@ -16,7 +16,6 @@ const COLORS = [
   '#ef4444', // red
   '#8b5cf6', // violet
   '#06b6d4', // cyan
-  '#f97316', // orange
   '#ec4899', // pink
   '#64748b', // slate
 ]

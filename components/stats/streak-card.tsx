@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Flame, Trophy } from 'lucide-react'
 
 interface StreakCardProps {
@@ -10,28 +10,29 @@ interface StreakCardProps {
 
 export function StreakCard({ streaks }: StreakCardProps) {
   return (
-    <Card className="bg-orange-500/10 border-orange-500/20">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <Flame className="h-4 w-4 text-orange-500" />
-          Consistency
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <Card premium glow="primary" className="flex flex-col justify-between group h-full">
+      <div className="flex items-center justify-between mb-6">
+        <div className="stat-label">Consistency</div>
+        <div className="h-8 w-8 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+          <Flame className="h-4 w-4 text-blue-500" />
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-baseline gap-1">
+          <span className="stat-value text-blue-500">{streaks.current_streak}</span>
+          <span className="text-sm font-black uppercase tracking-widest text-white/20 ml-2">Days</span>
+        </div>
+        <p className="text-white/40 text-[10px] font-black uppercase tracking-widest mt-1">Current Streak</p>
+      </div>
+
+      <div className="mt-8 pt-6 border-t border-white/5 flex items-center justify-between">
         <div>
-          <p className="text-4xl font-bold text-orange-500">
-            {streaks.current_streak}
-          </p>
-          <p className="text-xs text-muted-foreground uppercase font-semibold">Day Streak</p>
+          <p className="text-xl font-bold tracking-tight">{streaks.longest_streak}</p>
+          <p className="stat-label">All-time Best</p>
         </div>
-        <div className="pt-4 border-t border-orange-500/10 flex items-center justify-between">
-          <div>
-            <p className="text-lg font-bold">{streaks.longest_streak}</p>
-            <p className="text-[10px] text-muted-foreground uppercase">Best Streak</p>
-          </div>
-          <Trophy className="h-8 w-8 text-orange-500 opacity-20" />
-        </div>
-      </CardContent>
+        <Trophy className="h-8 w-8 text-blue-500/20" />
+      </div>
     </Card>
   )
 }

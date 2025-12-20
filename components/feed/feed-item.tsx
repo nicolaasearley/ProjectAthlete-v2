@@ -26,8 +26,8 @@ interface FeedItemProps {
 
 const REACTION_TYPES = [
   { type: 'like', icon: Heart, color: 'text-red-500', fill: 'fill-red-500' },
-  { type: 'fire', icon: Zap, color: 'text-orange-500', fill: 'fill-orange-500' },
-  { type: 'respect', icon: Award, color: 'text-blue-500', fill: 'fill-blue-500' },
+  { type: 'fire', icon: Zap, color: 'text-blue-500', fill: 'fill-blue-500' },
+  { type: 'respect', icon: Award, color: 'text-primary', fill: 'fill-primary' },
 ]
 
 export function FeedItem({ post, currentUserId }: FeedItemProps) {
@@ -48,38 +48,38 @@ export function FeedItem({ post, currentUserId }: FeedItemProps) {
   }
 
   return (
-    <Card className={cn(
-      "overflow-hidden transition-all hover:border-primary/30",
-      post.post_type === 'pr' && "border-orange-500/30 bg-orange-500/5",
-      post.post_type === 'achievement' && "border-yellow-500/30 bg-yellow-500/5"
+    <Card premium className={cn(
+      "overflow-hidden transition-all hover:border-white/10 group",
+      post.post_type === 'pr' && "glow-teal bg-[#14e0d4]/[0.02]",
+      post.post_type === 'achievement' && "glow-purple bg-purple-500/[0.02]"
     )}>
-      <CardContent className="p-4 sm:p-6 space-y-4">
+      <CardContent className="p-8 space-y-6">
         <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-accent flex items-center justify-center overflow-hidden shrink-0">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
               {post.avatar_url ? (
                 <img src={post.avatar_url} alt={post.display_name || ''} className="h-full w-full object-cover" />
               ) : (
-                <User className="h-5 w-5 text-muted-foreground" />
+                <User className="h-6 w-6 text-white/20" />
               )}
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <p className="font-bold text-sm sm:text-base">
+              <div className="flex items-center gap-3">
+                <p className="font-bold text-lg tracking-tight">
                   {post.display_name || 'Anonymous'}
                 </p>
                 {post.post_type === 'pr' && (
-                  <Badge variant="outline" className="bg-orange-500/10 text-orange-600 border-orange-200 text-[10px] uppercase h-5">
+                  <div className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[8px] font-black uppercase tracking-widest text-emerald-400">
                     New PR
-                  </Badge>
+                  </div>
                 )}
                 {post.post_type === 'achievement' && (
-                  <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-200 text-[10px] uppercase h-5">
+                  <div className="px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[8px] font-black uppercase tracking-widest text-purple-400">
                     Achievement
-                  </Badge>
+                  </div>
                 )}
               </div>
-              <p className="text-[10px] sm:text-xs text-muted-foreground">
+              <p className="stat-label mt-1">
                 {new Date(post.created_at).toLocaleString('en-US', { 
                   month: 'short', 
                   day: 'numeric', 
@@ -95,56 +95,52 @@ export function FeedItem({ post, currentUserId }: FeedItemProps) {
               variant="ghost" 
               size="icon" 
               onClick={handleDelete}
-              className="h-8 w-8 text-muted-foreground hover:text-destructive transition-colors"
+              className="h-8 w-8 text-white/10 hover:text-red-400 transition-colors"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
           )}
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {post.post_type === 'pr' ? (
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-orange-500/10 border border-orange-500/20">
-              <div className="h-12 w-12 rounded-full bg-orange-500 flex items-center justify-center shrink-0">
-                <Trophy className="h-6 w-6 text-white" />
+            <div className="flex items-center gap-6 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
+              <div className="h-16 w-16 rounded-full bg-[#14e0d4] flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(20,224,212,0.3)]">
+                <Trophy className="h-8 w-8 text-black" />
               </div>
               <div>
-                <p className="font-bold text-lg leading-tight">
-                  {post.metadata?.weight} {post.metadata?.unit || 'lbs'}
+                <p className="text-3xl font-bold tracking-tighter">
+                  {post.metadata?.weight} <span className="text-sm font-black uppercase tracking-widest text-white/20 ml-1">{post.metadata?.unit || 'lbs'}</span>
                 </p>
-                <p className="text-sm text-orange-700 font-medium">
+                <p className="text-sm font-bold tracking-tight text-[#14e0d4] mt-1">
                   {post.metadata?.exercise_name}
                 </p>
-                <p className="text-[10px] text-orange-600/70 uppercase font-bold tracking-wider">
-                  New Personal Record!
-                </p>
+                <p className="stat-label mt-1">Personal Record</p>
               </div>
             </div>
           ) : post.post_type === 'achievement' ? (
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
-              <div className="h-12 w-12 rounded-full bg-yellow-500 flex items-center justify-center shrink-0">
-                <Award className="h-6 w-6 text-white" />
+            <div className="flex items-center gap-6 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
+              <div className="h-16 w-16 rounded-full bg-purple-500 flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(168,85,247,0.3)]">
+                <Award className="h-8 w-8 text-white" />
               </div>
               <div>
-                <p className="font-bold text-lg leading-tight">
+                <p className="text-xl font-bold tracking-tight leading-tight">
                   Challenge Completed
                 </p>
-                <p className="text-sm text-yellow-700 font-medium">
+                <p className="text-sm font-bold tracking-tight text-purple-400 mt-1">
                   {post.metadata?.challenge_name}
                 </p>
-                <p className="text-[10px] text-yellow-600/70 uppercase font-bold tracking-wider">
-                  Earned a new badge!
-                </p>
+                <p className="stat-label mt-1">New Badge Earned</p>
               </div>
             </div>
           ) : (
-            <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
+            <p className="text-lg font-medium leading-relaxed tracking-tight text-white/80">
               {post.content}
             </p>
           )}
         </div>
 
-        <div className="pt-2 flex items-center gap-2">
+        <div className="pt-4 flex items-center gap-3">
           {REACTION_TYPES.map((reaction) => {
             const count = post.reaction_counts[reaction.type] || 0
             const hasReacted = post.user_reactions.includes(reaction.type)
@@ -157,14 +153,14 @@ export function FeedItem({ post, currentUserId }: FeedItemProps) {
                 size="sm"
                 onClick={() => handleReaction(reaction.type)}
                 className={cn(
-                  "h-8 gap-1.5 rounded-full px-3 transition-all",
+                  "h-10 gap-2 rounded-full px-4 transition-all bg-white/[0.03] border border-white/5",
                   hasReacted 
-                    ? cn("bg-accent", reaction.color) 
-                    : "hover:bg-accent text-muted-foreground"
+                    ? cn("bg-white/[0.1] border-white/20", reaction.color) 
+                    : "hover:bg-white/[0.08] text-white/20"
                 )}
               >
                 <Icon className={cn("h-4 w-4", hasReacted && reaction.fill)} />
-                {count > 0 && <span className="text-xs font-bold">{count}</span>}
+                {count > 0 && <span className="text-xs font-black">{count}</span>}
               </Button>
             )
           })}

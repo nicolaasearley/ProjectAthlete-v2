@@ -25,30 +25,30 @@ export function Navbar({ profile }: NavbarProps) {
 
   return (
     <>
-      <header className="h-16 border-b border-white/5 bg-background/40 backdrop-blur-xl px-6 flex items-center justify-between sticky top-0 z-40">
-        <div className="flex items-center gap-4">
+      <header className="h-20 border-b border-white/[0.03] bg-background/60 backdrop-blur-3xl px-8 flex items-center justify-between sticky top-0 z-40">
+        <div className="flex items-center gap-6">
           <button
             onClick={() => setMobileNavOpen(true)}
-            className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-accent"
+            className="lg:hidden p-2 -ml-2 rounded-xl hover:bg-white/5 transition-colors"
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-5 w-5 text-white/40" />
           </button>
           
           <div className="hidden sm:block">
-            <span className="text-sm text-muted-foreground">
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-white/20">
               {profile?.organizations?.name || 'ProjectAthlete'}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <div className="text-right hidden sm:block">
-            <p className="text-sm font-medium">{profile?.display_name || 'User'}</p>
-            <p className="text-xs text-muted-foreground capitalize">{profile?.role || 'athlete'}</p>
+            <p className="text-sm font-bold tracking-tight">{profile?.display_name || 'User'}</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-white/20">{profile?.role || 'athlete'}</p>
           </div>
           
-          <Button variant="ghost" size="icon" onClick={handleSignOut}>
-            <LogOut className="h-5 w-5" />
+          <Button variant="ghost" size="icon" onClick={handleSignOut} className="h-10 w-10 rounded-xl hover:bg-white/5 text-white/20 hover:text-red-400 transition-colors">
+            <LogOut className="h-4 w-4" />
           </Button>
         </div>
       </header>

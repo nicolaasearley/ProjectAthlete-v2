@@ -5,6 +5,7 @@ import { CategoryBreakdown } from '@/components/stats/category-breakdown'
 import { StreakCard } from '@/components/stats/streak-card'
 import { PRTimeline } from '@/components/stats/pr-timeline'
 import { Metadata } from 'next'
+import { Trophy, Activity } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Training Stats | ProjectAthlete',
@@ -61,44 +62,45 @@ export default async function StatsPage() {
   const exerciseList = Array.from(exerciseMap.entries()).map(([id, name]) => ({ id, name }))
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Training Stats</h1>
-        <p className="text-muted-foreground">Your progress at a glance</p>
+    <div className="space-y-10 pb-20 page-transition">
+      <div className="px-2">
+        <h1 className="text-4xl font-bold tracking-tighter">Training Stats</h1>
+        <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">Your progress at a glance</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        <StreakCard streaks={streaks?.[0] || { current_streak: 0, longest_streak: 0 }} />
-        
-        <div className="md:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Volume Trends (30 Days)</CardTitle>
-            </CardHeader>
-            <CardContent className="h-[300px]">
-              <VolumeChart data={volumeTrends || []} />
-            </CardContent>
-          </Card>
+        <div className="md:col-span-1">
+          <StreakCard streaks={streaks?.[0] || { current_streak: 0, longest_streak: 0 }} />
         </div>
+        
+        <Card premium glow="teal" className="md:col-span-2">
+          <div className="flex items-center justify-between mb-8">
+            <div className="stat-label">Volume Trends</div>
+            <div className="text-[10px] font-black uppercase tracking-widest text-white/20">Last 30 Days</div>
+          </div>
+          <div className="h-[250px] w-full">
+            <VolumeChart data={volumeTrends || []} />
+          </div>
+        </Card>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Training Split</CardTitle>
-          </CardHeader>
-          <CardContent className="h-[300px]">
+        <Card premium glow="purple">
+          <div className="flex items-center justify-between mb-8">
+            <div className="stat-label">Training Split</div>
+            <Activity className="h-4 w-4 text-purple-500/40" />
+          </div>
+          <div className="h-[300px] w-full">
             <CategoryBreakdown data={categoryData || []} />
-          </CardContent>
+          </div>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Personal Records</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <PRTimeline exercises={exerciseList} userId={user.id} />
-          </CardContent>
+        <Card premium>
+          <div className="flex items-center justify-between mb-8">
+            <div className="stat-label">Personal Records</div>
+            <Trophy className="h-4 w-4 text-white/20" />
+          </div>
+          <PRTimeline exercises={exerciseList} userId={user.id} />
         </Card>
       </div>
     </div>
