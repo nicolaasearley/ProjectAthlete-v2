@@ -49,17 +49,17 @@ export function FeedItem({ post, currentUserId }: FeedItemProps) {
 
   return (
     <div className={cn(
-      "rounded-2xl bg-white/[0.02] border border-white/5 p-4 transition-all hover:bg-white/[0.04]",
+      "rounded-2xl bg-foreground/[0.02] border border-foreground/5 p-4 transition-all hover:bg-foreground/[0.04]",
       post.post_type === 'pr' && "border-[#14e0d4]/20 bg-[#14e0d4]/[0.02]",
       post.post_type === 'achievement' && "border-purple-500/20 bg-purple-500/[0.02]"
     )}>
       {/* Header Row */}
       <div className="flex items-center gap-3">
-        <div className="h-9 w-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shrink-0">
+        <div className="h-9 w-9 rounded-full bg-foreground/5 border border-foreground/10 flex items-center justify-center overflow-hidden shrink-0">
           {post.avatar_url ? (
             <img src={post.avatar_url} alt={post.display_name || ''} className="h-full w-full object-cover" />
           ) : (
-            <User className="h-4 w-4 text-white/20" />
+            <User className="h-4 w-4 text-foreground/20" />
           )}
         </div>
         <div className="flex-1 min-w-0">
@@ -74,7 +74,7 @@ export function FeedItem({ post, currentUserId }: FeedItemProps) {
               <span className="text-[8px] font-black uppercase tracking-widest text-purple-400">🏆</span>
             )}
           </div>
-          <p className="text-[10px] text-white/30">
+          <p className="text-[10px] text-foreground/30">
             {new Date(post.created_at).toLocaleString('en-US', { 
               month: 'short', 
               day: 'numeric', 
@@ -88,7 +88,7 @@ export function FeedItem({ post, currentUserId }: FeedItemProps) {
             variant="ghost" 
             size="icon" 
             onClick={handleDelete}
-            className="h-7 w-7 text-white/10 hover:text-red-400 transition-colors"
+            className="h-7 w-7 text-foreground/10 hover:text-red-400 transition-colors"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
@@ -104,7 +104,7 @@ export function FeedItem({ post, currentUserId }: FeedItemProps) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-lg font-black tracking-tighter">
-                {post.metadata?.weight} <span className="text-[10px] text-white/30">{post.metadata?.unit || 'lbs'}</span>
+                {post.metadata?.weight} <span className="text-[10px] text-foreground/30">{post.metadata?.unit || 'lbs'}</span>
               </p>
               <p className="text-xs font-medium text-[#14e0d4] truncate">{post.metadata?.exercise_name}</p>
             </div>
@@ -120,7 +120,7 @@ export function FeedItem({ post, currentUserId }: FeedItemProps) {
             </div>
           </div>
         ) : (
-          <p className="text-sm text-white/70 leading-relaxed">
+          <p className="text-sm text-foreground/70 leading-relaxed">
             {post.content}
           </p>
         )}
@@ -138,8 +138,8 @@ export function FeedItem({ post, currentUserId }: FeedItemProps) {
               key={reaction.type}
               onClick={() => handleReaction(reaction.type)}
               className={cn(
-                "h-7 flex items-center gap-1 rounded-lg px-2 transition-all text-white/20",
-                hasReacted && cn("bg-white/10", reaction.color)
+                "h-7 flex items-center gap-1 rounded-lg px-2 transition-all text-foreground/20",
+                hasReacted && cn("bg-foreground/10", reaction.color)
               )}
             >
               <Icon className={cn("h-3.5 w-3.5", hasReacted && reaction.fill)} />

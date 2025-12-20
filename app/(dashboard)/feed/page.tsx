@@ -43,12 +43,12 @@ export default async function FeedPage() {
       {/* Header */}
       <div className="px-2">
         <h1 className="text-4xl font-bold tracking-tighter">Activity Feed</h1>
-        <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">Updates from your organization</p>
+        <p className="text-foreground/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">Updates from your organization</p>
       </div>
 
       {/* Quick Stats Row */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="flex items-center gap-4 p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+        <div className="flex items-center gap-4 p-5 rounded-2xl bg-foreground/[0.02] border border-foreground/5">
           <div className="h-10 w-10 rounded-full bg-[#14e0d4]/10 border border-[#14e0d4]/20 flex items-center justify-center">
             <TrendingUp className="h-5 w-5 text-[#14e0d4]" />
           </div>
@@ -57,7 +57,7 @@ export default async function FeedPage() {
             <p className="stat-label">New PRs</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+        <div className="flex items-center gap-4 p-5 rounded-2xl bg-foreground/[0.02] border border-foreground/5">
           <div className="h-10 w-10 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
             <Rss className="h-5 w-5 text-purple-400" />
           </div>
@@ -66,7 +66,7 @@ export default async function FeedPage() {
             <p className="stat-label">Achievements</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 p-5 rounded-2xl bg-white/[0.02] border border-white/5">
+        <div className="flex items-center gap-4 p-5 rounded-2xl bg-foreground/[0.02] border border-foreground/5">
           <div className="h-10 w-10 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
             <Users className="h-5 w-5 text-blue-400" />
           </div>
@@ -87,9 +87,9 @@ export default async function FeedPage() {
             ))
           ) : (
             <Card premium className="text-center py-16">
-              <MessageSquare className="h-16 w-16 mx-auto mb-6 text-white/10" />
+              <MessageSquare className="h-16 w-16 mx-auto mb-6 text-foreground/10" />
               <p className="text-xl font-bold tracking-tight mb-2">No activity yet</p>
-              <p className="text-white/40 text-sm max-w-xs mx-auto">Be the first to share an update or log a workout to see PRs appear here.</p>
+              <p className="text-foreground/40 text-sm max-w-xs mx-auto">Be the first to share an update or log a workout to see PRs appear here.</p>
             </Card>
           )}
         </div>

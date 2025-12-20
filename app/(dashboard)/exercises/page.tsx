@@ -56,7 +56,7 @@ export default async function ExercisesPage({ searchParams }: ExercisesPageProps
       <div className="flex items-end justify-between px-2">
         <div>
           <h1 className="text-4xl font-bold tracking-tighter">Exercise Library</h1>
-          <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">{exercises?.length || 0} exercises available</p>
+          <p className="text-foreground/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">{exercises?.length || 0} exercises available</p>
         </div>
         <CreateExerciseDialog />
       </div>

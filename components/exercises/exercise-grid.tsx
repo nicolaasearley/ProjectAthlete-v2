@@ -15,9 +15,9 @@ export function ExerciseGrid({ exercises }: ExerciseGridProps) {
   if (exercises.length === 0) {
     return (
       <Card premium className="text-center py-16">
-        <Dumbbell className="h-16 w-16 mx-auto mb-6 text-white/10" />
+        <Dumbbell className="h-16 w-16 mx-auto mb-6 text-foreground/10" />
         <p className="text-xl font-bold tracking-tight mb-2">No exercises found</p>
-        <p className="text-white/40 text-sm">Try adjusting your search or filter criteria.</p>
+        <p className="text-foreground/40 text-sm">Try adjusting your search or filter criteria.</p>
       </Card>
     )
   }

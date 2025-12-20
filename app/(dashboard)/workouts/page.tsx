@@ -64,11 +64,11 @@ export default async function WorkoutsPage() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 px-2">
         <div>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter">Workouts</h1>
-          <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[9px] sm:text-[10px] mt-1">{workouts?.length || 0} sessions logged</p>
+          <p className="text-foreground/40 font-medium uppercase tracking-[0.2em] text-[9px] sm:text-[10px] mt-1">{workouts?.length || 0} sessions logged</p>
         </div>
         <div className="flex gap-2 sm:gap-3">
           {isCoachOrAdmin && (
-            <Button asChild variant="ghost" className="h-10 sm:h-12 px-3 sm:px-5 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-white/40 hover:text-white border border-white/10 hover:border-white/20 flex-1 sm:flex-none">
+            <Button asChild variant="ghost" className="h-10 sm:h-12 px-3 sm:px-5 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-foreground/40 hover:text-foreground border border-foreground/10 hover:border-foreground/20 flex-1 sm:flex-none">
               <Link href="/workouts/all" className="flex items-center justify-center gap-2">
                 <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span className="hidden xs:inline">All Athletes</span>
@@ -76,7 +76,7 @@ export default async function WorkoutsPage() {
               </Link>
             </Button>
           )}
-          <Button asChild className="h-10 sm:h-12 px-4 sm:px-6 rounded-xl bg-white text-black hover:bg-white/90 font-black uppercase tracking-widest text-[9px] sm:text-[10px] flex-1 sm:flex-none">
+          <Button asChild className="h-10 sm:h-12 px-4 sm:px-6 rounded-xl bg-foreground text-background hover:bg-foreground/90 font-black uppercase tracking-widest text-[9px] sm:text-[10px] flex-1 sm:flex-none">
             <Link href="/workouts/new" className="flex items-center justify-center gap-2">
               <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Log Workout
@@ -86,15 +86,15 @@ export default async function WorkoutsPage() {
       </div>
 
       {/* Compact Calendar Strip */}
-      <div className="rounded-2xl bg-white/[0.02] border border-white/5 p-3 sm:p-4 mx-2 sm:mx-0">
+      <div className="rounded-2xl bg-foreground/[0.02] border border-foreground/5 p-3 sm:p-4 mx-2 sm:mx-0">
         <div className="flex items-center justify-between mb-4">
-          <span className="text-[10px] font-black uppercase tracking-widest text-white/40">{monthName} {currentYear}</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-foreground/40">{monthName} {currentYear}</span>
           <div className="flex items-center gap-1">
-            <div className="h-6 w-6 rounded-md bg-white/5 flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors">
-              <ChevronLeft className="h-3 w-3 text-white/40" />
+            <div className="h-6 w-6 rounded-md bg-foreground/5 flex items-center justify-center cursor-pointer hover:bg-foreground/10 transition-colors">
+              <ChevronLeft className="h-3 w-3 text-foreground/40" />
             </div>
-            <div className="h-6 w-6 rounded-md bg-white/5 flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors">
-              <ChevronRight className="h-3 w-3 text-white/40" />
+            <div className="h-6 w-6 rounded-md bg-foreground/5 flex items-center justify-center cursor-pointer hover:bg-foreground/10 transition-colors">
+              <ChevronRight className="h-3 w-3 text-foreground/40" />
             </div>
           </div>
         </div>
@@ -102,7 +102,7 @@ export default async function WorkoutsPage() {
         {/* Day Headers */}
         <div className="grid grid-cols-7 gap-1 mb-1">
           {dayNames.map((day, i) => (
-            <div key={i} className="text-center text-[8px] font-black uppercase tracking-widest text-white/20 py-1">
+            <div key={i} className="text-center text-[8px] font-black uppercase tracking-widest text-foreground/20 py-1">
               {day}
             </div>
           ))}
@@ -128,16 +128,16 @@ export default async function WorkoutsPage() {
                   h-9 rounded-lg flex items-center justify-center relative transition-all cursor-pointer group
                   ${hasWorkout 
                     ? 'bg-gradient-to-br from-blue-500/30 to-blue-600/10 border border-blue-500/30 hover:from-blue-500/40 hover:to-blue-600/20' 
-                    : 'hover:bg-white/5'}
-                  ${isToday && !hasWorkout ? 'ring-1 ring-white/20' : ''}
+                    : 'hover:bg-foreground/5'}
+                  ${isToday && !hasWorkout ? 'ring-1 ring-foreground/20' : ''}
                 `}
               >
-                <span className={`text-xs font-bold ${hasWorkout ? 'text-blue-400' : isToday ? 'text-white' : 'text-white/30'}`}>
+                <span className={`text-xs font-bold ${hasWorkout ? 'text-blue-400' : isToday ? 'text-foreground' : 'text-foreground/30'}`}>
                   {dayNum}
                 </span>
                 {hasWorkout && (
-                  <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    <div className="bg-black/90 border border-white/10 rounded-lg px-2 py-1 whitespace-nowrap">
+                  <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
+                    <div className="bg-background/95 backdrop-blur-sm border border-foreground/10 rounded-lg px-2 py-1 whitespace-nowrap shadow-xl">
                       <p className="text-[8px] font-bold text-blue-400">{workoutData.exercises.join(', ') || 'Workout'}</p>
                     </div>
                   </div>
@@ -165,10 +165,10 @@ export default async function WorkoutsPage() {
         </div>
       ) : (
         <Card premium className="text-center py-16">
-          <Dumbbell className="h-16 w-16 mx-auto mb-6 text-white/10" />
+          <Dumbbell className="h-16 w-16 mx-auto mb-6 text-foreground/10" />
           <h3 className="text-xl font-bold tracking-tight mb-2">No workouts yet</h3>
-          <p className="text-white/40 text-sm max-w-xs mx-auto mb-8">Start logging to track your progress and see your data here.</p>
-          <Button asChild className="h-12 px-8 rounded-xl bg-white text-black hover:bg-white/90 font-black uppercase tracking-widest text-[10px]">
+          <p className="text-foreground/40 text-sm max-w-xs mx-auto mb-8">Start logging to track your progress and see your data here.</p>
+          <Button asChild className="h-12 px-8 rounded-xl bg-foreground text-background hover:bg-foreground/90 font-black uppercase tracking-widest text-[10px]">
             <Link href="/workouts/new" className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
               Log Your First Workout

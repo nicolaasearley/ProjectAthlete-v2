@@ -65,7 +65,7 @@ export default async function StatsPage() {
     <div className="space-y-10 pb-20 page-transition">
       <div className="px-2">
         <h1 className="text-4xl font-bold tracking-tighter">Training Stats</h1>
-        <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">Your progress at a glance</p>
+        <p className="text-foreground/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">Your progress at a glance</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
@@ -76,7 +76,7 @@ export default async function StatsPage() {
         <Card premium glow="teal" className="md:col-span-2">
           <div className="flex items-center justify-between mb-8">
             <div className="stat-label">Volume Trends</div>
-            <div className="text-[10px] font-black uppercase tracking-widest text-white/20">Last 30 Days</div>
+            <div className="text-[10px] font-black uppercase tracking-widest text-foreground/20">Last 30 Days</div>
           </div>
           <div className="h-[250px] w-full">
             <VolumeChart data={volumeTrends || []} />
@@ -98,7 +98,7 @@ export default async function StatsPage() {
         <Card premium>
           <div className="flex items-center justify-between mb-8">
             <div className="stat-label">Personal Records</div>
-            <Trophy className="h-4 w-4 text-white/20" />
+            <Trophy className="h-4 w-4 text-foreground/20" />
           </div>
           <PRTimeline exercises={exerciseList} userId={user.id} />
         </Card>

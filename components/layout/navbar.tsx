@@ -25,17 +25,17 @@ export function Navbar({ profile }: NavbarProps) {
 
   return (
     <>
-      <header className="h-20 border-b border-white/[0.03] bg-background/60 backdrop-blur-3xl px-8 flex items-center justify-between sticky top-0 z-40">
+      <header className="h-20 border-b border-foreground/[0.03] bg-background/60 backdrop-blur-3xl px-8 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-6">
           <button
             onClick={() => setMobileNavOpen(true)}
-            className="lg:hidden p-2 -ml-2 rounded-xl hover:bg-white/5 transition-colors"
+            className="lg:hidden p-2 -ml-2 rounded-xl hover:bg-foreground/5 transition-colors"
           >
-            <Menu className="h-5 w-5 text-white/40" />
+            <Menu className="h-5 w-5 text-foreground/40" />
           </button>
           
           <div className="hidden sm:block">
-            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-white/20">
+            <span className="text-[10px] font-black uppercase tracking-[0.25em] text-foreground/20">
               {profile?.organizations?.name || 'ProjectAthlete'}
             </span>
           </div>
@@ -44,10 +44,10 @@ export function Navbar({ profile }: NavbarProps) {
         <div className="flex items-center gap-6">
           <div className="text-right hidden sm:block">
             <p className="text-sm font-bold tracking-tight">{profile?.display_name || 'User'}</p>
-            <p className="text-[9px] font-black uppercase tracking-widest text-white/20">{profile?.role || 'athlete'}</p>
+            <p className="text-[9px] font-black uppercase tracking-widest text-foreground/20">{profile?.role || 'athlete'}</p>
           </div>
           
-          <Button variant="ghost" size="icon" onClick={handleSignOut} className="h-10 w-10 rounded-xl hover:bg-white/5 text-white/20 hover:text-red-400 transition-colors">
+          <Button variant="ghost" size="icon" onClick={handleSignOut} className="h-10 w-10 rounded-xl hover:bg-foreground/5 text-foreground/20 hover:text-red-400 transition-colors">
             <LogOut className="h-4 w-4" />
           </Button>
         </div>

@@ -68,9 +68,9 @@ export default async function DashboardPage() {
       <div className="flex items-end justify-between px-2">
         <div>
           <h1 className="text-4xl font-bold tracking-tighter">Overview</h1>
-          <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">Your training performance</p>
+          <p className="text-foreground/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">Your training performance</p>
         </div>
-        <Button asChild variant="ghost" size="sm" className="text-white/40 hover:text-white transition-colors uppercase tracking-widest text-[9px] font-black">
+        <Button asChild variant="ghost" size="sm" className="text-foreground/40 hover:text-foreground transition-colors uppercase tracking-widest text-[9px] font-black">
           <Link href="/stats" className="flex items-center gap-2">
             Details <BarChart2 className="h-3 w-3" />
           </Link>
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
             <div className="stat-label mb-2 text-blue-400">Current Streak</div>
             <div className="flex items-baseline gap-2">
               <span className="stat-value text-blue-500">{streaks?.[0]?.current_streak || 0}</span>
-              <span className="text-2xl font-black uppercase tracking-widest text-white/20">Days</span>
+              <span className="text-2xl font-black uppercase tracking-widest text-foreground/20">Days</span>
             </div>
             <p className="text-xl font-medium mt-6 leading-tight">
               You&apos;ve logged <span className="text-blue-400">{thisWeekWorkouts} workouts</span> this week. <br/>
@@ -97,7 +97,7 @@ export default async function DashboardPage() {
               <p className="stat-label mb-1">Total Workouts</p>
               <p className="text-2xl font-bold tracking-tight">{workouts?.length || 0}</p>
             </div>
-            <div className="h-8 w-px bg-white/10" />
+            <div className="h-8 w-px bg-foreground/10" />
             <div>
               <p className="stat-label mb-1">Longest Streak</p>
               <p className="text-2xl font-bold tracking-tight">{streaks?.[0]?.longest_streak || 0}</p>
@@ -113,15 +113,15 @@ export default async function DashboardPage() {
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold tracking-tight">Next Session</h2>
-              <div className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                <Dumbbell className="h-5 w-5 text-white/40" />
+              <div className="h-10 w-10 rounded-full bg-foreground/5 border border-foreground/10 flex items-center justify-center">
+                <Dumbbell className="h-5 w-5 text-foreground/40" />
               </div>
             </div>
-            <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">Ready to lift?</p>
-            <p className="mt-2 text-lg font-medium text-white/80">Track your progress and beat your previous PRs.</p>
+            <p className="text-foreground/40 text-[10px] font-black uppercase tracking-[0.2em]">Ready to lift?</p>
+            <p className="mt-2 text-lg font-medium text-foreground/80">Track your progress and beat your previous PRs.</p>
           </div>
 
-          <Button asChild className="w-full mt-10 h-14 rounded-2xl bg-white text-black hover:bg-white/90 font-black uppercase tracking-widest text-xs transition-transform active:scale-[0.98] shadow-2xl">
+          <Button asChild className="w-full mt-10 h-14 rounded-2xl bg-foreground text-background hover:bg-foreground/90 font-black uppercase tracking-widest text-xs transition-transform active:scale-[0.98] shadow-2xl">
             <Link href="/workouts/new" className="flex items-center justify-center gap-3">
               <Play className="h-4 w-4 fill-current ml-1" /> Start Workout
             </Link>
@@ -135,7 +135,7 @@ export default async function DashboardPage() {
             <span className="stat-value text-[#14e0d4]">{activeChallengesCount || 0}</span>
             <Trophy className="h-6 w-6 text-[#14e0d4]/40" />
           </div>
-          <p className="mt-4 text-xs font-medium text-white/40">Competitions currently available to join and compete in.</p>
+          <p className="mt-4 text-xs font-medium text-foreground/40">Competitions currently available to join and compete in.</p>
           <Button asChild variant="ghost" className="mt-6 w-fit p-0 h-auto text-[10px] font-black uppercase tracking-widest text-[#14e0d4] hover:bg-transparent hover:opacity-80">
             <Link href="/challenges">View Leaderboards →</Link>
           </Button>
@@ -147,7 +147,7 @@ export default async function DashboardPage() {
             <span className="stat-value text-purple-400">{feedCount || 0}</span>
             <Rss className="h-6 w-6 text-purple-400/40" />
           </div>
-          <p className="mt-4 text-xs font-medium text-white/40">Recent updates, PRs, and achievements from the organization.</p>
+          <p className="mt-4 text-xs font-medium text-foreground/40">Recent updates, PRs, and achievements from the organization.</p>
           <Button asChild variant="ghost" className="mt-6 w-fit p-0 h-auto text-[10px] font-black uppercase tracking-widest text-purple-400 hover:bg-transparent hover:opacity-80">
             <Link href="/feed">Check Updates →</Link>
           </Button>
@@ -157,7 +157,7 @@ export default async function DashboardPage() {
         <Card premium className="md:col-span-4 p-8">
           <div className="flex items-center justify-between mb-8">
             <div className="stat-label">Top Records</div>
-            <Trophy className="h-4 w-4 text-white/20" />
+            <Trophy className="h-4 w-4 text-foreground/20" />
           </div>
           <div className="space-y-5">
             {prs && prs.length > 0 ? (
@@ -165,20 +165,20 @@ export default async function DashboardPage() {
                 <div key={pr.exercise_id} className="flex items-center justify-between group">
                   <div className="min-w-0 flex-1">
                     <p className="font-bold tracking-tight truncate group-hover:text-blue-400 transition-colors">{pr.exercise_name}</p>
-                    <p className="text-[10px] text-white/20 font-black uppercase tracking-widest mt-0.5 truncate">{pr.category}</p>
+                    <p className="text-[10px] text-foreground/20 font-black uppercase tracking-widest mt-0.5 truncate">{pr.category}</p>
                   </div>
                   <div className="text-right ml-4">
                     <p className="font-black text-lg tracking-tighter leading-none">
                       {Number(pr.max_weight) > 0 
                         ? Number(pr.max_weight).toLocaleString() 
                         : Number(pr.estimated_1rm || 0).toLocaleString()} 
-                      <span className="text-[10px] text-white/20 ml-1">LBS</span>
+                      <span className="text-[10px] text-foreground/20 ml-1">LBS</span>
                     </p>
                   </div>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-white/20 font-medium">No records yet. Log workouts to see your PRs.</p>
+              <p className="text-xs text-foreground/20 font-medium">No records yet. Log workouts to see your PRs.</p>
             )}
           </div>
         </Card>
@@ -186,7 +186,7 @@ export default async function DashboardPage() {
         {/* Recent Sessions List */}
         <div className="md:col-span-12 mt-4 px-2 flex items-center justify-between">
           <h3 className="text-2xl font-bold tracking-tighter">Recent Sessions</h3>
-          <Button asChild variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-white p-0 h-auto hover:bg-transparent">
+          <Button asChild variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-foreground/30 hover:text-foreground p-0 h-auto hover:bg-transparent">
             <Link href="/workouts/all">All Workouts →</Link>
           </Button>
         </div>

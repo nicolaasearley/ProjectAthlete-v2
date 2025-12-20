@@ -39,7 +39,7 @@ export function Sidebar({ role }: SidebarProps) {
   const isAdmin = role === 'admin' || role === 'coach'
 
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:border-r lg:border-white/5 lg:bg-background/40 lg:backdrop-blur-xl">
+    <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:border-r lg:border-foreground/5 lg:bg-background/40 lg:backdrop-blur-xl">
       <div className="p-6">
         <Link href="/" className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">

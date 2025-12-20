@@ -87,9 +87,9 @@ const CATEGORY_STYLES: Record<string, {
 }
 
 const DEFAULT_STYLE = {
-  gradient: 'from-white/5 to-transparent',
-  border: 'border-white/10',
-  text: 'text-white/60',
+  gradient: 'from-foreground/5 to-transparent',
+  border: 'border-foreground/10',
+  text: 'text-foreground/60',
   icon: Dumbbell,
   glow: ''
 }
@@ -117,13 +117,13 @@ export function ExerciseCard({ exercise }: ExerciseCardProps) {
         <div className="relative z-10">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-bold tracking-tight truncate group-hover:text-white transition-colors">
+              <h3 className="text-lg font-bold tracking-tight truncate group-hover:text-foreground transition-colors">
                 {exercise.name}
               </h3>
               <div className={cn(
                 "inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest",
                 style.text,
-                'bg-white/5 border',
+                'bg-foreground/5 border',
                 style.border
               )}>
                 <Icon className="h-3 w-3" />
@@ -133,7 +133,7 @@ export function ExerciseCard({ exercise }: ExerciseCardProps) {
           </div>
 
           {exercise.exercise_aliases && exercise.exercise_aliases.length > 0 && (
-            <p className="text-xs text-white/30 line-clamp-1 mt-4">
+            <p className="text-xs text-foreground/30 line-clamp-1 mt-4">
               Also: {exercise.exercise_aliases.map(a => a.alias).join(', ')}
             </p>
           )}

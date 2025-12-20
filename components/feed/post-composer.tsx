@@ -35,15 +35,15 @@ export function PostComposer() {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Share an update with your team..."
-            className="flex-1 bg-transparent border-none resize-none text-lg font-medium placeholder:text-white/20 focus:outline-none min-h-[80px]"
+            className="flex-1 bg-transparent border-none resize-none text-lg font-medium placeholder:text-foreground/20 focus:outline-none min-h-[80px]"
             disabled={isPending}
           />
         </div>
-        <div className="flex justify-end border-t border-white/5 pt-6 -mx-8 -mb-8 px-8 pb-6 bg-white/[0.02]">
+        <div className="flex justify-end border-t border-foreground/5 pt-6 -mx-8 -mb-8 px-8 pb-6 bg-foreground/[0.02]">
           <Button 
             type="submit" 
             disabled={isPending || !content.trim()} 
-            className="h-12 px-8 rounded-xl bg-white text-black hover:bg-white/90 font-black uppercase tracking-widest text-[10px] transition-transform active:scale-[0.98] disabled:opacity-30"
+            className="h-12 px-8 rounded-xl bg-foreground text-background hover:bg-foreground/90 font-black uppercase tracking-widest text-[10px] transition-transform active:scale-[0.98] disabled:opacity-30"
           >
             {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
             Post Update
