@@ -8,38 +8,22 @@ const THEMES = [
   {
     id: 'dark',
     name: 'Dark',
-    colors: {
-      bg: 'bg-[#0a0a0a]',
-      primary: 'bg-[#2563eb]',
-      card: 'bg-[#121212]'
-    }
+    colors: ['#0a0a0a', '#121212', '#2563eb']
   },
   {
     id: 'light',
     name: 'Light',
-    colors: {
-      bg: 'bg-[#fafafa]',
-      primary: 'bg-[#2563eb]',
-      card: 'bg-white'
-    }
+    colors: ['#fafafa', '#ffffff', '#2563eb']
   },
   {
     id: 'pastel',
     name: 'Pastel',
-    colors: {
-      bg: 'bg-[#f7f3f0]',
-      primary: 'bg-[#f299b1]',
-      card: 'bg-[#fcf7f9]'
-    }
+    colors: ['#f7f3f0', '#fcf7f9', '#f299b1']
   },
   {
     id: 'ocean',
     name: 'Ocean',
-    colors: {
-      bg: 'bg-[#091417]',
-      primary: 'bg-[#14e0d4]',
-      card: 'bg-[#0d1e22]'
-    }
+    colors: ['#091417', '#0d1e22', '#14e0d4']
   }
 ] as const
 
@@ -47,7 +31,7 @@ export function ThemeSelector() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       {THEMES.map((t) => {
         const isActive = theme === t.id
         
@@ -56,46 +40,39 @@ export function ThemeSelector() {
             key={t.id}
             onClick={() => setTheme(t.id)}
             className={cn(
-              "group relative flex flex-col gap-2 p-2 rounded-xl border-2 transition-all duration-300",
+              "group relative flex items-center gap-3 p-3 rounded-2xl border-2 transition-all duration-300 overflow-hidden",
               isActive 
-                ? "border-primary bg-primary/5 shadow-lg shadow-primary/10" 
-                : "border-border hover:border-border/80 bg-card/50"
+                ? "border-primary bg-primary/10 shadow-[0_0_20px_rgba(var(--primary),0.1)]" 
+                : "border-white/[0.05] hover:border-white/10 bg-white/[0.02]"
             )}
           >
-            {/* Theme Preview */}
-            <div className={cn(
-              "w-full aspect-video rounded-lg overflow-hidden flex shadow-inner",
-              t.colors.bg
-            )}>
-              <div className="w-1/3 h-full p-1">
-                <div className={cn("w-full h-full rounded-md shadow-sm", t.colors.card)}>
-                  <div className="w-1/2 h-1 bg-white/10 rounded-full mt-1 ml-1" />
-                  <div className="w-3/4 h-1 bg-white/5 rounded-full mt-1 ml-1" />
-                </div>
-              </div>
-              <div className="flex-1 p-1">
-                <div className={cn("w-full h-4 rounded shadow-sm", t.colors.primary)} />
-                <div className="grid grid-cols-2 gap-1 mt-1">
-                  <div className="h-6 rounded bg-white/5 shadow-sm" />
-                  <div className="h-6 rounded bg-white/5 shadow-sm" />
-                </div>
-              </div>
+            {/* Color Swatches */}
+            <div className="flex -space-x-2">
+              {t.colors.map((color, i) => (
+                <div 
+                  key={i}
+                  style={{ backgroundColor: color }}
+                  className={cn(
+                    "h-6 w-6 rounded-full border border-white/10 shadow-sm",
+                    i === 2 && "ring-2 ring-white/5"
+                  )}
+                />
+              ))}
             </div>
 
             {/* Label */}
-            <div className="flex items-center justify-between px-1">
-              <span className={cn(
-                "text-xs font-semibold uppercase tracking-wider transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground"
-              )}>
-                {t.name}
-              </span>
-              {isActive && <Check className="h-3 w-3 text-primary" strokeWidth={3} />}
-            </div>
+            <span className={cn(
+              "text-[10px] font-bold tracking-widest uppercase transition-colors relative z-10",
+              isActive ? "text-primary" : "text-white/40 group-hover:text-white/60"
+            )}>
+              {t.name}
+            </span>
 
-            {/* Ripple effect on active */}
+            {/* Selection Check (Hidden but semantic) */}
             {isActive && (
-              <div className="absolute inset-0 rounded-xl bg-primary/5 animate-pulse" />
+              <div className="absolute top-1 right-1">
+                <Check className="h-2.5 w-2.5 text-primary" strokeWidth={4} />
+              </div>
             )}
           </button>
         )
