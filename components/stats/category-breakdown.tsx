@@ -36,7 +36,7 @@ export function CategoryBreakdown({ data }: CategoryBreakdownProps) {
   }))
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="100%" debounce={100}>
       <PieChart>
         <Pie
           data={formattedData}
@@ -46,6 +46,7 @@ export function CategoryBreakdown({ data }: CategoryBreakdownProps) {
           outerRadius={80}
           paddingAngle={5}
           dataKey="value"
+          isAnimationActive={false}
         >
           {formattedData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="none" />

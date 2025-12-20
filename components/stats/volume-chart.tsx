@@ -25,7 +25,7 @@ export function VolumeChart({ data }: VolumeChartProps) {
   }))
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ResponsiveContainer width="100%" height="100%" debounce={100}>
       <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
@@ -63,6 +63,7 @@ export function VolumeChart({ data }: VolumeChartProps) {
           fillOpacity={1} 
           fill="url(#colorVolume)" 
           strokeWidth={2}
+          isAnimationActive={false}
         />
       </AreaChart>
     </ResponsiveContainer>
