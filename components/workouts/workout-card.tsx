@@ -1,12 +1,18 @@
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Calendar, User } from 'lucide-react'
+import { Calendar, User, Dumbbell, TrendingUp } from 'lucide-react'
+
+interface WorkoutSetData {
+  id: string
+  weight?: number | null
+  reps?: number | null
+}
 
 interface WorkoutExerciseData {
   id: string
   exercises: { name: string } | null
-  workout_sets: { id: string }[]
+  workout_sets: WorkoutSetData[]
 }
 
 interface WorkoutData {
@@ -29,6 +35,15 @@ export function WorkoutCard({ workout, showUser }: WorkoutCardProps) {
     0
   )
   
+  // Calculate total volume (weight * reps for all sets)
+  const totalVolume = workout.workout_exercises.reduce((sum, ex) => {
+    return sum + ex.workout_sets.reduce((setSum, set) => {
+      const weight = Number(set.weight) || 0
+      const reps = Number(set.reps) || 0
+      return setSum + (weight * reps)
+    }, 0)
+  }, 0)
+  
   const formattedDate = new Date(workout.date).toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
@@ -37,48 +52,60 @@ export function WorkoutCard({ workout, showUser }: WorkoutCardProps) {
   
   return (
     <Link href={`/workouts/${workout.id}`}>
-      <Card hoverable className="group p-6">
-        <div className="flex items-center justify-between mb-4">
+      <Card premium hoverable className="group">
+        <div className="flex items-start justify-between mb-6">
           <div>
-            <div className="stat-label mb-1">Workout Session</div>
-            <h3 className="text-xl font-bold tracking-tight">{formattedDate}</h3>
+            <div className="stat-label mb-2">Session</div>
+            <h3 className="text-2xl font-bold tracking-tighter">{formattedDate}</h3>
             {showUser && workout.user && (
-              <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mt-1 flex items-center gap-1">
+              <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mt-2 flex items-center gap-1.5">
                 <User className="h-3 w-3" />
                 {workout.user.display_name || 'Anonymous'}
               </p>
             )}
           </div>
-          <div className="flex gap-2">
-            <div className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-              <Calendar className="h-4 w-4 text-white/20 group-hover:text-blue-400 transition-colors" />
-            </div>
+          <div className="h-12 w-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-blue-500/10 group-hover:border-blue-500/20 transition-colors">
+            <Dumbbell className="h-5 w-5 text-white/20 group-hover:text-blue-400 transition-colors" />
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-1.5 mt-4">
-          {workout.workout_exercises.slice(0, 4).map((ex) => (
-            <div key={ex.id} className="px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-wider text-white/40">
+        {/* Exercise Tags */}
+        <div className="flex flex-wrap gap-2 mb-6">
+          {workout.workout_exercises.slice(0, 3).map((ex) => (
+            <div key={ex.id} className="px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-wider text-white/40">
               {ex.exercises?.name || 'Unknown'}
             </div>
           ))}
-          {workout.workout_exercises.length > 4 && (
-            <div className="px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-wider text-white/20">
-              +{workout.workout_exercises.length - 4}
+          {workout.workout_exercises.length > 3 && (
+            <div className="px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/5 text-[10px] font-black uppercase tracking-wider text-white/20">
+              +{workout.workout_exercises.length - 3} more
             </div>
           )}
         </div>
 
-        <div className="mt-6 flex items-center gap-4 border-t border-white/5 pt-4">
+        {/* Stats Footer */}
+        <div className="flex items-center gap-6 border-t border-white/5 pt-6">
           <div>
-            <p className="text-xs font-bold tracking-tight">{exerciseCount}</p>
+            <p className="text-lg font-bold tracking-tighter">{exerciseCount}</p>
             <p className="stat-label">Exercises</p>
           </div>
-          <div className="h-4 w-px bg-white/5" />
+          <div className="h-6 w-px bg-white/5" />
           <div>
-            <p className="text-xs font-bold tracking-tight">{totalSets}</p>
-            <p className="stat-label">Total Sets</p>
+            <p className="text-lg font-bold tracking-tighter">{totalSets}</p>
+            <p className="stat-label">Sets</p>
           </div>
+          {totalVolume > 0 && (
+            <>
+              <div className="h-6 w-px bg-white/5" />
+              <div className="flex-1 text-right">
+                <p className="text-lg font-bold tracking-tighter text-blue-400">
+                  {totalVolume >= 1000 ? `${(totalVolume / 1000).toFixed(1)}k` : totalVolume.toLocaleString()}
+                  <span className="text-[10px] text-white/20 ml-1">LBS</span>
+                </p>
+                <p className="stat-label">Volume</p>
+              </div>
+            </>
+          )}
         </div>
       </Card>
     </Link>

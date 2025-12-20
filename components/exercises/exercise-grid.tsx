@@ -1,4 +1,6 @@
 import { ExerciseCard } from './exercise-card'
+import { Card } from '@/components/ui/card'
+import { Dumbbell } from 'lucide-react'
 import type { Exercise, ExerciseAlias } from '@/types/database'
 
 interface ExerciseWithAliases extends Exercise {
@@ -12,9 +14,11 @@ interface ExerciseGridProps {
 export function ExerciseGrid({ exercises }: ExerciseGridProps) {
   if (exercises.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        <p>No exercises found</p>
-      </div>
+      <Card premium className="text-center py-16">
+        <Dumbbell className="h-16 w-16 mx-auto mb-6 text-white/10" />
+        <p className="text-xl font-bold tracking-tight mb-2">No exercises found</p>
+        <p className="text-white/40 text-sm">Try adjusting your search or filter criteria.</p>
+      </Card>
     )
   }
   

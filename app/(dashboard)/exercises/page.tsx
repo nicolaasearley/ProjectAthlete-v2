@@ -4,6 +4,7 @@ import { ExerciseGrid } from '@/components/exercises/exercise-grid'
 import { ExerciseFilters } from '@/components/exercises/exercise-filters'
 import { CreateExerciseDialog } from '@/components/exercises/create-exercise-dialog'
 import { EXERCISE_CATEGORIES } from '@/types/database'
+import { Library } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Exercises | ProjectAthlete',
@@ -50,13 +51,12 @@ export default async function ExercisesPage({ searchParams }: ExercisesPageProps
   const { data: exercises } = await query
   
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-      <div>
-        <h1 className="text-3xl font-bold">Exercise Library</h1>
-        <p className="text-muted-foreground">
-          {exercises?.length || 0} exercises available
-        </p>
+    <div className="space-y-10 pb-20 page-transition">
+      {/* Header */}
+      <div className="flex items-end justify-between px-2">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tighter">Exercise Library</h1>
+          <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">{exercises?.length || 0} exercises available</p>
         </div>
         <CreateExerciseDialog />
       </div>

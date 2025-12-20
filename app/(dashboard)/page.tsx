@@ -108,8 +108,8 @@ export default async function DashboardPage() {
           <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-blue-500/5 to-transparent pointer-events-none" />
         </Card>
 
-        {/* Start Workout Card (Keep but fix styling) */}
-        <Card premium className="md:col-span-4 flex flex-col justify-between hover-lift">
+        {/* Start Workout Card */}
+        <Card premium className="md:col-span-4 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold tracking-tight">Next Session</h2>
@@ -186,7 +186,7 @@ export default async function DashboardPage() {
         {/* Recent Sessions List */}
         <div className="md:col-span-12 mt-4 px-2 flex items-center justify-between">
           <h3 className="text-2xl font-bold tracking-tighter">Recent Sessions</h3>
-          <Button asChild variant="link" className="text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-white p-0 h-auto">
+          <Button asChild variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-white p-0 h-auto hover:bg-transparent">
             <Link href="/workouts/all">All Workouts →</Link>
           </Button>
         </div>
@@ -212,5 +212,3 @@ export default async function DashboardPage() {
     </div>
   )
 }
-}
-
