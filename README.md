@@ -59,6 +59,36 @@ A self-hosted, multi-tenant workout logging web application built with Next.js, 
    ```
 
 ## Docker Deployment
+
+### Quick Start with Docker Compose (Recommended)
+
+1. Copy the example environment file and fill in your Supabase credentials:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. Build and start the container:
+   ```bash
+   docker compose up -d --build
+   ```
+
+3. Access the app at `http://localhost:6767`
+
+### Updating the Live Server
+
+After pushing changes to GitHub, SSH into your server and run:
+```bash
+./deploy.sh
+```
+
+This script will:
+- Pull the latest code from GitHub
+- Rebuild the Docker image
+- Restart the container with zero downtime
+- Clean up old Docker images
+
+### Manual Docker Build (Alternative)
+
 Build the container with your Supabase credentials (required for client-side code):
 ```bash
 docker build \
