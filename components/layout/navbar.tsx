@@ -25,7 +25,7 @@ export function Navbar({ profile }: NavbarProps) {
 
   return (
     <>
-      <header className="h-16 border-b border-border bg-card/30 backdrop-blur-sm px-6 flex items-center justify-between">
+      <header className="h-16 border-b border-white/5 bg-background/40 backdrop-blur-xl px-6 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-4">
           <button
             onClick={() => setMobileNavOpen(true)}

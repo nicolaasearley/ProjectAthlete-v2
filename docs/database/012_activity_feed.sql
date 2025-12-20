@@ -4,7 +4,7 @@
 -- ============================================
 
 -- 1. Feed Posts Table
-CREATE TABLE public.feed_posts (
+CREATE TABLE IF NOT EXISTS public.feed_posts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     org_id UUID NOT NULL REFERENCES public.organizations(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -15,7 +15,7 @@ CREATE TABLE public.feed_posts (
 );
 
 -- 2. Feed Reactions Table
-CREATE TABLE public.feed_reactions (
+CREATE TABLE IF NOT EXISTS public.feed_reactions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     post_id UUID NOT NULL REFERENCES public.feed_posts(id) ON DELETE CASCADE,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -27,48 +27,66 @@ CREATE TABLE public.feed_reactions (
 -- 3. RLS for Feed Posts
 ALTER TABLE public.feed_posts ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view feed posts in their org."
-    ON public.feed_posts FOR SELECT
-    USING ( org_id = (SELECT org_id FROM public.profiles WHERE id = auth.uid()) );
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can view feed posts in their org.') THEN
+        CREATE POLICY "Users can view feed posts in their org."
+            ON public.feed_posts FOR SELECT
+            USING ( org_id = (SELECT org_id FROM public.profiles WHERE id = auth.uid()) );
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can create feed posts in their org.') THEN
+        CREATE POLICY "Users can create feed posts in their org."
+            ON public.feed_posts FOR INSERT
+            WITH CHECK ( org_id = (SELECT org_id FROM public.profiles WHERE id = auth.uid()) );
+    END IF;
 
-CREATE POLICY "Users can create feed posts in their org."
-    ON public.feed_posts FOR INSERT
-    WITH CHECK ( org_id = (SELECT org_id FROM public.profiles WHERE id = auth.uid()) );
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can update their own feed posts.') THEN
+        CREATE POLICY "Users can update their own feed posts."
+            ON public.feed_posts FOR UPDATE
+            USING ( user_id = auth.uid() );
+    END IF;
 
-CREATE POLICY "Users can update their own feed posts."
-    ON public.feed_posts FOR UPDATE
-    USING ( user_id = auth.uid() );
-
-CREATE POLICY "Users can delete their own feed posts."
-    ON public.feed_posts FOR DELETE
-    USING ( user_id = auth.uid() );
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can delete their own feed posts.') THEN
+        CREATE POLICY "Users can delete their own feed posts."
+            ON public.feed_posts FOR DELETE
+            USING ( user_id = auth.uid() );
+    END IF;
+END $$;
 
 -- 4. RLS for Feed Reactions
 ALTER TABLE public.feed_reactions ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users can view reactions in their org."
-    ON public.feed_reactions FOR SELECT
-    USING ( 
-        EXISTS (
-            SELECT 1 FROM public.feed_posts fp
-            WHERE fp.id = post_id
-            AND fp.org_id = (SELECT org_id FROM public.profiles WHERE id = auth.uid())
-        )
-    );
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can view reactions in their org.') THEN
+        CREATE POLICY "Users can view reactions in their org."
+            ON public.feed_reactions FOR SELECT
+            USING ( 
+                EXISTS (
+                    SELECT 1 FROM public.feed_posts fp
+                    WHERE fp.id = post_id
+                    AND fp.org_id = (SELECT org_id FROM public.profiles WHERE id = auth.uid())
+                )
+            );
+    END IF;
 
-CREATE POLICY "Users can react to posts in their org."
-    ON public.feed_reactions FOR INSERT
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM public.feed_posts fp
-            WHERE fp.id = post_id
-            AND fp.org_id = (SELECT org_id FROM public.profiles WHERE id = auth.uid())
-        )
-    );
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can react to posts in their org.') THEN
+        CREATE POLICY "Users can react to posts in their org."
+            ON public.feed_reactions FOR INSERT
+            WITH CHECK (
+                EXISTS (
+                    SELECT 1 FROM public.feed_posts fp
+                    WHERE fp.id = post_id
+                    AND fp.org_id = (SELECT org_id FROM public.profiles WHERE id = auth.uid())
+                )
+            );
+    END IF;
 
-CREATE POLICY "Users can remove their own reactions."
-    ON public.feed_reactions FOR DELETE
-    USING ( user_id = auth.uid() );
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can remove their own reactions.') THEN
+        CREATE POLICY "Users can remove their own reactions."
+            ON public.feed_reactions FOR DELETE
+            USING ( user_id = auth.uid() );
+    END IF;
+END $$;
 
 -- 5. Helper Function to get feed
 CREATE OR REPLACE FUNCTION get_activity_feed(p_org_id UUID, p_limit INTEGER DEFAULT 50, p_offset INTEGER DEFAULT 0)
@@ -136,14 +154,18 @@ BEGIN
     SELECT user_id, org_id INTO v_user_id, v_org_id 
     FROM public.workout_sessions WHERE id = p_session_id;
 
-    -- Check each exercise in the session
+    -- Check each exercise in the session - only pick the single best set per exercise
     FOR v_row IN 
-        SELECT we.exercise_id, e.name as exercise_name, MAX(wsets.weight) as session_max, wsets.reps
+        SELECT DISTINCT ON (we.exercise_id)
+            we.exercise_id, 
+            e.name as exercise_name, 
+            wsets.weight as session_max, 
+            wsets.reps
         FROM public.workout_exercises we
         JOIN public.exercises e ON e.id = we.exercise_id
         JOIN public.workout_sets wsets ON wsets.workout_exercise_id = we.id
         WHERE we.session_id = p_session_id AND wsets.weight > 0
-        GROUP BY we.exercise_id, e.name, wsets.reps
+        ORDER BY we.exercise_id, wsets.weight DESC, wsets.reps DESC
     LOOP
         -- Check if this weight/reps combo is better than previous best
         SELECT NOT EXISTS (
@@ -156,7 +178,13 @@ BEGIN
               AND (wsets2.weight > v_row.session_max OR (wsets2.weight = v_row.session_max AND wsets2.reps >= v_row.reps))
         ) INTO v_is_pr;
 
-        IF v_is_pr THEN
+        IF v_is_pr AND NOT EXISTS (
+            SELECT 1 FROM public.feed_posts 
+            WHERE user_id = v_user_id 
+              AND post_type = 'pr' 
+              AND metadata->>'exercise_name' = v_row.exercise_name
+              AND metadata->>'session_id' = p_session_id::text
+        ) THEN
             -- Post to feed
             INSERT INTO public.feed_posts (org_id, user_id, post_type, metadata)
             VALUES (
@@ -167,7 +195,8 @@ BEGIN
                     'exercise_name', v_row.exercise_name,
                     'weight', v_row.session_max,
                     'reps', v_row.reps,
-                    'unit', 'lbs'
+                    'unit', 'lbs',
+                    'session_id', p_session_id
                 )
             );
         END IF;
@@ -205,10 +234,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS on_badge_awarded ON public.user_badges;
 CREATE TRIGGER on_badge_awarded
     AFTER INSERT ON public.user_badges
     FOR EACH ROW
     EXECUTE FUNCTION post_achievement_to_feed();
-
-
-
