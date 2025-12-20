@@ -65,10 +65,13 @@ A self-hosted, multi-tenant workout logging web application built with Next.js, 
 1. Copy the example environment file and fill in your Supabase credentials:
    ```bash
    cp .env.example .env.local
+   nano .env.local  # Add your credentials
    ```
 
 2. Build and start the container:
    ```bash
+   # Source the env file first (required for build args)
+   set -a && source .env.local && set +a
    docker compose up -d --build
    ```
 
@@ -82,6 +85,7 @@ After pushing changes to GitHub, SSH into your server and run:
 ```
 
 This script will:
+- Load environment variables from `.env.local`
 - Pull the latest code from GitHub
 - Rebuild the Docker image
 - Restart the container with zero downtime

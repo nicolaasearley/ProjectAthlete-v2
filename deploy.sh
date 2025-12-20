@@ -9,6 +9,18 @@ echo ""
 # Navigate to project directory (works from anywhere)
 cd "$(dirname "$0")"
 
+# Load environment variables for Docker build args
+if [ -f .env.local ]; then
+    echo "📋 Loading environment from .env.local..."
+    set -a
+    source .env.local
+    set +a
+else
+    echo "⚠️  Warning: .env.local not found. Build may fail."
+    echo "   Create it with: cp .env.example .env.local"
+fi
+
+echo ""
 echo "📥 Pulling latest code from GitHub..."
 git pull origin main
 
