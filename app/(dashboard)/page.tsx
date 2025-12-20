@@ -32,8 +32,31 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .order('date', { ascending: false })
 
-  // Fetch streaks
+  // Fetch feed count
+  const { count: feedCount } = await supabase
+    .from('feed_posts')
+    .select('*', { count: 'exact', head: true })
+
+  // Fetch active challenges count
+  const today = new Date().toISOString().split('T')[0]
+  const { count: activeChallengesCount } = await supabase
+    .from('challenges')
+    .select('*', { count: 'exact', head: true })
+    .lte('start_date', today)
+    .gte('end_date', today)
+
+  // Calculate this week's workouts
+  const oneWeekAgo = new Date()
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+  const thisWeekWorkouts = workouts?.filter((w: any) => new Date(w.date) >= oneWeekAgo).length || 0
+
+  // Get streaks
   const { data: streaks } = await (supabase.rpc as any)('get_workout_streaks', {
+    p_user_id: user.id
+  })
+
+  // Get Personal Records (simplified for dashboard)
+  const { data: prs } = await (supabase.rpc as any)('get_user_exercise_summary', {
     p_user_id: user.id
   })
 
@@ -45,7 +68,7 @@ export default async function DashboardPage() {
       <div className="flex items-end justify-between px-2">
         <div>
           <h1 className="text-4xl font-bold tracking-tighter">Overview</h1>
-          <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">Primed for performance</p>
+          <p className="text-white/40 font-medium uppercase tracking-[0.2em] text-[10px] mt-1">Your training performance</p>
         </div>
         <Button asChild variant="ghost" size="sm" className="text-white/40 hover:text-white transition-colors uppercase tracking-widest text-[9px] font-black">
           <Link href="/stats" className="flex items-center gap-2">
@@ -55,147 +78,139 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-12">
-        {/* Main Readiness Card */}
-        <Card premium glow="teal" className="md:col-span-8 flex flex-col justify-between group overflow-hidden">
+        {/* Main Consistency Card (Replaces Readiness) */}
+        <Card premium glow="primary" className="md:col-span-8 flex flex-col justify-between group overflow-hidden">
           <div className="relative z-10">
-            <div className="flex items-baseline gap-1">
-              <span className="stat-value text-white">87</span>
-              <span className="text-2xl font-bold text-white/20">/ 100</span>
+            <div className="stat-label mb-2 text-blue-400">Current Streak</div>
+            <div className="flex items-baseline gap-2">
+              <span className="stat-value text-blue-500">{streaks?.[0]?.current_streak || 0}</span>
+              <span className="text-2xl font-black uppercase tracking-widest text-white/20">Days</span>
             </div>
-            <p className="text-xl font-medium mt-4">You&apos;re primed for performance.</p>
-            
-            <div className="mt-8 flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-2 w-fit">
-              <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
-              <span className="text-xs font-bold text-emerald-400 tracking-wide">+5 vs yesterday</span>
-            </div>
+            <p className="text-xl font-medium mt-6 leading-tight">
+              You&apos;ve logged <span className="text-blue-400">{thisWeekWorkouts} workouts</span> this week. <br/>
+              Keep the momentum going!
+            </p>
           </div>
 
-          <div className="mt-12 grid grid-cols-4 gap-4 relative z-10">
-            {[
-              { label: 'HRV', value: '68ms' },
-              { label: 'Recovery', value: '92%' },
-              { label: 'Resting HR', value: '52bpm' },
-              { label: 'Sleep', value: '85' }
-            ].map((stat) => (
-              <div key={stat.label}>
-                <p className="stat-label mb-1">{stat.label}</p>
-                <p className="text-lg font-bold tracking-tight">{stat.value}</p>
-              </div>
-            ))}
+          <div className="mt-12 flex items-center gap-8 relative z-10">
+            <div>
+              <p className="stat-label mb-1">Total Workouts</p>
+              <p className="text-2xl font-bold tracking-tight">{workouts?.length || 0}</p>
+            </div>
+            <div className="h-8 w-px bg-white/10" />
+            <div>
+              <p className="stat-label mb-1">Longest Streak</p>
+              <p className="text-2xl font-bold tracking-tight">{streaks?.[0]?.longest_streak || 0}</p>
+            </div>
           </div>
 
           {/* Abstract Liquid Glass Element */}
-          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-white/[0.02] to-transparent pointer-events-none" />
+          <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-blue-500/5 to-transparent pointer-events-none" />
         </Card>
 
-        {/* Quick Action Card */}
-        <Card premium glow="primary" className="md:col-span-4 flex flex-col justify-between hover-lift">
+        {/* Start Workout Card (Keep but fix styling) */}
+        <Card premium className="md:col-span-4 flex flex-col justify-between hover-lift">
           <div>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold tracking-tight">The Catalyst</h2>
-              <div className="flex gap-2">
-                <div className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                  <Flame className="h-4 w-4 text-blue-400" />
-                </div>
+              <h2 className="text-2xl font-bold tracking-tight">Next Session</h2>
+              <div className="h-10 w-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                <Dumbbell className="h-5 w-5 text-white/40" />
               </div>
             </div>
-            <p className="text-white/40 text-sm font-medium">45 min • High intensity</p>
-            
-            <div className="mt-8 space-y-2">
-              <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-white/20">
-                <span>Estimated Exertion</span>
-                <span className="text-white/40">High</span>
-              </div>
-              <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full w-[70%] bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full" />
-              </div>
-            </div>
+            <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em]">Ready to lift?</p>
+            <p className="mt-2 text-lg font-medium text-white/80">Track your progress and beat your previous PRs.</p>
           </div>
 
-          <Button asChild className="w-full mt-10 h-14 rounded-2xl bg-white text-black hover:bg-white/90 font-bold text-base transition-transform active:scale-[0.98] shadow-2xl">
+          <Button asChild className="w-full mt-10 h-14 rounded-2xl bg-white text-black hover:bg-white/90 font-black uppercase tracking-widest text-xs transition-transform active:scale-[0.98] shadow-2xl">
             <Link href="/workouts/new" className="flex items-center justify-center gap-3">
-              <Play className="h-4 w-4 fill-current" /> Start Workout
+              <Play className="h-4 w-4 fill-current ml-1" /> Start Workout
             </Link>
           </Button>
         </Card>
 
-        {/* Mini Stat Cards */}
-        <Card premium glow="purple" className="md:col-span-4 flex flex-col items-center justify-center text-center py-10 group">
-          <div className="stat-label mb-6">Sleep</div>
-          <div className="relative h-32 w-32 flex items-center justify-center">
-            <svg className="absolute inset-0 h-full w-full -rotate-90">
-              <circle cx="64" cy="64" r="58" className="stroke-white/5 fill-none" strokeWidth="8" />
-              <circle 
-                cx="64" cy="64" r="58" 
-                className="stroke-purple-500 fill-none transition-all duration-1000" 
-                strokeWidth="8" 
-                strokeDasharray={364} 
-                strokeDashoffset={364 * (1 - 0.85)} 
-                strokeLinecap="round" 
-              />
-            </svg>
-            <div className="text-3xl font-bold tracking-tighter">85</div>
+        {/* Live Stats Row (Feed & Challenges) */}
+        <Card premium glow="teal" className="md:col-span-4 flex flex-col justify-between py-8">
+          <div className="stat-label">Active Challenges</div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="stat-value text-[#14e0d4]">{activeChallengesCount || 0}</span>
+            <Trophy className="h-6 w-6 text-[#14e0d4]/40" />
           </div>
-          <div className="mt-6 text-xl font-bold tracking-tight">7.5h</div>
-          <div className="text-[10px] font-black uppercase tracking-widest text-white/40">Slept</div>
-          
-          <div className="mt-8 w-full max-w-[120px] space-y-1">
-            <div className="h-1.5 w-full bg-white/5 rounded-full flex overflow-hidden">
-              <div className="h-full w-[30%] bg-purple-600" />
-              <div className="h-full w-[40%] bg-purple-400" />
-              <div className="h-full w-[30%] bg-purple-200" />
-            </div>
-            <div className="flex justify-between text-[8px] font-black uppercase tracking-tighter text-white/20">
-              <span>Deep</span>
-              <span>REM</span>
-              <span>Light</span>
-            </div>
-          </div>
+          <p className="mt-4 text-xs font-medium text-white/40">Competitions currently available to join and compete in.</p>
+          <Button asChild variant="ghost" className="mt-6 w-fit p-0 h-auto text-[10px] font-black uppercase tracking-widest text-[#14e0d4] hover:bg-transparent hover:opacity-80">
+            <Link href="/challenges">View Leaderboards →</Link>
+          </Button>
         </Card>
 
-        <Card premium glow="teal" className="md:col-span-4 flex flex-col items-center justify-center text-center py-10 group">
-          <div className="stat-label mb-6">Recovery</div>
-          <div className="relative h-32 w-32 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full border-8 border-white/5" />
-            <div className="absolute inset-0 rounded-full border-8 border-[#14e0d4] border-t-transparent -rotate-45" />
-            <div className="text-3xl font-bold tracking-tighter">92</div>
+        <Card premium glow="purple" className="md:col-span-4 flex flex-col justify-between py-8">
+          <div className="stat-label">Community Feed</div>
+          <div className="mt-4 flex items-baseline gap-2">
+            <span className="stat-value text-purple-400">{feedCount || 0}</span>
+            <Rss className="h-6 w-6 text-purple-400/40" />
           </div>
-          
-          <div className="mt-8 space-y-4 w-full px-6">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-white/40 uppercase">HRV</span>
-              <span className="text-xs font-bold text-emerald-400">+12ms</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold text-white/40 uppercase">Resting HR</span>
-              <span className="text-xs font-bold text-emerald-400">-3bpm</span>
-            </div>
-          </div>
+          <p className="mt-4 text-xs font-medium text-white/40">Recent updates, PRs, and achievements from the organization.</p>
+          <Button asChild variant="ghost" className="mt-6 w-fit p-0 h-auto text-[10px] font-black uppercase tracking-widest text-purple-400 hover:bg-transparent hover:opacity-80">
+            <Link href="/feed">Check Updates →</Link>
+          </Button>
         </Card>
 
-        {/* Recent Activity Mini-Card */}
-        <Card premium className="md:col-span-4 p-6 overflow-y-auto max-h-[400px]">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold tracking-tight">Recent Sessions</h3>
-            <Link href="/workouts/all" className="text-[9px] font-black uppercase tracking-widest text-white/40 hover:text-white transition-colors">View All</Link>
+        {/* Top PRs Preview */}
+        <Card premium className="md:col-span-4 p-8">
+          <div className="flex items-center justify-between mb-8">
+            <div className="stat-label">Top Records</div>
+            <Trophy className="h-4 w-4 text-white/20" />
           </div>
-          <div className="space-y-4">
-            {recentWorkouts.map((workout: any) => (
-              <div key={workout.id} className="group cursor-pointer">
-                <p className="text-xs font-bold tracking-tight group-hover:text-primary transition-colors">{workout.exercises?.name || 'Workout'}</p>
-                <div className="flex items-center gap-2 mt-1">
-                  <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">
-                    {new Date(workout.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                  </p>
-                  <div className="h-1 w-1 rounded-full bg-white/10" />
-                  <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">{workout.workout_exercises?.length || 0} Exercises</p>
+          <div className="space-y-5">
+            {prs && prs.length > 0 ? (
+              prs.slice(0, 3).map((pr: any) => (
+                <div key={pr.exercise_id} className="flex items-center justify-between group">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold tracking-tight truncate group-hover:text-blue-400 transition-colors">{pr.exercise_name}</p>
+                    <p className="text-[10px] text-white/20 font-black uppercase tracking-widest mt-0.5 truncate">{pr.category}</p>
+                  </div>
+                  <div className="text-right ml-4">
+                    <p className="font-black text-lg tracking-tighter leading-none">
+                      {Number(pr.max_weight) > 0 
+                        ? Number(pr.max_weight).toLocaleString() 
+                        : Number(pr.estimated_1rm || 0).toLocaleString()} 
+                      <span className="text-[10px] text-white/20 ml-1">LBS</span>
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-xs text-white/20 font-medium">No records yet. Log workouts to see your PRs.</p>
+            )}
           </div>
         </Card>
+
+        {/* Recent Sessions List */}
+        <div className="md:col-span-12 mt-4 px-2 flex items-center justify-between">
+          <h3 className="text-2xl font-bold tracking-tighter">Recent Sessions</h3>
+          <Button asChild variant="link" className="text-[10px] font-black uppercase tracking-widest text-white/30 hover:text-white p-0 h-auto">
+            <Link href="/workouts/all">All Workouts →</Link>
+          </Button>
+        </div>
+
+        <div className="md:col-span-12 grid gap-6 md:grid-cols-3">
+          {recentWorkouts.length > 0 ? (
+            recentWorkouts.map((workout: any) => (
+              <WorkoutCard key={workout.id} workout={workout as any} />
+            ))
+          ) : (
+            <div className="md:col-span-3">
+              <EmptyState 
+                icon={Dumbbell}
+                title="No workouts yet"
+                description="Start logging your sessions to see your progress here."
+                actionLabel="Log Workout"
+                actionHref="/workouts/new"
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
+}
 }
 
