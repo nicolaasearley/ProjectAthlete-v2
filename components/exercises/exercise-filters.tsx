@@ -13,17 +13,17 @@ interface ExerciseFiltersProps {
   currentSearch?: string
 }
 
-// Category color mapping for filter pills
+// Category color mapping for filter pills - Using ACTUAL categories from database
 const CATEGORY_COLORS: Record<string, string> = {
-  chest: 'data-[active=true]:bg-red-500/20 data-[active=true]:border-red-500/30 data-[active=true]:text-red-400',
-  back: 'data-[active=true]:bg-blue-500/20 data-[active=true]:border-blue-500/30 data-[active=true]:text-blue-400',
-  shoulders: 'data-[active=true]:bg-purple-500/20 data-[active=true]:border-purple-500/30 data-[active=true]:text-purple-400',
-  arms: 'data-[active=true]:bg-emerald-500/20 data-[active=true]:border-emerald-500/30 data-[active=true]:text-emerald-400',
-  legs: 'data-[active=true]:bg-amber-500/20 data-[active=true]:border-amber-500/30 data-[active=true]:text-amber-400',
+  squat: 'data-[active=true]:bg-blue-500/20 data-[active=true]:border-blue-500/30 data-[active=true]:text-blue-400',
+  hinge: 'data-[active=true]:bg-amber-500/20 data-[active=true]:border-amber-500/30 data-[active=true]:text-amber-400',
+  push: 'data-[active=true]:bg-red-500/20 data-[active=true]:border-red-500/30 data-[active=true]:text-red-400',
+  pull: 'data-[active=true]:bg-emerald-500/20 data-[active=true]:border-emerald-500/30 data-[active=true]:text-emerald-400',
+  carry: 'data-[active=true]:bg-purple-500/20 data-[active=true]:border-purple-500/30 data-[active=true]:text-purple-400',
   core: 'data-[active=true]:bg-cyan-500/20 data-[active=true]:border-cyan-500/30 data-[active=true]:text-cyan-400',
-  cardio: 'data-[active=true]:bg-rose-500/20 data-[active=true]:border-rose-500/30 data-[active=true]:text-rose-400',
   olympic: 'data-[active=true]:bg-yellow-500/20 data-[active=true]:border-yellow-500/30 data-[active=true]:text-yellow-400',
-  compound: 'data-[active=true]:bg-indigo-500/20 data-[active=true]:border-indigo-500/30 data-[active=true]:text-indigo-400',
+  cardio: 'data-[active=true]:bg-rose-500/20 data-[active=true]:border-rose-500/30 data-[active=true]:text-rose-400',
+  other: 'data-[active=true]:bg-slate-400/20 data-[active=true]:border-slate-400/30 data-[active=true]:text-slate-400',
 }
 
 export function ExerciseFilters({ 
