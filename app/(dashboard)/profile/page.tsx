@@ -5,7 +5,8 @@ import { BadgeDisplay } from '@/components/challenges/badge-display'
 import { Button } from '@/components/ui/button'
 import { updateAnonymity } from '@/app/challenges/actions'
 import { ProfileEditor } from '@/components/profile/profile-editor'
-import { AtSign, Building, Shield } from 'lucide-react'
+import { ThemeSelector } from '@/components/settings/theme-selector'
+import { AtSign, Building, Shield, Palette } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Profile | ProjectAthlete',
@@ -84,6 +85,18 @@ export default async function ProfilePage() {
                   </Button>
                 </div>
               </form>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-sm font-medium">
+                <Palette className="h-4 w-4" />
+                Appearance
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ThemeSelector />
             </CardContent>
           </Card>
         </div>
