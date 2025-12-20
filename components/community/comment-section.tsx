@@ -82,7 +82,7 @@ export function CommentSection({
                     </p>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground">
-                        {new Date(comment.created_at).toLocaleDateString()}
+                        {new Date(comment.created_at).toLocaleDateString('en-US')}
                       </span>
                       {comment.user_id === userId && (
                         <button

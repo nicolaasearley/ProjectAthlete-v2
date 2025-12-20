@@ -126,7 +126,7 @@ export function ChallengeLogHistory({ logs, challengeId, unit }: ChallengeLogHis
                         {log.value} <span className="text-xs font-normal text-muted-foreground uppercase">{unit}</span>
                       </p>
                       <span className="text-[10px] text-muted-foreground uppercase">
-                        {new Date(log.logged_at).toLocaleDateString()}
+                        {new Date(log.logged_at).toLocaleDateString('en-US')}
                       </span>
                     </div>
                     {log.notes && (

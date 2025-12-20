@@ -56,7 +56,7 @@ export function ApprovalQueue({ workouts, onApprove, onReject }: ApprovalQueuePr
                 {workout.workout_type.replace('_', ' ')}
               </Badge>
               <span className="text-xs text-muted-foreground">
-                Submitted {new Date(workout.created_at).toLocaleDateString()}
+                Submitted {new Date(workout.created_at).toLocaleDateString('en-US')}
               </span>
             </div>
             <CardTitle>{workout.title}</CardTitle>

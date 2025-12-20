@@ -110,7 +110,7 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Dates</p>
-                  <p>{new Date(challengeData.start_date).toLocaleDateString()} - {new Date(challengeData.end_date).toLocaleDateString()}</p>
+                  <p>{new Date(challengeData.start_date).toLocaleDateString('en-US')} - {new Date(challengeData.end_date).toLocaleDateString('en-US')}</p>
                 </div>
               </div>
             </CardContent>

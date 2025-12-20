@@ -24,10 +24,27 @@ const navigation = [
 
 export function BottomNav() {
   const pathname = usePathname()
+  
+  const activeIndex = navigation.findIndex(item => 
+    pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+  )
 
   return (
     <div className="lg:hidden fixed bottom-6 left-0 right-0 px-6 z-50 pointer-events-none">
-      <nav className="mx-auto max-w-md h-16 bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] rounded-[2.5rem] flex items-center justify-around px-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] pointer-events-auto ring-1 ring-white/10 overflow-hidden">
+      <nav className="mx-auto max-w-md h-16 bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] rounded-[2.5rem] flex items-center relative px-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] pointer-events-auto ring-1 ring-white/10 overflow-hidden">
+        
+        {/* Sliding Glass Bubble */}
+        {activeIndex !== -1 && (
+          <div 
+            className="absolute inset-y-1.5 bg-white/[0.08] backdrop-blur-md border border-white/10 rounded-[1.25rem] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
+            style={{ 
+              width: `calc((100% - 1rem) / ${navigation.length})`,
+              left: '0.5rem',
+              transform: `translateX(calc(${activeIndex} * 100%))`
+            }}
+          />
+        )}
+
         {navigation.map((item) => {
           const isActive = pathname === item.href || 
             (item.href !== '/' && pathname.startsWith(item.href))
@@ -37,16 +54,11 @@ export function BottomNav() {
               key={item.name}
               href={item.href}
               className={cn(
-                'flex flex-col items-center justify-center flex-1 h-full transition-all duration-500 relative group',
+                'flex flex-col items-center justify-center flex-1 h-full transition-all duration-500 relative group z-10',
                 isActive ? 'text-white' : 'text-white/40 hover:text-white/70'
               )}
             >
-              {/* Active Glass Highlight */}
-              {isActive && (
-                <div className="absolute inset-x-1 inset-y-1.5 bg-white/[0.07] backdrop-blur-md border border-white/10 rounded-[1.25rem] shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] animate-in fade-in zoom-in-95 duration-500" />
-              )}
-              
-              <div className="relative z-10 flex flex-col items-center justify-center gap-0">
+              <div className="flex flex-col items-center justify-center gap-0">
                 <item.icon className={cn(
                   'h-5 w-5 transition-all duration-500',
                   isActive ? 'scale-110' : 'group-hover:scale-105'

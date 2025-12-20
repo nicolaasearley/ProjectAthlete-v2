@@ -99,7 +99,7 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
             </div>
             <h1 className="text-3xl font-bold">{workoutData.title}</h1>
             <p className="text-sm text-muted-foreground">
-              by {workoutData.author?.display_name || 'Anonymous'} • {new Date(workoutData.created_at).toLocaleDateString()}
+              by {workoutData.author?.display_name || 'Anonymous'} • {new Date(workoutData.created_at).toLocaleDateString('en-US')}
             </p>
           </div>
         </div>

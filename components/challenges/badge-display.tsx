@@ -54,7 +54,7 @@ export function BadgeDisplay({ badges }: BadgeDisplayProps) {
                 </div>
                 <p className="text-xs font-bold line-clamp-1">{name}</p>
                 <p className="text-[10px] text-muted-foreground mt-1">
-                  {new Date(ub.awarded_at).toLocaleDateString()}
+                  {new Date(ub.awarded_at).toLocaleDateString('en-US')}
                 </p>
               </div>
             )

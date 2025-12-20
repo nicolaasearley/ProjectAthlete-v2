@@ -55,7 +55,7 @@ export function BestPerformances({ performances }: BestPerformancesProps) {
                     {Number(perf.weight)} lbs × {perf.reps} reps
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(perf.date).toLocaleDateString()}
+                    {new Date(perf.date).toLocaleDateString('en-US')}
                   </p>
                 </div>
               </div>

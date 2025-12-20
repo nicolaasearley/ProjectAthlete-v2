@@ -30,7 +30,7 @@ export function CommunityWorkoutCard({ workout }: CommunityWorkoutCardProps) {
               {workout.workout_type.replace('_', ' ')}
             </Badge>
             <span className="text-[10px] text-muted-foreground">
-              {new Date(workout.created_at).toLocaleDateString()}
+              {new Date(workout.created_at).toLocaleDateString('en-US')}
             </span>
           </div>
           <CardTitle className="text-base line-clamp-1">{workout.title}</CardTitle>
