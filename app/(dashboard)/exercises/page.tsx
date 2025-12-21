@@ -48,18 +48,29 @@ export default async function ExercisesPage({ searchParams }: ExercisesPageProps
   }
   
   if (params.search) {
-    // Use the search function for better alias matching
-    const { data: searchResults, error: searchError } = await (supabase.rpc as any)('search_exercises', { search_term: params.search })
-    
-    if (searchError) {
-      console.error('Search error:', searchError)
-    }
-
-    if (searchResults && searchResults.length > 0) {
-      query = query.in('id', searchResults.map((r: any) => r.id))
-    } else {
-      // Fallback: If RPC returns nothing, try a simple ILIKE on the exercises table directly
-      // This helps if there are issues with the RPC or aliases
+    try {
+      // Use the search function for better alias matching
+      const { data: searchResults, error: searchError } = await supabase.rpc('search_exercises', { 
+        search_term: params.search 
+      })
+      
+      if (searchError) {
+        console.error('Search RPC error:', {
+          message: searchError.message,
+          details: searchError.details,
+          hint: searchError.hint,
+          code: searchError.code
+        })
+        // Fallback to simple filtering if RPC fails
+        query = query.ilike('name', `%${params.search}%`)
+      } else if (searchResults && searchResults.length > 0) {
+        query = query.in('id', searchResults.map((r: any) => r.id))
+      } else {
+        // No results from RPC, still fallback to be safe
+        query = query.ilike('name', `%${params.search}%`)
+      }
+    } catch (err) {
+      console.error('Search unexpected error:', err)
       query = query.ilike('name', `%${params.search}%`)
     }
   }

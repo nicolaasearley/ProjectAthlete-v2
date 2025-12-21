@@ -32,9 +32,13 @@ CREATE INDEX IF NOT EXISTS idx_exercises_name ON public.exercises(name);
 ALTER TABLE public.exercises ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policy: Users can view global exercises and their org's exercises
-CREATE POLICY "Users can view global and org exercises"
-  ON public.exercises FOR SELECT
-  USING (is_global = TRUE OR org_id = get_user_org_id());
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can view global and org exercises') THEN
+        CREATE POLICY "Users can view global and org exercises"
+            ON public.exercises FOR SELECT
+            USING (is_global = TRUE OR org_id = get_user_org_id());
+    END IF;
+END $$;
 
 -- ============================================
 -- EXERCISE ALIASES TABLE
@@ -54,15 +58,19 @@ CREATE INDEX IF NOT EXISTS idx_exercise_aliases_alias ON public.exercise_aliases
 ALTER TABLE public.exercise_aliases ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policy: Users can view aliases for visible exercises
-CREATE POLICY "Users can view aliases for visible exercises"
-  ON public.exercise_aliases FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.exercises
-      WHERE exercises.id = exercise_aliases.exercise_id
-      AND (exercises.is_global = TRUE OR exercises.org_id = get_user_org_id())
-    )
-  );
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can view aliases for visible exercises') THEN
+        CREATE POLICY "Users can view aliases for visible exercises"
+            ON public.exercise_aliases FOR SELECT
+            USING (
+                EXISTS (
+                    SELECT 1 FROM public.exercises
+                    WHERE exercises.id = exercise_aliases.exercise_id
+                    AND (exercises.is_global = TRUE OR exercises.org_id = get_user_org_id())
+                )
+            );
+    END IF;
+END $$;
 
 -- ============================================
 -- SEARCH FUNCTION
@@ -74,7 +82,17 @@ RETURNS TABLE (
   category TEXT,
   match_type TEXT
 ) AS $$
+DECLARE
+  v_org_id UUID;
 BEGIN
+  -- Handle empty search term
+  IF search_term IS NULL OR trim(search_term) = '' THEN
+    RETURN;
+  END IF;
+
+  -- Get user's org_id once to avoid repeated calls
+  v_org_id := get_user_org_id();
+
   RETURN QUERY
   SELECT DISTINCT
     e.id,
@@ -88,7 +106,7 @@ BEGIN
     END as match_type
   FROM public.exercises e
   LEFT JOIN public.exercise_aliases ea ON ea.exercise_id = e.id
-  WHERE (e.is_global = TRUE OR e.org_id = get_user_org_id())
+  WHERE (e.is_global = TRUE OR e.org_id = v_org_id)
   AND (
     e.name ILIKE '%' || search_term || '%'
     OR ea.alias ILIKE '%' || search_term || '%'
@@ -102,4 +120,4 @@ BEGIN
     END,
     e.name;
 END;
-$$ LANGUAGE plpgsql STABLE SECURITY DEFINER;
+$$ LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = public;

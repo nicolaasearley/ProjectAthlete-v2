@@ -54,7 +54,7 @@ CREATE INDEX IF NOT EXISTS idx_profiles_org_id ON public.profiles(org_id);
 CREATE OR REPLACE FUNCTION get_user_org_id()
 RETURNS UUID AS $$
   SELECT org_id FROM public.profiles WHERE id = auth.uid();
-$$ LANGUAGE SQL STABLE SECURITY DEFINER;
+$$ LANGUAGE SQL STABLE SECURITY DEFINER SET search_path = public;
 
 -- Get current user's role from profile
 CREATE OR REPLACE FUNCTION get_user_role()
@@ -92,24 +92,31 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Organizations
 ALTER TABLE public.organizations ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Users can view their own organization" ON public.organizations;
-CREATE POLICY "Users can view their own organization"
-  ON public.organizations FOR SELECT
-  USING (id = get_user_org_id());
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can view their own organization') THEN
+        CREATE POLICY "Users can view their own organization"
+            ON public.organizations FOR SELECT
+            USING (id = get_user_org_id());
+    END IF;
+END $$;
 
 -- Profiles
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Users can view profiles in their org" ON public.profiles;
-CREATE POLICY "Users can view profiles in their org"
-  ON public.profiles FOR SELECT
-  USING (org_id = get_user_org_id());
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can view profiles in their org') THEN
+        CREATE POLICY "Users can view profiles in their org"
+            ON public.profiles FOR SELECT
+            USING (org_id = get_user_org_id());
+    END IF;
 
-DROP POLICY IF EXISTS "Users can update their own profile" ON public.profiles;
-CREATE POLICY "Users can update their own profile"
-  ON public.profiles FOR UPDATE
-  USING (id = auth.uid())
-  WITH CHECK (id = auth.uid());
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can update their own profile') THEN
+        CREATE POLICY "Users can update their own profile"
+            ON public.profiles FOR UPDATE
+            USING (id = auth.uid())
+            WITH CHECK (id = auth.uid());
+    END IF;
+END $$;
 
 -- ============================================
 -- PROFILE CREATION TRIGGER
