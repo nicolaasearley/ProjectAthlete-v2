@@ -9,9 +9,10 @@ interface ExerciseWithAliases extends Exercise {
 
 interface ExerciseGridProps {
   exercises: ExerciseWithAliases[]
+  favoriteExerciseIds?: string[]
 }
 
-export function ExerciseGrid({ exercises }: ExerciseGridProps) {
+export function ExerciseGrid({ exercises, favoriteExerciseIds = [] }: ExerciseGridProps) {
   if (exercises.length === 0) {
     return (
       <Card premium className="text-center py-16">
@@ -25,7 +26,11 @@ export function ExerciseGrid({ exercises }: ExerciseGridProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {exercises.map((exercise) => (
-        <ExerciseCard key={exercise.id} exercise={exercise} />
+        <ExerciseCard 
+          key={exercise.id} 
+          exercise={exercise} 
+          isFavorite={favoriteExerciseIds.includes(exercise.id)}
+        />
       ))}
     </div>
   )

@@ -1,9 +1,13 @@
+'use client'
+
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Dumbbell, Heart, Zap, Target, Sparkles, MoveHorizontal, Flame, ArrowUpDown, Package, CircleDot } from 'lucide-react'
 import type { Exercise, ExerciseAlias } from '@/types/database'
 import { cn } from '@/lib/utils'
+import { toggleFavoriteExercise } from '@/app/exercises/actions'
+import { useTransition } from 'react'
 
 interface ExerciseWithAliases extends Exercise {
   exercise_aliases: ExerciseAlias[]
@@ -11,6 +15,7 @@ interface ExerciseWithAliases extends Exercise {
 
 interface ExerciseCardProps {
   exercise: ExerciseWithAliases
+  isFavorite?: boolean
 }
 
 // Category color and icon mapping - Using ACTUAL categories from database
@@ -94,20 +99,44 @@ const DEFAULT_STYLE = {
   glow: ''
 }
 
-export function ExerciseCard({ exercise }: ExerciseCardProps) {
+export function ExerciseCard({ exercise, isFavorite = false }: ExerciseCardProps) {
   const style = CATEGORY_STYLES[exercise.category] || DEFAULT_STYLE
   const Icon = style.icon
+  const [isPending, startTransition] = useTransition()
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    startTransition(async () => {
+      await toggleFavoriteExercise(exercise.id)
+    })
+  }
 
   return (
-    <Link href={`/exercises/${exercise.id}`}>
+    <Link href={`/exercises/${exercise.id}`} className="group relative block h-full">
       <Card 
         premium 
         hoverable 
         className={cn(
-          "group h-full relative overflow-hidden transition-all duration-500",
+          "h-full relative overflow-hidden transition-all duration-500",
           style.glow
         )}
       >
+        {/* Favorite Toggle Button */}
+        <button
+          onClick={handleToggleFavorite}
+          disabled={isPending}
+          className={cn(
+            "absolute top-4 right-4 z-20 p-2 rounded-xl transition-all duration-300",
+            "bg-foreground/5 hover:bg-foreground/10 border border-foreground/5",
+            isFavorite ? "text-red-500 border-red-500/20" : "text-foreground/20 hover:text-foreground/40"
+          )}
+        >
+          <Heart 
+            className={cn("h-4 w-4 transition-all", isFavorite && "fill-current")} 
+          />
+        </button>
+
         {/* Gradient Overlay */}
         <div className={cn(
           "absolute inset-0 bg-gradient-to-br pointer-events-none",
@@ -116,7 +145,7 @@ export function ExerciseCard({ exercise }: ExerciseCardProps) {
         
         <div className="relative z-10">
           <div className="flex items-start justify-between mb-4">
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 pr-10">
               <h3 className="text-lg font-bold tracking-tight truncate group-hover:text-foreground transition-colors">
                 {exercise.name}
               </h3>

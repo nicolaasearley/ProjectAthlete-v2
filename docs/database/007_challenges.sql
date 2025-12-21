@@ -31,27 +31,38 @@ CREATE INDEX IF NOT EXISTS idx_challenges_dates ON public.challenges(start_date,
 ALTER TABLE public.challenges ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
-CREATE POLICY "Users can view challenges in their org"
-  ON public.challenges FOR SELECT
-  USING (org_id = get_user_org_id());
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can view challenges in their org') THEN
+    CREATE POLICY "Users can view challenges in their org"
+      ON public.challenges FOR SELECT
+      USING (org_id = get_user_org_id());
+  END IF;
 
-CREATE POLICY "Coaches can create challenges"
-  ON public.challenges FOR INSERT
-  WITH CHECK (
-    org_id = get_user_org_id()
-    AND is_coach_or_admin()
-    AND created_by = auth.uid()
-  );
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Coaches can create challenges') THEN
+    CREATE POLICY "Coaches can create challenges"
+      ON public.challenges FOR INSERT
+      WITH CHECK (
+        org_id = get_user_org_id()
+        AND is_coach_or_admin()
+        AND created_by = auth.uid()
+      );
+  END IF;
 
-CREATE POLICY "Coaches can update challenges"
-  ON public.challenges FOR UPDATE
-  USING (org_id = get_user_org_id() AND is_coach_or_admin());
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Coaches can update challenges') THEN
+    CREATE POLICY "Coaches can update challenges"
+      ON public.challenges FOR UPDATE
+      USING (org_id = get_user_org_id() AND is_coach_or_admin());
+  END IF;
 
-CREATE POLICY "Coaches can delete challenges"
-  ON public.challenges FOR DELETE
-  USING (org_id = get_user_org_id() AND is_coach_or_admin());
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Coaches can delete challenges') THEN
+    CREATE POLICY "Coaches can delete challenges"
+      ON public.challenges FOR DELETE
+      USING (org_id = get_user_org_id() AND is_coach_or_admin());
+  END IF;
+END $$;
 
 -- Update trigger
+DROP TRIGGER IF EXISTS update_challenges_updated_at ON public.challenges;
 CREATE TRIGGER update_challenges_updated_at
   BEFORE UPDATE ON public.challenges
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -77,35 +88,45 @@ CREATE INDEX IF NOT EXISTS idx_challenge_logs_logged_at ON public.challenge_logs
 ALTER TABLE public.challenge_logs ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
-CREATE POLICY "Users can view logs for challenges in their org"
-  ON public.challenge_logs FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.challenges
-      WHERE challenges.id = challenge_logs.challenge_id
-      AND challenges.org_id = get_user_org_id()
-    )
-  );
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can view logs for challenges in their org') THEN
+    CREATE POLICY "Users can view logs for challenges in their org"
+      ON public.challenge_logs FOR SELECT
+      USING (
+        EXISTS (
+          SELECT 1 FROM public.challenges
+          WHERE challenges.id = challenge_logs.challenge_id
+          AND challenges.org_id = get_user_org_id()
+        )
+      );
+  END IF;
 
-CREATE POLICY "Users can log their own progress during active challenges"
-  ON public.challenge_logs FOR INSERT
-  WITH CHECK (
-    user_id = auth.uid()
-    AND EXISTS (
-      SELECT 1 FROM public.challenges
-      WHERE challenges.id = challenge_logs.challenge_id
-      AND challenges.org_id = get_user_org_id()
-      AND CURRENT_DATE BETWEEN challenges.start_date AND challenges.end_date
-    )
-  );
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can log their own progress during active challenges') THEN
+    CREATE POLICY "Users can log their own progress during active challenges"
+      ON public.challenge_logs FOR INSERT
+      WITH CHECK (
+        user_id = auth.uid()
+        AND EXISTS (
+          SELECT 1 FROM public.challenges
+          WHERE challenges.id = challenge_logs.challenge_id
+          AND challenges.org_id = get_user_org_id()
+          AND CURRENT_DATE BETWEEN challenges.start_date AND challenges.end_date
+        )
+      );
+  END IF;
 
-CREATE POLICY "Users can update their own logs"
-  ON public.challenge_logs FOR UPDATE
-  USING (user_id = auth.uid());
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can update their own logs') THEN
+    CREATE POLICY "Users can update their own logs"
+      ON public.challenge_logs FOR UPDATE
+      USING (user_id = auth.uid());
+  END IF;
 
-CREATE POLICY "Users can delete their own logs"
-  ON public.challenge_logs FOR DELETE
-  USING (user_id = auth.uid());
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can delete their own logs') THEN
+    CREATE POLICY "Users can delete their own logs"
+      ON public.challenge_logs FOR DELETE
+      USING (user_id = auth.uid());
+  END IF;
+END $$;
 
 -- ============================================
 -- BADGES TABLE
@@ -127,9 +148,13 @@ CREATE TABLE IF NOT EXISTS public.badges (
 -- Enable RLS (badges are global, readable by all)
 ALTER TABLE public.badges ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Everyone can view badges"
-  ON public.badges FOR SELECT
-  USING (TRUE);
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Everyone can view badges') THEN
+    CREATE POLICY "Everyone can view badges"
+      ON public.badges FOR SELECT
+      USING (TRUE);
+  END IF;
+END $$;
 
 -- ============================================
 -- USER BADGES TABLE
@@ -151,16 +176,20 @@ CREATE INDEX IF NOT EXISTS idx_user_badges_badge_id ON public.user_badges(badge_
 ALTER TABLE public.user_badges ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
-CREATE POLICY "Users can view badges in their org"
-  ON public.user_badges FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = user_badges.user_id
-      AND profiles.org_id = get_user_org_id()
-    )
-    OR user_id = auth.uid()
-  );
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'Users can view badges in their org') THEN
+    CREATE POLICY "Users can view badges in their org"
+      ON public.user_badges FOR SELECT
+      USING (
+        EXISTS (
+          SELECT 1 FROM public.profiles
+          WHERE profiles.id = user_badges.user_id
+          AND profiles.org_id = get_user_org_id()
+        )
+        OR user_id = auth.uid()
+      );
+  END IF;
+END $$;
 
 -- ============================================
 -- SEED BADGES
@@ -309,6 +338,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+DROP TRIGGER IF EXISTS on_challenge_log_created ON public.challenge_logs;
 CREATE TRIGGER on_challenge_log_created
   AFTER INSERT ON public.challenge_logs
   FOR EACH ROW EXECUTE FUNCTION auto_award_participation_badge();

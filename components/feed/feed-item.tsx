@@ -115,8 +115,12 @@ export function FeedItem({ post, currentUserId }: FeedItemProps) {
               <Award className="h-5 w-5 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold tracking-tight">Challenge Completed</p>
-              <p className="text-xs text-purple-400 truncate">{post.metadata?.challenge_name}</p>
+              <p className="text-sm font-bold tracking-tight">
+                {post.metadata?.badge_name || 'Challenge Achievement'}
+              </p>
+              {post.metadata?.challenge_name && (
+                <p className="text-xs text-purple-400 truncate">{post.metadata?.challenge_name}</p>
+              )}
             </div>
           </div>
         ) : (

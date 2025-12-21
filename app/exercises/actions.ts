@@ -48,3 +48,36 @@ export async function createCustomExercise(formData: FormData) {
   redirect('/exercises')
 }
 
+export async function toggleFavoriteExercise(exerciseId: string) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+  
+  // Check if already favorited
+  const { data: existing } = await supabase
+    .from('user_favorite_exercises')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('exercise_id', exerciseId)
+    .single()
+  
+  if (existing) {
+    // Unfavorite
+    await supabase
+      .from('user_favorite_exercises')
+      .delete()
+      .eq('id', existing.id)
+  } else {
+    // Favorite
+    await supabase
+      .from('user_favorite_exercises')
+      .insert({
+        user_id: user.id,
+        exercise_id: exerciseId
+      })
+  }
+  
+  revalidatePath('/exercises')
+}
+

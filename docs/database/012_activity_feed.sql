@@ -210,9 +210,13 @@ RETURNS TRIGGER AS $$
 DECLARE
     v_org_id UUID;
     v_challenge_name TEXT;
+    v_badge_name TEXT;
 BEGIN
     -- Get org_id from profile
     SELECT org_id INTO v_org_id FROM public.profiles WHERE id = NEW.user_id;
+
+    -- Get badge name
+    SELECT name INTO v_badge_name FROM public.badges WHERE id = NEW.badge_id;
 
     -- Get challenge name if it exists
     IF NEW.challenge_id IS NOT NULL THEN
@@ -225,6 +229,19 @@ BEGIN
             'achievement', 
             jsonb_build_object(
                 'challenge_name', v_challenge_name,
+                'badge_name', v_badge_name,
+                'badge_id', NEW.badge_id
+            )
+        );
+    ELSE
+        -- Achievement not tied to a specific challenge
+        INSERT INTO public.feed_posts (org_id, user_id, post_type, metadata)
+        VALUES (
+            v_org_id, 
+            NEW.user_id, 
+            'achievement', 
+            jsonb_build_object(
+                'badge_name', v_badge_name,
                 'badge_id', NEW.badge_id
             )
         );

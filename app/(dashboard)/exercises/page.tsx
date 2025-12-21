@@ -15,6 +15,7 @@ interface ExercisesPageProps {
   searchParams: Promise<{
     category?: string
     search?: string
+    favorites?: string
   }>
 }
 
@@ -22,6 +23,17 @@ export default async function ExercisesPage({ searchParams }: ExercisesPageProps
   const params = await searchParams
   const supabase = await createClient()
   
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+
+  // Fetch user favorites
+  const { data: favorites } = await supabase
+    .from('user_favorite_exercises')
+    .select('exercise_id')
+    .eq('user_id', user.id)
+  
+  const favoriteIds = favorites?.map(f => f.exercise_id) || []
+
   let query = supabase
     .from('exercises')
     .select('*, exercise_aliases(*)')
@@ -29,6 +41,10 @@ export default async function ExercisesPage({ searchParams }: ExercisesPageProps
   
   if (params.category && params.category !== 'all') {
     query = query.eq('category', params.category)
+  }
+
+  if (params.favorites === 'true') {
+    query = query.in('id', favoriteIds)
   }
   
   if (params.search) {
@@ -65,9 +81,13 @@ export default async function ExercisesPage({ searchParams }: ExercisesPageProps
         categories={EXERCISE_CATEGORIES}
         currentCategory={params.category}
         currentSearch={params.search}
+        currentFavorites={params.favorites === 'true'}
       />
       
-      <ExerciseGrid exercises={(exercises as any) || []} />
+      <ExerciseGrid 
+        exercises={(exercises as any) || []} 
+        favoriteExerciseIds={favoriteIds}
+      />
     </div>
   )
 }
