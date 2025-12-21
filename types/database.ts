@@ -418,6 +418,26 @@ export type Database = {
           awarded_at?: string
         }
       }
+      user_favorite_exercises: {
+        Row: {
+          id: string
+          user_id: string
+          exercise_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          exercise_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          exercise_id?: string
+          created_at?: string
+        }
+      }
     }
     Functions: {
       get_user_org_id: {

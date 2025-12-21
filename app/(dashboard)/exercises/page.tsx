@@ -4,7 +4,8 @@ import { ExerciseGrid } from '@/components/exercises/exercise-grid'
 import { ExerciseFilters } from '@/components/exercises/exercise-filters'
 import { CreateExerciseDialog } from '@/components/exercises/create-exercise-dialog'
 import { EXERCISE_CATEGORIES } from '@/types/database'
-import { Library } from 'lucide-react'
+
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Exercises | ProjectAthlete',
@@ -32,12 +33,10 @@ export default async function ExercisesPage({ searchParams }: ExercisesPageProps
     .select('exercise_id')
     .eq('user_id', user.id)
   
-  const favoriteIds = favorites?.map(f => f.exercise_id) || []
+  const favoriteIds = (favorites || []).map(f => f.exercise_id)
 
-  let query = supabase
-    .from('exercises')
-    .select('*, exercise_aliases(*)')
-    .order('name')
+  // Build query
+  let query: any = supabase.from('exercises').select('*, exercise_aliases(*)')
   
   if (params.category && params.category !== 'all') {
     query = query.eq('category', params.category)
@@ -48,34 +47,25 @@ export default async function ExercisesPage({ searchParams }: ExercisesPageProps
   }
   
   if (params.search) {
-    try {
-      // Use the search function for better alias matching
-      const { data: searchResults, error: searchError } = await supabase.rpc('search_exercises', { 
-        search_term: params.search 
-      })
-      
-      if (searchError) {
-        console.error('Search RPC error:', {
-          message: searchError.message,
-          details: searchError.details,
-          hint: searchError.hint,
-          code: searchError.code
-        })
-        // Fallback to simple filtering if RPC fails
-        query = query.ilike('name', `%${params.search}%`)
-      } else if (searchResults && searchResults.length > 0) {
-        query = query.in('id', searchResults.map((r: any) => r.id))
-      } else {
-        // No results from RPC, still fallback to be safe
-        query = query.ilike('name', `%${params.search}%`)
-      }
-    } catch (err) {
-      console.error('Search unexpected error:', err)
+    // Use the search function for better alias matching
+    const { data: searchResults } = await supabase.rpc('search_exercises', { 
+      search_term: params.search 
+    })
+    
+    const ids = (searchResults || []).map((r: any) => r.id)
+    if (ids.length > 0) {
+      query = query.in('id', ids)
+    } else {
+      // No results from RPC, fallback to name search
       query = query.ilike('name', `%${params.search}%`)
     }
   }
   
-  const { data: exercises } = await query
+  const { data: exercises, error: queryError } = await query.order('name')
+
+  if (queryError) {
+    console.error('Exercise query error:', queryError)
+  }
   
   return (
     <div className="space-y-10 pb-20 page-transition">
