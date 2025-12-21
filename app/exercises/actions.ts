@@ -54,8 +54,8 @@ export async function toggleFavoriteExercise(exerciseId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
   
-  // Check if already favorited
-  const { data: existing } = await supabase
+  // Check if already favorited - use type assertion for new table
+  const { data: existing } = await (supabase as any)
     .from('user_favorite_exercises')
     .select('id')
     .eq('user_id', user.id)
@@ -64,13 +64,13 @@ export async function toggleFavoriteExercise(exerciseId: string) {
   
   if (existing) {
     // Unfavorite
-    await supabase
+    await (supabase as any)
       .from('user_favorite_exercises')
       .delete()
       .eq('id', existing.id)
   } else {
     // Favorite
-    await supabase
+    await (supabase as any)
       .from('user_favorite_exercises')
       .insert({
         user_id: user.id,
