@@ -21,6 +21,11 @@ else
 fi
 
 echo ""
+echo "🧹 Cleaning up untracked files that may conflict..."
+# Remove untracked files in public/ that are now tracked in git
+git clean -fd public/ 2>/dev/null || true
+
+echo ""
 echo "📥 Pulling latest code from GitHub..."
 git pull origin main
 
