@@ -89,7 +89,7 @@ export async function sendMassEmail(roles: string[], subject: string, body: stri
       roles,
       subject,
       body,
-      from_name: profile.display_name
+      from_name: (profile as any).display_name
     }
   })
 
