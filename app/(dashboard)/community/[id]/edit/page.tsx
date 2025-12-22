@@ -24,9 +24,12 @@ export default async function EditWorkoutPage({ params }: EditWorkoutPageProps) 
   
   if (!workout) notFound()
 
+  // Force narrowing for TypeScript
+  const workoutData = workout as any
+
   // Check permissions: Author or Coach/Admin
   const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
-  const isAuthor = workout.author_id === user.id
+  const isAuthor = workoutData.author_id === user.id
   
   if (!isAuthor && !isAdmin) {
     redirect(`/community/${id}`)
@@ -54,7 +57,7 @@ export default async function EditWorkoutPage({ params }: EditWorkoutPageProps) 
 
       <SubmitWorkoutForm 
         action={handleUpdate}
-        initialData={workout}
+        initialData={workoutData}
         submitLabel="Save Changes"
       />
     </div>
