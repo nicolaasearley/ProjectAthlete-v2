@@ -6,7 +6,9 @@ import { Button } from '@/components/ui/button'
 import { updateAnonymity } from '@/app/challenges/actions'
 import { ProfileEditor } from '@/components/profile/profile-editor'
 import { ThemeSelector } from '@/components/settings/theme-selector'
+import { NavCustomizer } from '@/components/settings/nav-customizer'
 import { AtSign, Building, Shield, Palette } from 'lucide-react'
+import { getNavPreferences } from '@/app/profile/actions'
 
 export const metadata: Metadata = {
   title: 'Profile | ProjectAthlete',
@@ -19,12 +21,16 @@ export default async function ProfilePage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*, organizations(name)')
-    .eq('id', user.id)
-    .single()
-  
+  const [profileResponse, navPreferences] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('*, organizations(name)')
+      .eq('id', user.id)
+      .single(),
+    getNavPreferences()
+  ])
+
+  const profile = profileResponse.data
   if (!profile) return null
   
   // Force narrowing for TypeScript
@@ -102,6 +108,8 @@ export default async function ProfilePage() {
         </div>
         
         <div className="md:col-span-2 space-y-6">
+          <NavCustomizer initialNavItems={navPreferences || ['/', '/workouts', '/stats', '/challenges', '/community']} />
+          
           <BadgeDisplay badges={(userBadges as any[]) || []} />
           
           <Card>

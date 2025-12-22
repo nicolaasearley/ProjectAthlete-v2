@@ -18,6 +18,28 @@ import {
 } from 'lucide-react'
 import { useAdminNotifications } from '@/lib/hooks/use-admin-notifications'
 import { Badge } from '@/components/ui/badge'
+import { useState } from 'react'
+
+function LogoImage() {
+  const [imageError, setImageError] = useState(false)
+
+  if (imageError) {
+    return (
+      <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+        <Dumbbell className="h-5 w-5 text-primary-foreground" />
+      </div>
+    )
+  }
+
+  return (
+    <img 
+      src="/logo.png" 
+      alt="Logo" 
+      className="h-8 w-8 rounded-lg object-cover"
+      onError={() => setImageError(true)}
+    />
+  )
+}
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
@@ -33,6 +55,7 @@ const navigation = [
 const adminNavigation = [
   { name: 'User Management', href: '/admin/users', icon: Shield },
   { name: 'Submissions', href: '/admin/submissions', icon: ClipboardList, badge: 'pending' },
+  { name: 'Send Email', href: '/admin/email', icon: Rss },
 ]
 
 interface MobileNavProps {
@@ -68,9 +91,7 @@ export function MobileNav({ open, onClose, role, orgId }: MobileNavProps) {
       )}>
         <div className="p-6 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2" onClick={onClose}>
-            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-              <Dumbbell className="h-5 w-5 text-primary-foreground" />
-            </div>
+            <LogoImage />
             <span className="font-bold text-lg">ProjectAthlete</span>
           </Link>
           

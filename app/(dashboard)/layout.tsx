@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { Sidebar } from '@/components/layout/sidebar'
 import { Navbar } from '@/components/layout/navbar'
 import { BottomNav } from '@/components/layout/bottom-nav'
+import { getNavPreferences } from '@/app/profile/actions'
 
 export default async function DashboardLayout({
   children,
@@ -17,12 +18,16 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
+  const [profileResponse, navPreferences] = await Promise.all([
+    supabase
     .from('profiles')
     .select('*, organizations(*)')
     .eq('id', user.id)
-    .single()
+      .single(),
+    getNavPreferences()
+  ])
 
+  const profile = profileResponse.data
   // Force narrowing for TypeScript
   const profileData = profile as any
 
@@ -34,7 +39,7 @@ export default async function DashboardLayout({
         <main className="flex-1 p-4 lg:p-6 overflow-y-auto animate-fade-in pb-24 lg:pb-6">
           {children}
         </main>
-        <BottomNav />
+        <BottomNav navItems={navPreferences || undefined} />
       </div>
     </div>
   )

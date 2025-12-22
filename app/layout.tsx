@@ -8,6 +8,26 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'ProjectAthlete',
   description: 'Track your workouts. Crush your goals.',
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
+  openGraph: {
+    title: 'ProjectAthlete',
+    description: 'Track your workouts. Crush your goals.',
+    url: 'https://projectathlete.com',
+    siteName: 'ProjectAthlete',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
 }
 
 export const viewport: Viewport = {

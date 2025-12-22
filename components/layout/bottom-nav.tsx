@@ -14,18 +14,30 @@ import {
   Rss,
 } from 'lucide-react'
 
-const navigation = [
+const ALL_NAV_ITEMS = [
   { name: 'Home', href: '/', icon: Home },
+  { name: 'Feed', href: '/feed', icon: Rss },
   { name: 'Workouts', href: '/workouts', icon: Dumbbell },
+  { name: 'Exercises', href: '/exercises', icon: Library },
   { name: 'Stats', href: '/stats', icon: BarChart2 },
   { name: 'Challenges', href: '/challenges', icon: Trophy },
   { name: 'Community', href: '/community', icon: Users },
+  { name: 'Profile', href: '/profile', icon: User },
 ]
 
-export function BottomNav() {
+interface BottomNavProps {
+  navItems?: string[]
+}
+
+export function BottomNav({ navItems }: BottomNavProps) {
   const pathname = usePathname()
   
-  const activeIndex = navigation.findIndex(item => 
+  // Use custom nav items if provided, otherwise default to a standard set
+  const currentNavigation = navItems 
+    ? ALL_NAV_ITEMS.filter(item => navItems.includes(item.href))
+    : ALL_NAV_ITEMS.filter(item => ['/', '/workouts', '/stats', '/challenges', '/community'].includes(item.href))
+  
+  const activeIndex = currentNavigation.findIndex(item => 
     pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
   )
 
@@ -38,14 +50,14 @@ export function BottomNav() {
           <div 
             className="absolute inset-y-1.5 bg-foreground/[0.08] backdrop-blur-md border border-foreground/10 rounded-[1.25rem] shadow-[inset_0_1px_1px_rgba(0,0,0,0.05)] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
             style={{ 
-              width: `calc((100% - 1rem) / ${navigation.length})`,
+              width: `calc((100% - 1rem) / ${currentNavigation.length})`,
               left: '0.5rem',
               transform: `translateX(calc(${activeIndex} * 100%))`
             }}
           />
         )}
 
-        {navigation.map((item) => {
+        {currentNavigation.map((item) => {
           const isActive = pathname === item.href || 
             (item.href !== '/' && pathname.startsWith(item.href))
           

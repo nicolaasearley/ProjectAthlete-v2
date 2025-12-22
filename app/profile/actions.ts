@@ -21,6 +21,45 @@ export async function updateProfile(formData: FormData) {
   revalidatePath('/profile')
 }
 
+export async function getNavPreferences() {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
+  
+  const { data, error } = await supabase
+    .from('user_nav_preferences')
+    .select('nav_items')
+    .eq('user_id', user.id)
+    .single()
+    
+  if (error && error.code !== 'PGRST116') {
+    console.error('Error fetching nav preferences:', error)
+    return null
+  }
+  
+  return (data?.nav_items as string[]) || ['/', '/workouts', '/stats', '/challenges', '/community']
+}
+
+export async function updateNavPreferences(navItems: string[]) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+  
+  const { error } = await supabase
+    .from('user_nav_preferences')
+    .upsert({
+      user_id: user.id,
+      nav_items: navItems,
+      updated_at: new Date().toISOString()
+    })
+    
+  if (error) throw error
+  
+  revalidatePath('/', 'layout')
+}
+
 export async function uploadAvatar(formData: FormData) {
   const supabase = await createClient()
   

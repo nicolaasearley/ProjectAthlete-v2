@@ -64,3 +64,47 @@ export async function updateUserRole(userId: string, role: 'athlete' | 'coach' |
   revalidatePath('/admin/users')
 }
 
+export async function sendMassEmail(roles: string[], subject: string, body: string) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+  
+  const { data: isAdmin } = await (supabase.rpc as any)('is_admin')
+  if (!isAdmin) throw new Error('Unauthorized')
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('org_id, display_name')
+    .eq('id', user.id)
+    .single()
+    
+  if (!profile) throw new Error('Profile not found')
+
+  // Call the Edge Function
+  // We use the supabase client's invoke method
+  const { data, error } = await supabase.functions.invoke('send-mass-email', {
+    body: {
+      org_id: (profile as any).org_id,
+      roles,
+      subject,
+      body,
+      from_name: profile.display_name
+    }
+  })
+
+  if (error) throw error
+  
+  // Also log it manually here since the edge function won't have the user session for 'sent_by'
+  await supabase.from('email_log').insert({
+    org_id: (profile as any).org_id,
+    sent_by: user.id,
+    recipient_roles: roles,
+    recipient_count: data.count || 0,
+    subject,
+    body
+  })
+
+  return data
+}
+
