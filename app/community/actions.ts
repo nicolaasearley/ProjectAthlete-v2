@@ -7,18 +7,18 @@ import type { CommunityWorkoutFormData } from '@/types/database'
 
 export async function submitWorkout(formData: FormData | CommunityWorkoutFormData) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
-  const { data: profileData } = await supabase
-    .from('profiles')
+
+  const { data: profileData } = await (supabase
+    .from('profiles') as any)
     .select('org_id')
     .eq('id', user.id)
     .single()
-  
+
   if (!profileData) throw new Error('Profile not found')
-  
+
   const profile = profileData as { org_id: string }
 
   // Extract data from FormData or use directly if CommunityWorkoutFormData
@@ -33,7 +33,7 @@ export async function submitWorkout(formData: FormData | CommunityWorkoutFormDat
   } else {
     data = formData
   }
-  
+
   const { error } = await (supabase
     .from('community_workouts') as any)
     .insert({
@@ -45,16 +45,16 @@ export async function submitWorkout(formData: FormData | CommunityWorkoutFormDat
       time_cap_minutes: data.time_cap_minutes,
       status: 'pending',
     })
-  
+
   if (error) throw error
-  
+
   revalidatePath('/community')
   redirect('/community?submitted=true')
 }
 
 export async function updateWorkout(id: string, formData: FormData | CommunityWorkoutFormData) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
 
@@ -70,7 +70,7 @@ export async function updateWorkout(id: string, formData: FormData | CommunityWo
   } else {
     data = formData
   }
-  
+
   const { error } = await (supabase
     .from('community_workouts') as any)
     .update({
@@ -81,9 +81,9 @@ export async function updateWorkout(id: string, formData: FormData | CommunityWo
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
-  
+
   if (error) throw error
-  
+
   revalidatePath('/community')
   revalidatePath(`/community/${id}`)
   redirect(`/community/${id}`)
@@ -91,7 +91,7 @@ export async function updateWorkout(id: string, formData: FormData | CommunityWo
 
 export async function deleteWorkout(id: string) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
 
@@ -99,19 +99,19 @@ export async function deleteWorkout(id: string) {
     .from('community_workouts') as any)
     .delete()
     .eq('id', id)
-  
+
   if (error) throw error
-  
+
   revalidatePath('/community')
   redirect('/community')
 }
 
 export async function addComment(workoutId: string, content: string) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
+
   const { error } = await (supabase
     .from('workout_comments') as any)
     .insert({
@@ -119,35 +119,35 @@ export async function addComment(workoutId: string, content: string) {
       user_id: user.id,
       content,
     })
-  
+
   if (error) throw error
-  
+
   revalidatePath(`/community/${workoutId}`)
 }
 
 export async function deleteComment(commentId: string, workoutId: string) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
+
   const { error } = await (supabase
     .from('workout_comments') as any)
     .delete()
     .eq('id', commentId)
     .eq('user_id', user.id)
-  
+
   if (error) throw error
-  
+
   revalidatePath(`/community/${workoutId}`)
 }
 
 export async function toggleReaction(workoutId: string, reactionType: 'like' | 'fire' | 'strong' | 'respect') {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
+
   // Check if reaction exists
   const { data: existing } = await (supabase
     .from('workout_reactions') as any)
@@ -156,7 +156,7 @@ export async function toggleReaction(workoutId: string, reactionType: 'like' | '
     .eq('user_id', user.id)
     .eq('reaction_type', reactionType)
     .single()
-  
+
   if (existing) {
     // Remove it
     await (supabase
@@ -173,7 +173,7 @@ export async function toggleReaction(workoutId: string, reactionType: 'like' | '
         reaction_type: reactionType,
       })
   }
-  
+
   revalidatePath(`/community/${workoutId}`)
 }
 

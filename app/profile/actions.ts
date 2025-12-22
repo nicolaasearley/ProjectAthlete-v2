@@ -5,94 +5,94 @@ import { revalidatePath } from 'next/cache'
 
 export async function updateProfile(formData: FormData) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
+
   const displayName = formData.get('displayName') as string
-  
+
   const { error } = await (supabase
     .from('profiles') as any)
     .update({ display_name: displayName.trim() })
     .eq('id', user.id)
-  
+
   if (error) throw error
-  
+
   revalidatePath('/profile')
 }
 
 export async function getNavPreferences() {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
-  
-  const { data, error } = await supabase
-    .from('user_nav_preferences')
+
+  const { data, error } = await (supabase
+    .from('user_nav_preferences') as any)
     .select('nav_items')
     .eq('user_id', user.id)
     .single()
-    
+
   if (error && error.code !== 'PGRST116') {
     console.error('Error fetching nav preferences:', error)
     return null
   }
-  
+
   return (data?.nav_items as string[]) || ['/', '/workouts', '/stats', '/challenges', '/community']
 }
 
 export async function updateNavPreferences(navItems: string[]) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
-  const { error } = await supabase
-    .from('user_nav_preferences')
+
+  const { error } = await (supabase
+    .from('user_nav_preferences') as any)
     .upsert({
       user_id: user.id,
       nav_items: navItems,
       updated_at: new Date().toISOString()
     })
-    
+
   if (error) throw error
-  
+
   revalidatePath('/', 'layout')
 }
 
 export async function uploadAvatar(formData: FormData) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
+
   const file = formData.get('avatar') as File
   if (!file) throw new Error('No file provided')
-  
+
   const fileExt = file.name.split('.').pop()
   const fileName = `${Math.random()}.${fileExt}`
   const filePath = `${user.id}/${fileName}`
-  
+
   // 1. Upload the file to the 'avatars' bucket
   const { error: uploadError } = await supabase.storage
     .from('avatars')
     .upload(filePath, file)
-    
+
   if (uploadError) throw uploadError
-  
+
   // 2. Get the public URL
   const { data: { publicUrl } } = supabase.storage
     .from('avatars')
     .getPublicUrl(filePath)
-    
+
   // 3. Update the profile with the avatar_url
   const { error: updateError } = await (supabase
     .from('profiles') as any)
     .update({ avatar_url: publicUrl })
     .eq('id', user.id)
-    
+
   if (updateError) throw updateError
-  
+
   revalidatePath('/profile')
 }
 

@@ -7,18 +7,18 @@ import type { ChallengeFormData } from '@/types/database'
 
 export async function createChallenge(formData: FormData | ChallengeFormData) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
-  const { data: profileData } = await supabase
-    .from('profiles')
+
+  const { data: profileData } = await (supabase
+    .from('profiles') as any)
     .select('org_id')
     .eq('id', user.id)
     .single()
-  
+
   if (!profileData) throw new Error('Profile not found')
-  
+
   const profile = profileData as { org_id: string }
 
   // Extract data from FormData or use directly if ChallengeFormData
@@ -54,7 +54,7 @@ export async function createChallenge(formData: FormData | ChallengeFormData) {
       badgeImageUrl = publicUrl
     }
   }
-  
+
   const { error } = await (supabase
     .from('challenges') as any)
     .insert({
@@ -68,19 +68,19 @@ export async function createChallenge(formData: FormData | ChallengeFormData) {
       created_by: user.id,
       badge_image_url: badgeImageUrl,
     })
-  
+
   if (error) throw error
-  
+
   revalidatePath('/challenges')
   redirect('/challenges')
 }
 
 export async function updateChallenge(challengeId: string, formData: FormData) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
+
   const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
   if (!isAdmin) throw new Error('Unauthorized')
 
@@ -95,7 +95,7 @@ export async function updateChallenge(challengeId: string, formData: FormData) {
 
   const badgeImage = formData.get('badge_image') as File | null
   let badgeImageUrl = undefined // undefined means don't update if not provided
-  
+
   if (badgeImage && badgeImage.size > 0) {
     const fileExt = badgeImage.name.split('.').pop()
     const fileName = `${Math.random()}.${fileExt}`
@@ -112,7 +112,7 @@ export async function updateChallenge(challengeId: string, formData: FormData) {
       badgeImageUrl = publicUrl
     }
   }
-  
+
   const updateData: any = { ...data }
   if (badgeImageUrl) updateData.badge_image_url = badgeImageUrl
 
@@ -120,9 +120,9 @@ export async function updateChallenge(challengeId: string, formData: FormData) {
     .from('challenges') as any)
     .update(updateData)
     .eq('id', challengeId)
-  
+
   if (error) throw error
-  
+
   revalidatePath('/challenges')
   revalidatePath(`/challenges/${challengeId}`)
   redirect(`/challenges/${challengeId}`)
@@ -130,10 +130,10 @@ export async function updateChallenge(challengeId: string, formData: FormData) {
 
 export async function deleteChallenge(challengeId: string) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
+
   const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
   if (!isAdmin) throw new Error('Unauthorized')
 
@@ -141,19 +141,19 @@ export async function deleteChallenge(challengeId: string) {
     .from('challenges') as any)
     .delete()
     .eq('id', challengeId)
-  
+
   if (error) throw error
-  
+
   revalidatePath('/challenges')
   redirect('/challenges')
 }
 
 export async function logProgress(challengeId: string, value: number, notes?: string) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
+
   const { error } = await (supabase
     .from('challenge_logs') as any)
     .insert({
@@ -162,19 +162,19 @@ export async function logProgress(challengeId: string, value: number, notes?: st
       value,
       notes: notes || null,
     })
-  
+
   if (error) throw error
-  
+
   revalidatePath(`/challenges/${challengeId}`)
   revalidatePath('/challenges')
 }
 
 export async function updateProgress(logId: string, challengeId: string, value: number, notes?: string) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
+
   const { error } = await (supabase
     .from('challenge_logs') as any)
     .update({
@@ -183,44 +183,44 @@ export async function updateProgress(logId: string, challengeId: string, value: 
     })
     .eq('id', logId)
     .eq('user_id', user.id)
-  
+
   if (error) throw error
-  
+
   revalidatePath(`/challenges/${challengeId}`)
   revalidatePath('/challenges')
 }
 
 export async function deleteProgress(logId: string, challengeId: string) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
+
   const { error } = await (supabase
     .from('challenge_logs') as any)
     .delete()
     .eq('id', logId)
     .eq('user_id', user.id)
-  
+
   if (error) throw error
-  
+
   revalidatePath(`/challenges/${challengeId}`)
   revalidatePath('/challenges')
 }
 
 export async function updateAnonymity(isAnonymous: boolean) {
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
-  
+
   const { error } = await (supabase
     .from('profiles') as any)
     .update({ is_anonymous_on_leaderboards: isAnonymous })
     .eq('id', user.id)
-  
+
   if (error) throw error
-  
+
   revalidatePath('/profile')
 }
 
