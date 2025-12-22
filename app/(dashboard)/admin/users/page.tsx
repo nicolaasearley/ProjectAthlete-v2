@@ -30,7 +30,7 @@ export default async function UserManagementPage() {
     .eq('org_id', profileData.org_id)
     .order('display_name', { ascending: true })
 
-  const userList = (profiles || []).map(p => ({
+  const userList = ((profiles as any[]) || []).map(p => ({
     ...p,
     email: null // Removed for security
   }))
