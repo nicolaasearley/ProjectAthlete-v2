@@ -8,12 +8,15 @@ import { User, Heart, Trash2, Trophy, Award, Zap } from 'lucide-react'
 import { toggleFeedReaction, deletePost } from '@/app/feed/actions'
 import { cn } from '@/lib/utils'
 
+import { UserAvatar } from '@/components/shared/user-avatar'
+
 interface FeedItemProps {
   post: {
     id: string
     user_id: string
     display_name: string | null
     avatar_url: string | null
+    user_role?: 'athlete' | 'coach' | 'admin'
     post_type: 'text' | 'pr' | 'achievement' | 'milestone'
     content: string | null
     metadata: any
@@ -55,13 +58,12 @@ export function FeedItem({ post, currentUserId }: FeedItemProps) {
     )}>
       {/* Header Row */}
       <div className="flex items-center gap-3">
-        <div className="h-9 w-9 rounded-full bg-foreground/5 border border-foreground/10 flex items-center justify-center overflow-hidden shrink-0">
-          {post.avatar_url ? (
-            <img src={post.avatar_url} alt={post.display_name || ''} className="h-full w-full object-cover" />
-          ) : (
-            <User className="h-4 w-4 text-foreground/20" />
-          )}
-        </div>
+        <UserAvatar 
+          src={post.avatar_url} 
+          name={post.display_name} 
+          role={post.user_role || 'athlete'} 
+          size="sm"
+        />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <p className="font-bold text-sm truncate">

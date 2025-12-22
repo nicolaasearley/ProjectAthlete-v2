@@ -13,7 +13,13 @@ import {
   Shield,
   BarChart2,
   Rss,
+  ClipboardList,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { Badge } from '@/components/ui/badge'
+import { useAdminNotifications } from '@/lib/hooks/use-admin-notifications'
+import { UserAvatar } from '@/components/shared/user-avatar'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
@@ -28,15 +34,18 @@ const navigation = [
 
 const adminNavigation = [
   { name: 'User Management', href: '/admin/users', icon: Shield },
+  { name: 'Submissions', href: '/admin/submissions', icon: ClipboardList, badge: 'pending' },
 ]
 
 interface SidebarProps {
   role?: string
+  orgId?: string
 }
 
-export function Sidebar({ role }: SidebarProps) {
+export function Sidebar({ role, orgId }: SidebarProps) {
   const pathname = usePathname()
   const isAdmin = role === 'admin' || role === 'coach'
+  const { pendingCount } = useAdminNotifications(isAdmin, orgId)
 
   return (
     <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:border-r lg:border-foreground/5 lg:bg-background/40 lg:backdrop-blur-xl">
@@ -78,20 +87,28 @@ export function Sidebar({ role }: SidebarProps) {
             </p>
             {adminNavigation.map((item) => {
               const isActive = pathname === item.href
+              const hasBadge = item.badge === 'pending' && pendingCount > 0
               
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                    'flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                     isActive
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                   )}
                 >
-                  <item.icon className="h-5 w-5" />
-                  {item.name}
+                  <div className="flex items-center gap-3">
+                    <item.icon className="h-5 w-5" />
+                    {item.name}
+                  </div>
+                  {hasBadge && (
+                    <Badge variant="destructive" className="h-5 w-5 flex items-center justify-center p-0 text-[10px] animate-pulse">
+                      {pendingCount}
+                    </Badge>
+                  )}
                 </Link>
               )
             })}

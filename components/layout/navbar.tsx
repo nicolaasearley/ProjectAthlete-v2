@@ -7,6 +7,7 @@ import { MobileNav } from '@/components/layout/mobile-nav'
 import { LogOut, Menu } from 'lucide-react'
 import { useState } from 'react'
 import type { Profile } from '@/types/database'
+import { UserAvatar } from '@/components/shared/user-avatar'
 
 interface NavbarProps {
   profile: (Profile & { organizations: { name: string } | null }) | null
@@ -47,6 +48,13 @@ export function Navbar({ profile }: NavbarProps) {
             <p className="text-[9px] font-black uppercase tracking-widest text-foreground/20">{profile?.role || 'athlete'}</p>
           </div>
           
+          <UserAvatar 
+            src={profile?.avatar_url} 
+            name={profile?.display_name} 
+            role={profile?.role} 
+            size="md"
+          />
+          
           <Button variant="ghost" size="icon" onClick={handleSignOut} className="h-10 w-10 rounded-xl hover:bg-foreground/5 text-foreground/20 hover:text-red-400 transition-colors">
             <LogOut className="h-4 w-4" />
           </Button>
@@ -57,6 +65,7 @@ export function Navbar({ profile }: NavbarProps) {
         open={mobileNavOpen} 
         onClose={() => setMobileNavOpen(false)} 
         role={profile?.role}
+        orgId={profile?.org_id}
       />
     </>
   )

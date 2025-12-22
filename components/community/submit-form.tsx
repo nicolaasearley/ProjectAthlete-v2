@@ -9,6 +9,8 @@ import type { CommunityWorkoutFormData, WorkoutType } from '@/types/database'
 
 interface SubmitWorkoutFormProps {
   action: (data: CommunityWorkoutFormData) => Promise<void>
+  initialData?: Partial<CommunityWorkoutFormData>
+  submitLabel?: string
 }
 
 const WORKOUT_TYPES: { value: WorkoutType; label: string }[] = [
@@ -18,12 +20,12 @@ const WORKOUT_TYPES: { value: WorkoutType; label: string }[] = [
   { value: 'other', label: 'Other' },
 ]
 
-export function SubmitWorkoutForm({ action }: SubmitWorkoutFormProps) {
+export function SubmitWorkoutForm({ action, initialData, submitLabel }: SubmitWorkoutFormProps) {
   const [isPending, startTransition] = useTransition()
-  const [title, setTitle] = useState('')
-  const [workoutType, setWorkoutType] = useState<WorkoutType>('amrap')
-  const [description, setDescription] = useState('')
-  const [timeCap, setTimeCap] = useState<number | ''>('')
+  const [title, setTitle] = useState(initialData?.title || '')
+  const [workoutType, setWorkoutType] = useState<WorkoutType>(initialData?.workout_type || 'amrap')
+  const [description, setDescription] = useState(initialData?.description || '')
+  const [timeCap, setTimeCap] = useState<number | ''>(initialData?.time_cap_minutes || '')
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,7 +40,8 @@ export function SubmitWorkoutForm({ action }: SubmitWorkoutFormProps) {
           workout_type: workoutType,
           time_cap_minutes: timeCap === '' ? null : timeCap,
         })
-      } catch (error) {
+      } catch (error: any) {
+        if (error.message === 'NEXT_REDIRECT') return
         console.error('Failed to submit workout:', error)
       }
     })
@@ -103,7 +106,7 @@ export function SubmitWorkoutForm({ action }: SubmitWorkoutFormProps) {
             {isPending ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : null}
-            Submit for Approval
+            {submitLabel || 'Submit for Approval'}
           </Button>
           
           <p className="text-xs text-center text-muted-foreground">

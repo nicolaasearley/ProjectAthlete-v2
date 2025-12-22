@@ -1,11 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Trophy } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { UserAvatar } from '@/components/shared/user-avatar'
 
 interface LeaderboardEntry {
   rank: number
   user_id: string
   display_name: string
+  avatar_url?: string | null
+  user_role?: string
   is_anonymous: boolean
   total_value: number
   log_count: number
@@ -66,6 +69,12 @@ export function Leaderboard({ entries, currentUserId, unit }: LeaderboardProps) 
                   )}>
                     {entry.rank}
                   </span>
+                  <UserAvatar 
+                    src={entry.is_anonymous && !isMe ? null : entry.avatar_url} 
+                    name={displayName} 
+                    role={entry.is_anonymous && !isMe ? 'athlete' : entry.user_role} 
+                    size="sm"
+                  />
                   <div className="min-w-0">
                     <p className="font-medium flex items-center gap-2">
                       <span className="truncate">{displayName}</span>

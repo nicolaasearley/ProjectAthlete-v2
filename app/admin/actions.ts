@@ -51,7 +51,7 @@ export async function updateUserRole(userId: string, role: 'athlete' | 'coach' |
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
   
-  const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
+  const { data: isAdmin } = await (supabase.rpc as any)('is_admin')
   if (!isAdmin) throw new Error('Unauthorized')
 
   const { error } = await (supabase

@@ -14,7 +14,10 @@ import {
   Shield,
   BarChart2,
   Rss,
+  ClipboardList,
 } from 'lucide-react'
+import { useAdminNotifications } from '@/lib/hooks/use-admin-notifications'
+import { Badge } from '@/components/ui/badge'
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
@@ -29,17 +32,20 @@ const navigation = [
 
 const adminNavigation = [
   { name: 'User Management', href: '/admin/users', icon: Shield },
+  { name: 'Submissions', href: '/admin/submissions', icon: ClipboardList, badge: 'pending' },
 ]
 
 interface MobileNavProps {
   open: boolean
   onClose: () => void
   role?: string
+  orgId?: string
 }
 
-export function MobileNav({ open, onClose, role }: MobileNavProps) {
+export function MobileNav({ open, onClose, role, orgId }: MobileNavProps) {
   const pathname = usePathname()
   const isAdmin = role === 'admin' || role === 'coach'
+  const { pendingCount } = useAdminNotifications(isAdmin, orgId)
 
   return (
     <div className={cn(
@@ -103,6 +109,7 @@ export function MobileNav({ open, onClose, role }: MobileNavProps) {
               </p>
               {adminNavigation.map((item) => {
                 const isActive = pathname === item.href
+                const hasBadge = item.badge === 'pending' && pendingCount > 0
                 
                 return (
                   <Link
@@ -110,14 +117,21 @@ export function MobileNav({ open, onClose, role }: MobileNavProps) {
                     href={item.href}
                     onClick={onClose}
                     className={cn(
-                      'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                      'flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                       isActive
                         ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                     )}
                   >
-                    <item.icon className="h-5 w-5" />
-                    {item.name}
+                    <div className="flex items-center gap-3">
+                      <item.icon className="h-5 w-5" />
+                      {item.name}
+                    </div>
+                    {hasBadge && (
+                      <Badge variant="destructive" className="h-5 w-5 flex items-center justify-center p-0 text-[10px] animate-pulse">
+                        {pendingCount}
+                      </Badge>
+                    )}
                   </Link>
                 )
               })}

@@ -52,6 +52,60 @@ export async function submitWorkout(formData: FormData | CommunityWorkoutFormDat
   redirect('/community?submitted=true')
 }
 
+export async function updateWorkout(id: string, formData: FormData | CommunityWorkoutFormData) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+
+  // Extract data
+  let data: CommunityWorkoutFormData
+  if (formData instanceof FormData) {
+    data = {
+      title: formData.get('title') as string,
+      description: formData.get('description') as string,
+      workout_type: formData.get('workout_type') as any,
+      time_cap_minutes: formData.get('time_cap_minutes') ? parseInt(formData.get('time_cap_minutes') as string) : null,
+    }
+  } else {
+    data = formData
+  }
+  
+  const { error } = await (supabase
+    .from('community_workouts') as any)
+    .update({
+      title: data.title,
+      description: data.description,
+      workout_type: data.workout_type,
+      time_cap_minutes: data.time_cap_minutes,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+  
+  if (error) throw error
+  
+  revalidatePath('/community')
+  revalidatePath(`/community/${id}`)
+  redirect(`/community/${id}`)
+}
+
+export async function deleteWorkout(id: string) {
+  const supabase = await createClient()
+  
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+
+  const { error } = await (supabase
+    .from('community_workouts') as any)
+    .delete()
+    .eq('id', id)
+  
+  if (error) throw error
+  
+  revalidatePath('/community')
+  redirect('/community')
+}
+
 export async function addComment(workoutId: string, content: string) {
   const supabase = await createClient()
   

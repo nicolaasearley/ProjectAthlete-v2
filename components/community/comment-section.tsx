@@ -5,9 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Loader2, Trash2 } from 'lucide-react'
 import type { WorkoutComment } from '@/types/database'
+import { UserAvatar } from '@/components/shared/user-avatar'
 
 interface CommentWithAuthor extends WorkoutComment {
-  profiles?: { display_name: string | null } | null
+  profiles?: { 
+    display_name: string | null 
+    avatar_url: string | null
+    role: string
+  } | null
 }
 
 interface CommentSectionProps {
@@ -75,6 +80,12 @@ export function CommentSection({
           ) : (
             comments.map((comment) => (
               <div key={comment.id} className="flex gap-3 text-sm">
+                <UserAvatar 
+                  src={comment.profiles?.avatar_url} 
+                  name={comment.profiles?.display_name} 
+                  role={comment.profiles?.role} 
+                  size="sm"
+                />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <p className="font-semibold">

@@ -107,7 +107,8 @@ export function WorkoutForm({ action, initialData, deleteAction, templates = [] 
           notes: notes || undefined,
           exercises: validExercises,
         })
-      } catch (error) {
+      } catch (error: any) {
+        if (error.message === 'NEXT_REDIRECT') return
         console.error('Failed to save workout:', error)
       }
     })
@@ -121,7 +122,8 @@ export function WorkoutForm({ action, initialData, deleteAction, templates = [] 
     startTransition(async () => {
       try {
         await deleteAction()
-      } catch (error) {
+      } catch (error: any) {
+        if (error.message === 'NEXT_REDIRECT') return
         console.error('Failed to delete workout:', error)
         setIsDeleting(false)
       }

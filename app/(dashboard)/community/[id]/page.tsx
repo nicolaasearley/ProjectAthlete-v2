@@ -5,10 +5,11 @@ import { Badge } from '@/components/ui/badge'
 import { ReactionBar } from '@/components/community/reaction-bar'
 import { CommentSection } from '@/components/community/comment-section'
 import { toggleReaction, addComment, deleteComment } from '@/app/community/actions'
+import { DeleteWorkoutButton } from '@/components/community/delete-workout-button'
 import { toggleFeatured } from '@/app/admin/actions'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { ArrowLeft, Star } from 'lucide-react'
+import { ArrowLeft, Star, Edit } from 'lucide-react'
 
 interface WorkoutPageProps {
   params: Promise<{ id: string }>
@@ -55,10 +56,10 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
     const commenterIds = [...new Set(commentsWithAuthors.map(c => c.user_id))] as string[]
     const { data: commenters } = await supabase
       .from('profiles')
-      .select('id, display_name')
+      .select('id, display_name, avatar_url, role')
       .in('id', commenterIds)
     
-    const commenterList = (commenters || []) as { id: string; display_name: string | null }[]
+    const commenterList = (commenters || []) as { id: string; display_name: string | null; avatar_url: string | null; role: string }[]
     commentsWithAuthors.forEach((c: any) => {
       c.profiles = commenterList.find(p => p.id === c.user_id)
     })
@@ -78,6 +79,9 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
   // Check if admin
   const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
   
+  const isAuthor = workoutData.author_id === user.id
+  const canEdit = isAuthor || isAdmin
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
@@ -105,14 +109,25 @@ export default async function CommunityWorkoutPage({ params }: WorkoutPageProps)
         </div>
         
         <div className="flex flex-col sm:flex-row gap-2">
-        {isAdmin && (
-          <form action={toggleFeatured.bind(null, id)}>
+          {canEdit && (
+            <div className="flex gap-2">
+              <Link href={`/community/${id}/edit`}>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Edit className="h-4 w-4" />
+                  Edit
+                </Button>
+              </Link>
+              <DeleteWorkoutButton id={id} />
+            </div>
+          )}
+          {isAdmin && (
+            <form action={toggleFeatured.bind(null, id)}>
               <Button variant="outline" size="sm" type="submit" className="w-full sm:w-auto gap-2">
                 <Star className={`h-4 w-4 ${workoutData.is_featured ? 'fill-yellow-500 text-yellow-500' : ''}`} />
-              {workoutData.is_featured ? 'Unfeature' : 'Feature'}
-            </Button>
-          </form>
-        )}
+                {workoutData.is_featured ? 'Unfeature' : 'Feature'}
+              </Button>
+            </form>
+          )}
         </div>
       </div>
       

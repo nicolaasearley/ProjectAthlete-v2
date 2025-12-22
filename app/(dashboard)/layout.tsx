@@ -28,7 +28,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen flex text-foreground">
-      <Sidebar role={profileData?.role} />
+      <Sidebar role={profileData?.role} orgId={profileData?.org_id} />
       <div className="flex-1 flex flex-col min-h-0">
         <Navbar profile={profileData} />
         <main className="flex-1 p-4 lg:p-6 overflow-y-auto animate-fade-in pb-24 lg:pb-6">
