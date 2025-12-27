@@ -15,6 +15,7 @@ import {
   BarChart2,
   Rss,
   ClipboardList,
+  Calendar,
 } from 'lucide-react'
 import { useAdminNotifications } from '@/lib/hooks/use-admin-notifications'
 import { Badge } from '@/components/ui/badge'
@@ -43,6 +44,7 @@ function LogoImage() {
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
+  { name: 'Routine', href: '/routines', icon: Calendar },
   { name: 'Feed', href: '/feed', icon: Rss },
   { name: 'Workouts', href: '/workouts', icon: Dumbbell },
   { name: 'Exercises', href: '/exercises', icon: Library },
