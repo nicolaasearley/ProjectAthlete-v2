@@ -438,6 +438,104 @@ export type Database = {
           created_at?: string
         }
       }
+      weekly_routines: {
+        Row: {
+          id: string
+          user_id: string
+          org_id: string
+          name: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          org_id: string
+          name?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          org_id?: string
+          name?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      routine_days: {
+        Row: {
+          id: string
+          routine_id: string
+          day_of_week: number
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          routine_id: string
+          day_of_week: number
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          routine_id?: string
+          day_of_week?: number
+          notes?: string | null
+          created_at?: string
+        }
+      }
+      routine_blocks: {
+        Row: {
+          id: string
+          day_id: string
+          block_type: 'warm_up' | 'plyometrics' | 'main_lift' | 'accessory' | 'calisthenics' | 'general_cardio' | 'running' | 'engine_work' | 'yoga_mobility' | 'hyrox' | 'wod' | 'skills' | 'recovery' | 'other'
+          order_index: number
+          notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          day_id: string
+          block_type: 'warm_up' | 'plyometrics' | 'main_lift' | 'accessory' | 'calisthenics' | 'general_cardio' | 'running' | 'engine_work' | 'yoga_mobility' | 'hyrox' | 'wod' | 'skills' | 'recovery' | 'other'
+          order_index: number
+          notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          day_id?: string
+          block_type?: 'warm_up' | 'plyometrics' | 'main_lift' | 'accessory' | 'calisthenics' | 'general_cardio' | 'running' | 'engine_work' | 'yoga_mobility' | 'hyrox' | 'wod' | 'skills' | 'recovery' | 'other'
+          order_index?: number
+          notes?: string | null
+          created_at?: string
+        }
+      }
+      routine_block_configs: {
+        Row: {
+          id: string
+          block_id: string
+          config_type: 'main_lift_type' | 'muscle_group'
+          value: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          block_id: string
+          config_type: 'main_lift_type' | 'muscle_group'
+          value: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          block_id?: string
+          config_type?: 'main_lift_type' | 'muscle_group'
+          value?: string
+          created_at?: string
+        }
+      }
     }
     Functions: {
       get_user_org_id: {
@@ -597,6 +695,7 @@ export interface ChallengeFormData {
   end_date: string
 }
 
+
 export const EXERCISE_CATEGORIES: { value: ExerciseCategory; label: string }[] = [
   { value: 'squat', label: 'Squat' },
   { value: 'hinge', label: 'Hinge' },
@@ -608,4 +707,55 @@ export const EXERCISE_CATEGORIES: { value: ExerciseCategory; label: string }[] =
   { value: 'cardio', label: 'Cardio' },
   { value: 'other', label: 'Other' },
 ]
+
+export type WeeklyRoutine = Database['public']['Tables']['weekly_routines']['Row']
+export type RoutineDay = Database['public']['Tables']['routine_days']['Row']
+export type RoutineBlock = Database['public']['Tables']['routine_blocks']['Row']
+export type RoutineBlockConfig = Database['public']['Tables']['routine_block_configs']['Row']
+
+export const BLOCK_TYPES: { value: RoutineBlock['block_type']; label: string }[] = [
+  { value: 'warm_up', label: 'Warm Up' },
+  { value: 'plyometrics', label: 'Plyometrics' },
+  { value: 'main_lift', label: 'Main Lift' },
+  { value: 'accessory', label: 'Accessory' },
+  { value: 'wod', label: 'WOD' },
+  { value: 'skills', label: 'Skills' },
+  { value: 'calisthenics', label: 'Calisthenics' },
+  { value: 'general_cardio', label: 'General Cardio' },
+  { value: 'running', label: 'Running' },
+  { value: 'engine_work', label: 'Engine Work' },
+  { value: 'yoga_mobility', label: 'Yoga / Mobility' },
+  { value: 'hyrox', label: 'Hyrox' },
+  { value: 'recovery', label: 'Recovery' },
+  { value: 'other', label: 'Other' },
+]
+
+export const MAIN_LIFT_TYPES = [
+  { value: 'squat', label: 'Squat' },
+  { value: 'hinge', label: 'Hinge' },
+  { value: 'bench', label: 'Bench' },
+  { value: 'press', label: 'Press' },
+  { value: 'clean', label: 'Clean' },
+  { value: 'snatch', label: 'Snatch' },
+  { value: 'jerk', label: 'Jerk' },
+  { value: 'pull_up', label: 'Pull Up / Vertical' },
+  { value: 'row', label: 'Row / Horizontal' },
+  { value: 'carry', label: 'Carry' },
+]
+
+export const MUSCLE_GROUPS = [
+  { value: 'chest', label: 'Chest' },
+  { value: 'back', label: 'Back' },
+  { value: 'shoulders', label: 'Shoulders' },
+  { value: 'biceps', label: 'Biceps' },
+  { value: 'triceps', label: 'Triceps' },
+  { value: 'forearms', label: 'Forearms' },
+  { value: 'quads', label: 'Quads' },
+  { value: 'hamstrings', label: 'Hamstrings' },
+  { value: 'glutes', label: 'Glutes' },
+  { value: 'calves', label: 'Calves' },
+  { value: 'adductors', label: 'Adductors' },
+  { value: 'core', label: 'Core' },
+]
+
 

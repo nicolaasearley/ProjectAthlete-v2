@@ -12,10 +12,12 @@ import {
   User,
   BarChart2,
   Rss,
+  Calendar,
 } from 'lucide-react'
 
 const ALL_NAV_ITEMS = [
   { name: 'Home', href: '/', icon: Home },
+  { name: 'Routine', href: '/routines', icon: Calendar },
   { name: 'Feed', href: '/feed', icon: Rss },
   { name: 'Workouts', href: '/workouts', icon: Dumbbell },
   { name: 'Exercises', href: '/exercises', icon: Library },
@@ -31,25 +33,25 @@ interface BottomNavProps {
 
 export function BottomNav({ navItems }: BottomNavProps) {
   const pathname = usePathname()
-  
+
   // Use custom nav items if provided, otherwise default to a standard set
-  const currentNavigation = navItems 
+  const currentNavigation = navItems
     ? ALL_NAV_ITEMS.filter(item => navItems.includes(item.href))
-    : ALL_NAV_ITEMS.filter(item => ['/', '/workouts', '/stats', '/challenges', '/community'].includes(item.href))
-  
-  const activeIndex = currentNavigation.findIndex(item => 
+    : ALL_NAV_ITEMS.filter(item => ['/', '/routines', '/workouts', '/stats', '/challenges', '/community'].includes(item.href))
+
+  const activeIndex = currentNavigation.findIndex(item =>
     pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
   )
 
   return (
     <div className="lg:hidden fixed bottom-6 left-0 right-0 px-6 z-50 pointer-events-none">
       <nav className="mx-auto max-w-md h-16 bg-foreground/[0.03] backdrop-blur-2xl border border-foreground/[0.08] rounded-[2.5rem] flex items-center relative px-2 shadow-2xl pointer-events-auto ring-1 ring-foreground/10 overflow-hidden">
-        
+
         {/* Sliding Glass Bubble */}
         {activeIndex !== -1 && (
-          <div 
+          <div
             className="absolute inset-y-1.5 bg-foreground/[0.08] backdrop-blur-md border border-foreground/10 rounded-[1.25rem] shadow-[inset_0_1px_1px_rgba(0,0,0,0.05)] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
-            style={{ 
+            style={{
               width: `calc((100% - 1rem) / ${currentNavigation.length})`,
               left: '0.5rem',
               transform: `translateX(calc(${activeIndex} * 100%))`
@@ -58,9 +60,9 @@ export function BottomNav({ navItems }: BottomNavProps) {
         )}
 
         {currentNavigation.map((item) => {
-          const isActive = pathname === item.href || 
+          const isActive = pathname === item.href ||
             (item.href !== '/' && pathname.startsWith(item.href))
-          
+
           return (
             <Link
               key={item.name}

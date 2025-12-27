@@ -14,6 +14,7 @@ import {
   BarChart2,
   Rss,
   ClipboardList,
+  Calendar,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -33,9 +34,9 @@ function LogoImage() {
   }
 
   return (
-    <img 
-      src="/logo.png" 
-      alt="Logo" 
+    <img
+      src="/logo.png"
+      alt="Logo"
       className="h-8 w-8 rounded-lg object-cover"
       onError={() => setImageError(true)}
     />
@@ -44,6 +45,7 @@ function LogoImage() {
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: Home },
+  { name: 'Routine', href: '/routines', icon: Calendar },
   { name: 'Feed', href: '/feed', icon: Rss },
   { name: 'Workouts', href: '/workouts', icon: Dumbbell },
   { name: 'Exercises', href: '/exercises', icon: Library },
@@ -77,12 +79,12 @@ export function Sidebar({ role, orgId }: SidebarProps) {
           <span className="font-bold text-lg">ProjectAthlete</span>
         </Link>
       </div>
-      
+
       <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
         {navigation.map((item) => {
-          const isActive = pathname === item.href || 
+          const isActive = pathname === item.href ||
             (item.href !== '/' && pathname.startsWith(item.href))
-          
+
           return (
             <Link
               key={item.name}
@@ -108,7 +110,7 @@ export function Sidebar({ role, orgId }: SidebarProps) {
             {adminNavigation.map((item) => {
               const isActive = pathname === item.href
               const hasBadge = item.badge === 'pending' && pendingCount > 0
-              
+
               return (
                 <Link
                   key={item.name}
@@ -121,8 +123,8 @@ export function Sidebar({ role, orgId }: SidebarProps) {
                   )}
                 >
                   <div className="flex items-center gap-3">
-                  <item.icon className="h-5 w-5" />
-                  {item.name}
+                    <item.icon className="h-5 w-5" />
+                    {item.name}
                   </div>
                   {hasBadge && (
                     <Badge variant="destructive" className="h-5 w-5 flex items-center justify-center p-0 text-[10px] animate-pulse">
