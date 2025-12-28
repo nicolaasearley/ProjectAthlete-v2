@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { getSuggestedExercises } from '@/app/routines/actions'
 import { Exercise } from '@/types/database'
-import { X, Loader2, Dumbbell, History, ChevronRight } from 'lucide-react'
+import { X, Loader2, Dumbbell, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -12,6 +12,81 @@ interface ExerciseSuggestionModalProps {
     filterType: 'main_lift_type' | 'muscle_group'
     value: string
     onClose: () => void
+}
+
+function ExerciseItem({ exercise }: { exercise: Exercise }) {
+    const [isExpanded, setIsExpanded] = useState(false)
+
+    return (
+        <div
+            className="flex flex-col p-2 rounded-2xl hover:bg-foreground/[0.03] transition-colors group border border-transparent hover:border-foreground/5 cursor-pointer"
+            onClick={() => setIsExpanded(!isExpanded)}
+        >
+            <div className="flex items-center justify-between p-2">
+                <div className="flex items-center gap-4">
+                    <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                        <Dumbbell className="h-5 w-5 text-blue-400" />
+                    </div>
+                    <div>
+                        <p className="font-bold tracking-tight">{exercise.name}</p>
+                        <div className="flex flex-wrap gap-1 mt-0.5">
+                            <p className="text-[10px] text-foreground/30 font-black uppercase tracking-widest">{exercise.category}</p>
+                            {exercise.primary_muscle_group && (
+                                <>
+                                    <span className="text-[10px] text-foreground/20">•</span>
+                                    <span className="text-[10px] text-blue-400/60 font-bold uppercase tracking-widest">{exercise.primary_muscle_group}</span>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+                <ChevronRight className={cn(
+                    "h-4 w-4 text-foreground/20 transition-all",
+                    isExpanded ? "rotate-90 text-blue-400" : "group-hover:text-blue-400 group-hover:translate-x-1"
+                )} />
+            </div>
+
+            {isExpanded && (
+                <div className="mt-2 pt-4 border-t border-border/30 px-2 pb-2 animate-in slide-in-from-top-2 duration-200">
+                    {exercise.description && (
+                        <p className="text-xs text-foreground/60 leading-relaxed mb-4 italic">
+                            {exercise.description}
+                        </p>
+                    )}
+
+                    {exercise.secondary_muscle_groups && exercise.secondary_muscle_groups.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-4">
+                            <span className="text-[10px] text-foreground/30 font-bold uppercase tracking-tighter mr-2 pt-0.5">Targets:</span>
+                            {exercise.secondary_muscle_groups.map(muscle => (
+                                <span key={muscle} className="px-2 py-0.5 rounded-md bg-blue-500/5 text-[9px] font-bold text-blue-400/70 border border-blue-500/10 uppercase tracking-tighter">
+                                    {muscle}
+                                </span>
+                            ))}
+                        </div>
+                    )}
+
+                    {exercise.demo_url && (
+                        <div className="relative aspect-video w-full rounded-2xl overflow-hidden border border-border/50 bg-foreground/5 mt-1 shadow-inner">
+                            <img
+                                src={exercise.demo_url}
+                                alt={exercise.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).parentElement!.style.display = 'none';
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    {!exercise.description && !exercise.secondary_muscle_groups?.length && !exercise.demo_url && (
+                        <p className="text-[10px] text-foreground/20 font-medium uppercase tracking-widest text-center py-4">
+                            Details coming soon...
+                        </p>
+                    )}
+                </div>
+            )}
+        </div>
+    )
 }
 
 export function ExerciseSuggestionModal({ filterType, value, onClose }: ExerciseSuggestionModalProps) {
@@ -74,21 +149,7 @@ export function ExerciseSuggestionModal({ filterType, value, onClose }: Exercise
                     ) : exercises.length > 0 ? (
                         <div className="grid gap-1">
                             {exercises.map((exercise) => (
-                                <div
-                                    key={exercise.id}
-                                    className="flex items-center justify-between p-4 rounded-2xl hover:bg-foreground/[0.03] transition-colors group cursor-default"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                                            <Dumbbell className="h-5 w-5 text-blue-400" />
-                                        </div>
-                                        <div>
-                                            <p className="font-bold tracking-tight">{exercise.name}</p>
-                                            <p className="text-[10px] text-foreground/30 font-black uppercase tracking-widest mt-0.5">{exercise.category}</p>
-                                        </div>
-                                    </div>
-                                    <ChevronRight className="h-4 w-4 text-foreground/20 group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
-                                </div>
+                                <ExerciseItem key={exercise.id} exercise={exercise} />
                             ))}
                         </div>
                     ) : (

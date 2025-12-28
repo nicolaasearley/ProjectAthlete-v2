@@ -57,6 +57,7 @@ const navigation = [
 
 const adminNavigation = [
   { name: 'User Management', href: '/admin/users', icon: Shield },
+  { name: 'Manage Exercises', href: '/admin/exercises', icon: Library },
   { name: 'Submissions', href: '/admin/submissions', icon: ClipboardList, badge: 'pending' },
   { name: 'Send Email', href: '/admin/email', icon: Rss },
 ]

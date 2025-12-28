@@ -108,3 +108,31 @@ export async function sendMassEmail(roles: string[], subject: string, body: stri
   return data
 }
 
+export async function updateExerciseMetadata(
+  exerciseId: string,
+  updates: {
+    description?: string | null
+    primary_muscle_group?: string | null
+    secondary_muscle_groups?: string[] | null
+    demo_url?: string | null
+  }
+) {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthorized')
+
+  const { data: isAdmin } = await (supabase.rpc as any)('is_admin')
+  if (!isAdmin) throw new Error('Unauthorized')
+
+  const { error } = await (supabase
+    .from('exercises') as any)
+    .update(updates)
+    .eq('id', exerciseId)
+
+  if (error) throw error
+
+  revalidatePath('/exercises')
+  revalidatePath(`/exercises/${exerciseId}`)
+  revalidatePath('/admin/exercises')
+}

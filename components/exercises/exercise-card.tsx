@@ -19,7 +19,7 @@ interface ExerciseCardProps {
 }
 
 // Category color and icon mapping - Using ACTUAL categories from database
-const CATEGORY_STYLES: Record<string, { 
+const CATEGORY_STYLES: Record<string, {
   gradient: string
   border: string
   text: string
@@ -114,9 +114,9 @@ export function ExerciseCard({ exercise, isFavorite = false }: ExerciseCardProps
 
   return (
     <Link href={`/exercises/${exercise.id}`} className="group relative block h-full">
-      <Card 
-        premium 
-        hoverable 
+      <Card
+        premium
+        hoverable
         className={cn(
           "h-full relative overflow-hidden transition-all duration-500",
           style.glow
@@ -132,8 +132,8 @@ export function ExerciseCard({ exercise, isFavorite = false }: ExerciseCardProps
             isFavorite ? "text-red-500 border-red-500/20" : "text-foreground/20 hover:text-foreground/40"
           )}
         >
-          <Heart 
-            className={cn("h-4 w-4 transition-all", isFavorite && "fill-current")} 
+          <Heart
+            className={cn("h-4 w-4 transition-all", isFavorite && "fill-current")}
           />
         </button>
 
@@ -142,21 +142,29 @@ export function ExerciseCard({ exercise, isFavorite = false }: ExerciseCardProps
           "absolute inset-0 bg-gradient-to-br pointer-events-none",
           style.gradient
         )} />
-        
+
         <div className="relative z-10">
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1 min-w-0 pr-10">
               <h3 className="text-lg font-bold tracking-tight truncate group-hover:text-foreground transition-colors">
                 {exercise.name}
               </h3>
-              <div className={cn(
-                "inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest",
-                style.text,
-                'bg-foreground/5 border',
-                style.border
-              )}>
-                <Icon className="h-3 w-3" />
-                {exercise.category}
+              <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                <div className={cn(
+                  "inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest",
+                  style.text,
+                  'bg-foreground/5 border',
+                  style.border
+                )}>
+                  <Icon className="h-3 w-3" />
+                  {exercise.category}
+                </div>
+
+                {exercise.primary_muscle_group && (
+                  <div className="inline-flex items-center px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest bg-blue-500/5 text-blue-400/80 border border-blue-500/10">
+                    {exercise.primary_muscle_group}
+                  </div>
+                )}
               </div>
             </div>
           </div>

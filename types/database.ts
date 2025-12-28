@@ -66,6 +66,10 @@ export type Database = {
           id: string
           name: string
           category: 'squat' | 'hinge' | 'push' | 'pull' | 'carry' | 'core' | 'olympic' | 'cardio' | 'other'
+          description: string | null
+          primary_muscle_group: string | null
+          secondary_muscle_groups: string[] | null
+          demo_url: string | null
           is_global: boolean
           org_id: string | null
           created_at: string
@@ -75,6 +79,10 @@ export type Database = {
           id?: string
           name: string
           category: 'squat' | 'hinge' | 'push' | 'pull' | 'carry' | 'core' | 'olympic' | 'cardio' | 'other'
+          description?: string | null
+          primary_muscle_group?: string | null
+          secondary_muscle_groups?: string[] | null
+          demo_url?: string | null
           is_global?: boolean
           org_id?: string | null
           created_at?: string
@@ -84,6 +92,10 @@ export type Database = {
           id?: string
           name?: string
           category?: 'squat' | 'hinge' | 'push' | 'pull' | 'carry' | 'core' | 'olympic' | 'cardio' | 'other'
+          description?: string | null
+          primary_muscle_group?: string | null
+          secondary_muscle_groups?: string[] | null
+          demo_url?: string | null
           is_global?: boolean
           org_id?: string | null
           created_at?: string
