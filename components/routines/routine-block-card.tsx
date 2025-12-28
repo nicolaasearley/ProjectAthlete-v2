@@ -1,8 +1,10 @@
 'use client'
 
+import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { RoutineBlock, RoutineBlockConfig, BLOCK_TYPES } from '@/types/database'
 import { Dumbbell, Activity, Timer, Zap, Heart, StretchHorizontal, Footprints, Flame, Star, BatteryCharging } from 'lucide-react'
+import { ExerciseSuggestionModal } from './exercise-suggestion-modal'
 
 // Extended type to include nested configs
 export interface ExtendedRoutineBlock extends RoutineBlock {
@@ -49,6 +51,8 @@ const BLOCK_COLORS: Record<string, string> = {
 }
 
 export function RoutineBlockCard({ block, className }: RoutineBlockCardProps) {
+    const [showSuggestions, setShowSuggestions] = React.useState(false)
+
     const Icon = BLOCK_ICONS[block.block_type] || Activity
     const colorClass = BLOCK_COLORS[block.block_type] || BLOCK_COLORS.other
     const label = BLOCK_TYPES.find(t => t.value === block.block_type)?.label || block.block_type
@@ -56,32 +60,55 @@ export function RoutineBlockCard({ block, className }: RoutineBlockCardProps) {
     const mainLiftConfigs = block.routine_block_configs.filter(c => c.config_type === 'main_lift_type').map(c => c.value)
     const muscleConfigs = block.routine_block_configs.filter(c => c.config_type === 'muscle_group').map(c => c.value)
 
+    const isMainLift = block.block_type === 'main_lift' && mainLiftConfigs.length > 0
+    const isAccessory = block.block_type === 'accessory' && muscleConfigs.length > 0
+    const isClickable = isMainLift // Disabled accessory for now
+
     return (
-        <div className={cn("rounded-lg border p-3 text-sm", colorClass, className)}>
-            <div className="flex items-center gap-2 font-medium mb-1">
-                <Icon className="h-4 w-4" />
-                <span>{label}</span>
+        <>
+            <div
+                onClick={() => isClickable && setShowSuggestions(true)}
+                className={cn(
+                    "rounded-lg border p-3 text-sm transition-all relative overflow-hidden",
+                    colorClass,
+                    isClickable && "cursor-pointer hover:border-foreground/30 hover:shadow-md",
+                    className
+                )}
+            >
+                <div className="flex items-center gap-2 font-medium mb-1 relative z-10">
+                    <Icon className="h-4 w-4" />
+                    <span>{label}</span>
+                </div>
+
+                {mainLiftConfigs.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1 relative z-10">
+                        {mainLiftConfigs.map(v => (
+                            <span key={v} className="px-1.5 py-0.5 rounded text-xs bg-black/20 capitalize">{v}</span>
+                        ))}
+                    </div>
+                )}
+
+                {muscleConfigs.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1 relative z-10">
+                        {muscleConfigs.map(v => (
+                            <span key={v} className="px-1.5 py-0.5 rounded text-xs bg-black/20 capitalize">{v}</span>
+                        ))}
+                    </div>
+                )}
+
+                {block.notes && (
+                    <div className="text-xs opacity-80 mt-2 whitespace-pre-wrap relative z-10">{block.notes}</div>
+                )}
+
+                {showSuggestions && (
+                    <ExerciseSuggestionModal
+                        filterType={isMainLift ? 'main_lift_type' : 'muscle_group'}
+                        value={isMainLift ? mainLiftConfigs[0] : muscleConfigs[0]}
+                        onClose={() => setShowSuggestions(false)}
+                    />
+                )}
             </div>
-
-            {mainLiftConfigs.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-1">
-                    {mainLiftConfigs.map(v => (
-                        <span key={v} className="px-1.5 py-0.5 rounded textxs bg-black/20 capitalize">{v}</span>
-                    ))}
-                </div>
-            )}
-
-            {muscleConfigs.length > 0 && (
-                <div className="flex flex-wrap gap-1 mt-1">
-                    {muscleConfigs.map(v => (
-                        <span key={v} className="px-1.5 py-0.5 rounded text-xs bg-black/20 capitalize">{v}</span>
-                    ))}
-                </div>
-            )}
-
-            {block.notes && (
-                <div className="text-xs opacity-80 mt-2 whitespace-pre-wrap">{block.notes}</div>
-            )}
-        </div>
+        </>
     )
 }
+

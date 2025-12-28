@@ -198,3 +198,78 @@ export async function reorderBlocks(dayId: string, orderedBlockIds: string[]) {
 
     revalidatePath('/routines')
 }
+
+export async function getSuggestedExercises(filterType: 'main_lift_type' | 'muscle_group', value: string) {
+    const supabase = await createClient()
+
+    if (filterType === 'main_lift_type') {
+        const categoryMap: Record<string, string> = {
+            squat: 'squat',
+            hinge: 'hinge',
+            bench: 'push',
+            press: 'push',
+            clean: 'olympic',
+            snatch: 'olympic',
+            jerk: 'olympic',
+            pull_up: 'pull',
+            row: 'pull',
+            carry: 'carry'
+        }
+
+        const category = categoryMap[value] || 'other'
+        const { data } = await supabase.from('exercises').select('*').eq('category', category).order('name', { ascending: true })
+        return data || []
+    }
+
+    if (filterType === 'muscle_group') {
+        const muscleToCategory: Record<string, string> = {
+            chest: 'push',
+            back: 'pull',
+            shoulders: 'push',
+            quads: 'squat',
+            hamstrings: 'hinge',
+            glutes: 'hinge',
+            core: 'core',
+            adductors: 'squat',
+            calves: 'other'
+        }
+
+        // Specific keywords for better name matching
+        const muscleKeywords: Record<string, string[]> = {
+            biceps: ['curl', 'bicep'],
+            triceps: ['tricep', 'dip', 'extension', 'skull'],
+            quads: ['quad', 'extension', 'press', 'squat'],
+            hamstrings: ['hamstring', 'curl', 'rdl', 'deadlift'],
+            calves: ['calf', 'raise']
+        }
+
+        const keywords = muscleKeywords[value] || [value]
+
+        // Build query with OR for keywords
+        let query = supabase.from('exercises').select('*')
+
+        const filterParts = keywords.map(kw => `name.ilike.%${kw}%`)
+        query = query.or(filterParts.join(','))
+
+        const { data: specificData } = await query.order('name', { ascending: true })
+
+        if (specificData && specificData.length > 3) {
+            return specificData
+        }
+
+        // Otherwise use category fallback
+        const category = muscleToCategory[value]
+        if (category) {
+            const { data } = await supabase
+                .from('exercises')
+                .select('*')
+                .eq('category', category)
+                .order('name', { ascending: true })
+            return data || []
+        }
+
+        return specificData || []
+    }
+
+    return []
+}

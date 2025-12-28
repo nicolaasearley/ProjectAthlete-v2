@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { EmptyState } from '@/components/shared/empty-state'
 import { WorkoutCard } from '@/components/workouts/workout-card'
 import { Button } from '@/components/ui/button'
-import { Dumbbell, Trophy, Users, TrendingUp, Rss, BarChart2, Play, Flame, Moon, Activity } from 'lucide-react'
+import { Dumbbell, Trophy, Users, TrendingUp, BarChart2, Play, Flame, Moon, Activity } from 'lucide-react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { CurrentRoutineCard } from '@/components/routines/current-routine-card'
 
 export const metadata: Metadata = {
   title: 'Dashboard | ProjectAthlete',
@@ -32,10 +33,6 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .order('date', { ascending: false })
 
-  // Fetch feed count
-  const { count: feedCount } = await supabase
-    .from('feed_posts')
-    .select('*', { count: 'exact', head: true })
 
   // Fetch active challenges count
   const today = new Date().toISOString().split('T')[0]
@@ -87,7 +84,7 @@ export default async function DashboardPage() {
               <span className="text-2xl font-black uppercase tracking-widest text-foreground/20">Days</span>
             </div>
             <p className="text-xl font-medium mt-6 leading-tight">
-              You&apos;ve logged <span className="text-blue-400">{thisWeekWorkouts} workouts</span> this week. <br/>
+              You&apos;ve logged <span className="text-blue-400">{thisWeekWorkouts} workouts</span> this week. <br />
               Keep the momentum going!
             </p>
           </div>
@@ -107,6 +104,9 @@ export default async function DashboardPage() {
           {/* Abstract Liquid Glass Element */}
           <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-blue-500/5 to-transparent pointer-events-none" />
         </Card>
+
+        {/* Current Day Routine Card */}
+        <CurrentRoutineCard />
 
         {/* Start Workout Card */}
         <Card premium className="md:col-span-4 flex flex-col justify-between">
@@ -141,17 +141,6 @@ export default async function DashboardPage() {
           </Button>
         </Card>
 
-        <Card premium glow="purple" className="md:col-span-4 flex flex-col justify-between py-8">
-          <div className="stat-label">Community Feed</div>
-          <div className="mt-4 flex items-baseline gap-2">
-            <span className="stat-value text-purple-400">{feedCount || 0}</span>
-            <Rss className="h-6 w-6 text-purple-400/40" />
-          </div>
-          <p className="mt-4 text-xs font-medium text-foreground/40">Recent updates, PRs, and achievements from the organization.</p>
-          <Button asChild variant="ghost" className="mt-6 w-fit p-0 h-auto text-[10px] font-black uppercase tracking-widest text-purple-400 hover:bg-transparent hover:opacity-80">
-            <Link href="/feed">Check Updates →</Link>
-          </Button>
-        </Card>
 
         {/* Top PRs Preview */}
         <Card premium className="md:col-span-4 p-8">
@@ -169,9 +158,9 @@ export default async function DashboardPage() {
                   </div>
                   <div className="text-right ml-4">
                     <p className="font-black text-lg tracking-tighter leading-none">
-                      {Number(pr.max_weight) > 0 
-                        ? Number(pr.max_weight).toLocaleString() 
-                        : Number(pr.estimated_1rm || 0).toLocaleString()} 
+                      {Number(pr.max_weight) > 0
+                        ? Number(pr.max_weight).toLocaleString()
+                        : Number(pr.estimated_1rm || 0).toLocaleString()}
                       <span className="text-[10px] text-foreground/20 ml-1">LBS</span>
                     </p>
                   </div>
@@ -198,7 +187,7 @@ export default async function DashboardPage() {
             ))
           ) : (
             <div className="md:col-span-3">
-              <EmptyState 
+              <EmptyState
                 icon={Dumbbell}
                 title="No workouts yet"
                 description="Start logging your sessions to see your progress here."
