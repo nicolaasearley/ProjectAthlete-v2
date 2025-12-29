@@ -54,7 +54,7 @@ export function QuickActions() {
     ]
 
     return (
-        <div className="fixed bottom-32 right-4 lg:bottom-10 lg:right-10 z-[100] flex flex-col items-end">
+        <div className="fixed bottom-32 right-4 lg:bottom-10 lg:right-10 z-[100] flex flex-col items-end pointer-events-none">
             {/* Backdrop */}
             {isOpen && (
                 <div
@@ -66,7 +66,7 @@ export function QuickActions() {
             {/* Menu Options */}
             <div className={cn(
                 "flex flex-col items-end gap-3 mb-4 transition-all duration-300 origin-bottom",
-                isOpen ? "scale-100 opacity-100 translate-y-0" : "scale-0 opacity-0 translate-y-10"
+                isOpen ? "scale-100 opacity-100 translate-y-0 pointer-events-auto" : "scale-0 opacity-0 translate-y-10"
             )}>
                 {actions.map((action, idx) => (
                     <Link
@@ -98,7 +98,7 @@ export function QuickActions() {
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={cn(
-                    "w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-500 hover:scale-110 active:scale-90 relative overflow-hidden group",
+                    "w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-500 hover:scale-110 active:scale-90 relative overflow-hidden group pointer-events-auto",
                     isOpen ? "bg-foreground text-background" : "bg-primary text-primary-foreground"
                 )}
             >
