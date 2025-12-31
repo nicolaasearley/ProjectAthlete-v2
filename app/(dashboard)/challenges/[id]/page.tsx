@@ -18,31 +18,31 @@ interface ChallengePageProps {
 export default async function ChallengePage({ params }: ChallengePageProps) {
   const { id } = await params
   const supabase = await createClient()
-  
+
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
-  
+
   const { data: challenge } = await supabase
     .from('challenges')
     .select('*')
     .eq('id', id)
     .single()
-  
+
   if (!challenge) {
     notFound()
   }
 
   // Force narrowing for TypeScript
   const challengeData = challenge as any
-  
+
   const today = new Date().toISOString().split('T')[0]
   const isActive = challengeData.start_date <= today && challengeData.end_date >= today
-  
+
   // Get leaderboard
   const { data: leaderboard } = await (supabase.rpc as any)('get_challenge_leaderboard', {
     p_challenge_id: id
   })
-  
+
   // Get user progress summary
   const { data: progress } = await (supabase.rpc as any)('get_user_challenge_progress', {
     p_challenge_id: id,
@@ -56,13 +56,13 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
     .eq('challenge_id', id)
     .eq('user_id', user.id)
     .order('logged_at', { ascending: false })
-  
+
   // Check if admin
   const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
-  
+
   const userProgress = (progress as any)?.[0] || null
   const daysRemaining = Math.max(0, Math.ceil((new Date(challengeData.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
-  
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
@@ -91,47 +91,43 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
       </div>
 
       {isActive && <ChallengeCountdown endDate={challengeData.end_date} />}
-      
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Info className="h-5 w-5 text-muted-foreground" />
-                About this Challenge
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-              <p className="whitespace-pre-wrap">{challengeData.description}</p>
-              <div className="pt-4 border-t border-border grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Goal</p>
-                  <p>Log most {challengeData.metric} total</p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Dates</p>
-                  <p>{new Date(challengeData.start_date).toLocaleDateString('en-US')} - {new Date(challengeData.end_date).toLocaleDateString('en-US')}</p>
-                </div>
+
+      <div className="space-y-6">
+        {/* About this Challenge - order 1 on mobile */}
+        <Card className="order-1">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-muted-foreground" />
+              About this Challenge
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+            <p className="whitespace-pre-wrap">{challengeData.description}</p>
+            <div className="pt-4 border-t border-border grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Goal</p>
+                <p>Log most {challengeData.metric} total</p>
               </div>
-            </CardContent>
-          </Card>
-          
-          <Leaderboard 
-            entries={(leaderboard as any[]) || []}
-            currentUserId={user.id}
-            unit={challengeData.metric_unit}
-          />
-        </div>
-        
-        <div className="space-y-6">
-          {isActive && (
-            <LogProgressForm 
-              challengeId={id}
-              unit={challengeData.metric_unit}
-              onLog={logProgress}
-            />
-          )}
-          
+              <div>
+                <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Dates</p>
+                <p>{new Date(challengeData.start_date).toLocaleDateString('en-US')} - {new Date(challengeData.end_date).toLocaleDateString('en-US')}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Log Progress and Performance - side by side on desktop */}
+        <div className="grid gap-6 lg:grid-cols-3 order-2">
+          <div className="lg:col-span-2 space-y-6">
+            {isActive && (
+              <LogProgressForm
+                challengeId={id}
+                unit={challengeData.metric_unit}
+                onLog={logProgress}
+              />
+            )}
+          </div>
+
           <Card className="bg-primary/5 border-primary/20">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium">Your Performance</CardTitle>
@@ -155,13 +151,21 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
               </div>
             </CardContent>
           </Card>
-
-          <ChallengeLogHistory 
-            logs={(userLogs as any[]) || []} 
-            challengeId={id}
-            unit={challengeData.metric_unit}
-          />
         </div>
+
+        {/* Leaderboard - order 4 on mobile */}
+        <Leaderboard
+          entries={(leaderboard as any[]) || []}
+          currentUserId={user.id}
+          unit={challengeData.metric_unit}
+        />
+
+        {/* Your Logs - order 5 on mobile */}
+        <ChallengeLogHistory
+          logs={(userLogs as any[]) || []}
+          challengeId={id}
+          unit={challengeData.metric_unit}
+        />
       </div>
     </div>
   )

@@ -148,20 +148,26 @@ export async function deleteChallenge(challengeId: string) {
   redirect('/challenges')
 }
 
-export async function logProgress(challengeId: string, value: number, notes?: string) {
+export async function logProgress(challengeId: string, value: number, notes?: string, loggedAt?: string) {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized')
 
+  const insertData: any = {
+    challenge_id: challengeId,
+    user_id: user.id,
+    value,
+    notes: notes || null,
+  }
+
+  if (loggedAt) {
+    insertData.logged_at = loggedAt
+  }
+
   const { error } = await (supabase
     .from('challenge_logs') as any)
-    .insert({
-      challenge_id: challengeId,
-      user_id: user.id,
-      value,
-      notes: notes || null,
-    })
+    .insert(insertData)
 
   if (error) throw error
 

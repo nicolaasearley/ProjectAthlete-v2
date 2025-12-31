@@ -126,7 +126,14 @@ export function ChallengeLogHistory({ logs, challengeId, unit }: ChallengeLogHis
                         {log.value} <span className="text-xs font-normal text-muted-foreground uppercase">{unit}</span>
                       </p>
                       <span className="text-[10px] text-muted-foreground uppercase">
-                        {new Date(log.logged_at).toLocaleDateString('en-US')}
+                        {(() => {
+                          const dateStr = log.logged_at
+                          // If it's a full timestamp, extract just the date part
+                          const datePart = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr.substring(0, 10)
+                          // Parse as local date
+                          const [year, month, day] = datePart.split('-').map(Number)
+                          return new Date(year, month - 1, day).toLocaleDateString('en-US')
+                        })()}
                       </span>
                     </div>
                     {log.notes && (

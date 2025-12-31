@@ -9,21 +9,22 @@ import { Loader2 } from 'lucide-react'
 interface LogProgressFormProps {
   challengeId: string
   unit: string
-  onLog: (challengeId: string, value: number, notes?: string) => Promise<void>
+  onLog: (challengeId: string, value: number, notes?: string, loggedAt?: string) => Promise<void>
 }
 
 export function LogProgressForm({ challengeId, unit, onLog }: LogProgressFormProps) {
   const [isPending, startTransition] = useTransition()
   const [value, setValue] = useState<number | ''>('')
   const [notes, setNotes] = useState('')
-  
+  const [loggedAt, setLoggedAt] = useState(new Date().toISOString().split('T')[0])
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (value === '' || value <= 0) return
-    
+
     startTransition(async () => {
       try {
-        await onLog(challengeId, value, notes || undefined)
+        await onLog(challengeId, value, notes || undefined, loggedAt)
         setValue('')
         setNotes('')
       } catch (error) {
@@ -31,7 +32,7 @@ export function LogProgressForm({ challengeId, unit, onLog }: LogProgressFormPro
       }
     })
   }
-  
+
   return (
     <Card>
       <CardHeader>
@@ -39,11 +40,20 @@ export function LogProgressForm({ challengeId, unit, onLog }: LogProgressFormPro
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex gap-4">
-            <div className="flex-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Date</label>
+              <Input
+                type="date"
+                value={loggedAt}
+                onChange={(e) => setLoggedAt(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-medium text-muted-foreground">Value ({unit})</label>
               <Input
                 type="number"
-                label={`Value (${unit})`}
                 placeholder="0.00"
                 step="0.01"
                 min="0.01"
@@ -53,7 +63,7 @@ export function LogProgressForm({ challengeId, unit, onLog }: LogProgressFormPro
               />
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <label className="text-sm font-medium">Notes (optional)</label>
             <textarea
@@ -63,7 +73,7 @@ export function LogProgressForm({ challengeId, unit, onLog }: LogProgressFormPro
               className="w-full h-20 rounded-lg border border-input bg-background px-3 py-2 text-sm resize-none"
             />
           </div>
-          
+
           <Button type="submit" className="w-full gap-2" disabled={isPending || value === '' || value <= 0}>
             {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             Add Log
