@@ -12,23 +12,23 @@ export function CreateExerciseDialog() {
   const [open, setOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
-  
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
-    
+
     const formData = new FormData(e.currentTarget)
-    
+
     startTransition(async () => {
-      try {
-        await createCustomExercise(formData)
+      const result = await createCustomExercise(formData)
+      if (result.error) {
+        setError(result.error)
+      } else {
         setOpen(false)
-      } catch (err: any) {
-        setError(err.message || 'Failed to create exercise')
       }
     })
   }
-  
+
   if (!open) {
     return (
       <Button onClick={() => setOpen(true)} variant="outline" size="sm">
@@ -37,7 +37,7 @@ export function CreateExerciseDialog() {
       </Button>
     )
   }
-  
+
   return (
     <Card className="border-primary/50">
       <CardHeader className="pb-3">
@@ -61,7 +61,7 @@ export function CreateExerciseDialog() {
             required
             autoFocus
           />
-          
+
           <div className="space-y-2">
             <label className="text-sm font-medium">Category</label>
             <select
@@ -76,7 +76,7 @@ export function CreateExerciseDialog() {
               ))}
             </select>
           </div>
-          
+
           <div className="space-y-2">
             <label className="text-sm font-medium">Tracking Metric</label>
             <select
@@ -92,11 +92,11 @@ export function CreateExerciseDialog() {
               <option value="time_calories">Time & Calories</option>
             </select>
           </div>
-          
+
           {error && (
             <p className="text-sm text-destructive">{error}</p>
           )}
-          
+
           <div className="flex gap-2">
             <Button
               type="button"

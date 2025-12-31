@@ -6,46 +6,51 @@ import { redirect } from 'next/navigation'
 import type { ExerciseCategory } from '@/types/database'
 
 export async function createCustomExercise(formData: FormData) {
-  const supabase = await createClient()
+  try {
+    const supabase = await createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Unauthorized')
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return { error: 'Unauthorized' }
 
-  const { data: profile } = await (supabase
-    .from('profiles') as any)
-    .select('org_id')
-    .eq('id', user.id)
-    .single()
+    const { data: profile } = await (supabase
+      .from('profiles') as any)
+      .select('org_id')
+      .eq('id', user.id)
+      .single()
 
-  if (!profile) throw new Error('Profile not found')
+    if (!profile) return { error: 'Profile not found' }
 
-  const name = formData.get('name') as string
-  const category = formData.get('category') as ExerciseCategory
-  const default_metric = formData.get('default_metric') as string
+    const name = (formData.get('name') as string)?.trim()
+    const category = formData.get('category') as ExerciseCategory
+    const default_metric = formData.get('default_metric') as string
 
-  if (!name || !category) {
-    throw new Error('Name and category are required')
-  }
-
-  const { error } = await (supabase
-    .from('exercises') as any)
-    .insert({
-      name: name.trim(),
-      category,
-      default_metric,
-      is_global: false,
-      org_id: (profile as any).org_id,
-    })
-
-  if (error) {
-    if (error.code === '23505') {
-      throw new Error('An exercise with this name already exists')
+    if (!name || !category) {
+      return { error: 'Name and category are required' }
     }
-    throw error
-  }
 
-  revalidatePath('/exercises')
-  redirect('/exercises')
+    const { error } = await (supabase
+      .from('exercises') as any)
+      .insert({
+        name,
+        category,
+        default_metric,
+        is_global: false,
+        org_id: (profile as any).org_id,
+      })
+
+    if (error) {
+      if (error.code === '23505') {
+        return { error: 'An exercise with this name already exists' }
+      }
+      return { error: error.message }
+    }
+
+    revalidatePath('/exercises')
+    return { success: true }
+  } catch (error: any) {
+    console.error('Error creating exercise:', error)
+    return { error: error.message || 'Failed to create exercise' }
+  }
 }
 
 export async function toggleFavoriteExercise(exerciseId: string) {
