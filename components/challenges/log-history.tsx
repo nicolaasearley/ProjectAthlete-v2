@@ -119,7 +119,7 @@ export function ChallengeLogHistory({ logs, challengeId, unit }: ChallengeLogHis
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center justify-between group">
+                <div className="flex items-center justify-between group pr-14 md:pr-0">
                   <div>
                     <div className="flex items-baseline gap-2">
                       <p className="font-bold text-lg">
@@ -140,7 +140,7 @@ export function ChallengeLogHistory({ logs, challengeId, unit }: ChallengeLogHis
                       <p className="text-xs text-muted-foreground italic">&ldquo;{log.notes}&rdquo;</p>
                     )}
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <Button
                       size="icon"
                       variant="ghost"
