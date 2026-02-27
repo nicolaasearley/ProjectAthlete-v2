@@ -17,7 +17,9 @@ export function ChallengeCountdown({ endDate }: ChallengeCountdownProps) {
   } | null>(null)
 
   useEffect(() => {
-    const target = new Date(endDate).getTime()
+    // Treat the challenge as active through the *end* of the endDate in the
+    // local timezone, not at the first moment of that date or in UTC.
+    const target = new Date(`${endDate}T23:59:59`).getTime()
 
     const updateCountdown = () => {
       const now = new Date().getTime()

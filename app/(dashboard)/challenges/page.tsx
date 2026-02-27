@@ -23,10 +23,13 @@ export default async function ChallengesPage() {
     .single()
   
   if (!profile) return null
-  
+
   // Force narrowing for TypeScript
   const profileData = profile as any
-  const today = new Date().toISOString().split('T')[0]
+
+  // Use local calendar date (YYYY-MM-DD) instead of UTC date so challenges
+  // respect the viewer's local timezone for "today" checks.
+  const today = new Date().toLocaleDateString('en-CA') // e.g. 2025-03-01
   
   // Get active challenges (started and not ended)
   const { data: activeChallenges } = await supabase

@@ -35,7 +35,9 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
   // Force narrowing for TypeScript
   const challengeData = challenge as any
 
-  const today = new Date().toISOString().split('T')[0]
+  // Use local calendar date (YYYY-MM-DD) instead of UTC date so challenges
+  // respect the viewer's local timezone for "today" checks.
+  const today = new Date().toLocaleDateString('en-CA')
   const isActive = challengeData.start_date <= today && challengeData.end_date >= today
 
   // Get leaderboard
@@ -61,7 +63,15 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
   const { data: isAdmin } = await (supabase.rpc as any)('is_coach_or_admin')
 
   const userProgress = (progress as any)?.[0] || null
-  const daysRemaining = Math.max(0, Math.ceil((new Date(challengeData.end_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+
+  // Treat the challenge as running through the *end* of the end_date in the
+  // local timezone, not the start of the day or UTC midnight.
+  const endOfDay = new Date(`${challengeData.end_date}T23:59:59`)
+  const now = new Date()
+  const daysRemaining = Math.max(
+    0,
+    Math.ceil((endOfDay.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  )
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
