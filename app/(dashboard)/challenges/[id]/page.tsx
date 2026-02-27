@@ -35,9 +35,11 @@ export default async function ChallengePage({ params }: ChallengePageProps) {
   // Force narrowing for TypeScript
   const challengeData = challenge as any
 
-  // Use local calendar date (YYYY-MM-DD) instead of UTC date so challenges
-  // respect the viewer's local timezone for "today" checks.
-  const today = new Date().toLocaleDateString('en-CA')
+  // Use Eastern Time (America/New_York) for the canonical "today" so challenge
+  // windows are consistent regardless of where the user is located.
+  const today = new Date().toLocaleDateString('en-CA', {
+    timeZone: 'America/New_York',
+  })
   const isActive = challengeData.start_date <= today && challengeData.end_date >= today
 
   // Get leaderboard

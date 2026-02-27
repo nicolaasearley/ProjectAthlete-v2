@@ -34,8 +34,11 @@ export default async function DashboardPage() {
     .order('date', { ascending: false })
 
 
-  // Fetch active challenges count
-  const today = new Date().toISOString().split('T')[0]
+  // Fetch active challenges count (using Eastern Time as the app-wide default
+  // timezone so challenge status is consistent regardless of user locale)
+  const today = new Date().toLocaleDateString('en-CA', {
+    timeZone: 'America/New_York',
+  })
   const { count: activeChallengesCount } = await supabase
     .from('challenges')
     .select('*', { count: 'exact', head: true })
